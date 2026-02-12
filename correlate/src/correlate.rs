@@ -402,14 +402,14 @@ impl RowViewer<Row> for Viewer {
 
 /* ------------------------------------------ View Loop ----------------------------------------- */
 
-struct DemoApp {
+struct CorrelateApp {
     table: egui_data_table::DataTable<Row>,
     viewer: Viewer,
     style_override: egui_data_table::Style,
     scroll_bar_always_visible: bool,
 }
 
-impl Default for DemoApp {
+impl Default for CorrelateApp {
 
     // fn new(cc: &eframe::CreationContext<'_>) -> Self {
     //
@@ -453,7 +453,7 @@ impl Default for DemoApp {
     }
 }
 
-impl eframe::App for DemoApp {
+impl eframe::App for CorrelateApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         fn is_send<T: Send>(_: &T) {}
         fn is_sync<T: Sync>(_: &T) {}
@@ -583,13 +583,13 @@ fn main() {
     env_logger::init();
 
     eframe::run_simple_native(
-        "Spreadsheet Demo",
+        "Correlate",
         eframe::NativeOptions {
             centered: true,
             ..Default::default()
         },
         {
-            let mut app = DemoApp::default();
+            let mut app = CorrelateApp::default();
             move |ctx, frame| {
                 app.update(ctx, frame);
             }
@@ -624,7 +624,7 @@ fn main() {
             .start(
                 canvas,
                 web_options,
-                Box::new(|_cc| Ok(Box::new(DemoApp::default()))),
+                Box::new(|_cc| Ok(Box::new(CorrelateApp::default()))),
             )
             .await;
 

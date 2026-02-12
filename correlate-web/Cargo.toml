@@ -5,7 +5,7 @@ edition.workspace = true
 
 [[bin]]
 name = "correlate-web"
-path = "../correlate/src/demo.rs"
+path = "../correlate/src/correlate.rs"
 
 [dependencies]
 egui =                  { workspace = true }
