@@ -4,6 +4,7 @@ use correlate::CorrelateApp;
 mod columns;
 mod data;
 mod view;
+mod codec;
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {
