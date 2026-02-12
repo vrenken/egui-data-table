@@ -5,7 +5,7 @@ edition.workspace = true
 
 [[bin]]
 name = "correlate"
-path = "src/correlate.rs"
+path = "src/main.rs"
 
 [dependencies]
 egui =                  { workspace = true }
