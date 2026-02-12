@@ -2,7 +2,7 @@
 use egui::Response;
 use egui_data_table::RowViewer;
 use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
-use crate::columns::{AGE, COLUMN_COUNT, COLUMN_NAMES, GENDER, GRADE, IS_STUDENT, NAME, ROW_LOCKED};
+use crate::data::{AGE, COLUMN_COUNT, COLUMN_NAMES, GENDER, GRADE, IS_STUDENT, NAME, ROW_LOCKED};
 
 use crate::data::*;
 

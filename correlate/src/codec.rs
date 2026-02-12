@@ -1,5 +1,5 @@
 ﻿use egui_data_table::viewer::{DecodeErrorBehavior, RowCodec};
-use crate::columns::{AGE, GRADE, IS_STUDENT, NAME, ROW_LOCKED};
+use crate::data::{AGE, GRADE, IS_STUDENT, NAME, ROW_LOCKED};
 use crate::data::row::Row;
 
 pub struct Codec;

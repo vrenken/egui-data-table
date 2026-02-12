@@ -1,6 +1,5 @@
 use view::CorrelateApp;
 
-mod columns;
 mod data;
 mod view;
 mod codec;
