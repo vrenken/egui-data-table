@@ -1,5 +1,4 @@
-mod correlate;
-use correlate::CorrelateApp;
+use view::CorrelateApp;
 
 mod columns;
 mod data;

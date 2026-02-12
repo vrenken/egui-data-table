@@ -3,7 +3,8 @@ use egui::Response;
 use egui_data_table::RowViewer;
 use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
 use crate::columns::{AGE, COLUMN_COUNT, COLUMN_NAMES, GENDER, GRADE, IS_STUDENT, NAME, ROW_LOCKED};
-use crate::data::{Gender, Grade, Row};
+
+use crate::data::*;
 
 pub struct Viewer {
     pub name_filter: String,
@@ -24,7 +25,7 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn try_create_codec(&mut self, _: bool) -> Option<impl RowCodec<Row>> {
-        Some(crate::correlate::Codec)
+        Some(crate::codec::Codec)
     }
 
     fn is_sortable_column(&mut self, column: usize) -> bool {

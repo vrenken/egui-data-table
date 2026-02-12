@@ -1,14 +1,8 @@
-use std::{iter::repeat_with};
+﻿use std::iter::repeat_with;
 use egui::{Sense, Widget};
 use egui::scroll_area::ScrollBarVisibility;
-
-use crate::data::*;
-use crate::view::*;
-pub(crate) use crate::codec::Codec;
-
-/* ------------------------------------ Viewer Implementation ----------------------------------- */
-
-/* ------------------------------------------ View Loop ----------------------------------------- */
+use crate::data::{Gender, Grade, Row};
+use crate::view::Viewer;
 
 pub struct CorrelateApp {
     table: egui_data_table::DataTable<Row>,

@@ -1,29 +1,6 @@
 ﻿use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-#[derive(Debug, Clone)]
-pub struct Row {
-    pub name: String,
-    pub age: i32,
-    pub gender: Option<Gender>,
-    pub is_student: bool,
-    pub grade: Grade,
-    pub row_locked: bool
-}
-
-impl Default for Row {
-    fn default() -> Self {
-        Row {
-            name: "".to_string(),
-            age: 0,
-            gender: None,
-            is_student: false,
-            grade: Grade::F,
-            row_locked: false
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Grade {
     A,
@@ -79,20 +56,5 @@ impl FromStr for Grade {
         };
 
         Ok(value)
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Gender {
-    Male,
-    Female,
-}
-
-impl Display for Gender {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Gender::Male => write!(f, "Male"),
-            Gender::Female => write!(f, "Female"),
-        }
     }
 }
