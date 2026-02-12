@@ -10,15 +10,20 @@ fn main() {
     use eframe::App;
     env_logger::init();
 
+    let options = eframe::NativeOptions {
+        centered: true,
+        ..Default::default()
+    };
     eframe::run_simple_native(
         "Correlate",
-        eframe::NativeOptions {
-            centered: true,
-            ..Default::default()
-        },
+        options,
         {
             let mut app = CorrelateApp::default();
             move |ctx, frame| {
+
+                // register the fonts.
+                egui_material_icons::initialize(&ctx);
+
                 app.update(ctx, frame);
             }
         },
@@ -52,7 +57,12 @@ fn main() {
             .start(
                 canvas,
                 web_options,
-                Box::new(|_cc| Ok(Box::new(CorrelateApp::default()))),
+                Box::new(|_cc| {
+                    // register the fonts.
+                    egui_material_icons::initialize(&_cc);
+
+                    Ok(Box::new(CorrelateApp::default()))
+                }),
             )
             .await;
 

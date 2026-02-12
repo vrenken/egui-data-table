@@ -5,8 +5,6 @@ use egui_data_table::{
     viewer::{DecodeErrorBehavior, RowCodec},
 };
 
-use egui_material_icons::icons;
-
 use crate::columns::*;
 use crate::data::*;
 use crate::view::*;
@@ -68,13 +66,6 @@ pub struct CorrelateApp {
 
 impl Default for CorrelateApp {
 
-    // fn new(cc: &eframe::CreationContext<'_>) -> Self {
-    //
-    //     // register the fonts:
-    //     egui_material_icons::initialize(&cc.egui_ctx);
-    //
-    //     Self::default()
-    // }
     fn default() -> Self {
         Self {
             table: {
@@ -124,6 +115,11 @@ impl eframe::App for CorrelateApp {
                     " kang-sw/egui-data-table",
                     "https://github.com/kang-sw/egui-data-table",
                 );
+
+                // later in some ui:
+                ui
+                    .button(egui_material_icons::icons::ICON_STRATEGY)
+                    .clicked();
 
                 ui.hyperlink_to(
                     "(source)",
