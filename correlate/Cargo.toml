@@ -11,7 +11,7 @@ path = "src/demo.rs"
 egui =                  { workspace = true }
 egui-data-table =       { workspace = true }
 egui_material_icons =   { workspace = true }
-egui_extras =           { workspace = true, default-features = false, features = [ "serde" ] }
+egui_extras =           { workspace = true, features = [ "serde" ] }
 eframe =                { workspace = true, features = ["serde", "persistence"] }
 env_logger =            { workspace = true }
 getrandom =             { workspace = true, features = ["wasm_js"] }
@@ -29,3 +29,10 @@ web-sys =               { version = "0.3" }
 [features]
 default = ["persistency"]
 persistency = ["dep:serde"]
+
+[dev-dependencies]
+eframe =                    { workspace = true, features = ["serde", "persistence"] }
+fastrand =                  { workspace = true }
+names =                     { workspace = true }
+log =                       { workspace = true }
+env_logger =                { workspace = true }
