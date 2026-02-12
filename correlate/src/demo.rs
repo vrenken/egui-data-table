@@ -8,6 +8,8 @@ use egui_data_table::{
     RowViewer,
 };
 
+use egui_material_icons::icons;
+
 /* ----------------------------------------- Columns -------------------------------------------- */
 
 mod columns {
@@ -408,6 +410,14 @@ struct DemoApp {
 }
 
 impl Default for DemoApp {
+
+    // fn new(cc: &eframe::CreationContext<'_>) -> Self {
+    //
+    //     // register the fonts:
+    //     egui_material_icons::initialize(&cc.egui_ctx);
+    //
+    //     Self::default()
+    // }
     fn default() -> Self {
         Self {
             table: {
