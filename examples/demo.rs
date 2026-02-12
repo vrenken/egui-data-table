@@ -147,6 +147,10 @@ struct Codec;
 impl RowCodec<Row> for Codec {
     type DeserializeError = &'static str;
 
+    fn create_empty_decoded_row(&mut self) -> Row {
+        Row::default()
+    }
+
     fn encode_column(&mut self, src_row: &Row, column: usize, dst: &mut String) {
         match column {
             NAME => dst.push_str(&src_row.name),
@@ -177,24 +181,11 @@ impl RowCodec<Row> for Codec {
 
         Ok(())
     }
-
-    fn create_empty_decoded_row(&mut self) -> Row {
-        Row::default()
-    }
 }
 
 /* ------------------------------------ Viewer Implementation ----------------------------------- */
 
 impl RowViewer<Row> for Viewer {
-
-    fn on_highlight_cell(&mut self, row: &Row, column: usize) {
-        println!("cell highlighted: row: {:?}, column: {}", row, column);
-    }
-
-    fn try_create_codec(&mut self, _: bool) -> Option<impl RowCodec<Row>> {
-        Some(Codec)
-    }
-
     fn num_columns(&mut self) -> usize {
         COLUMN_COUNT
     }
@@ -202,6 +193,10 @@ impl RowViewer<Row> for Viewer {
     fn column_name(&mut self, column: usize) -> Cow<'static, str> {
         COLUMN_NAMES[column]
             .into()
+    }
+
+    fn try_create_codec(&mut self, _: bool) -> Option<impl RowCodec<Row>> {
+        Some(Codec)
     }
 
     fn is_sortable_column(&mut self, column: usize) -> bool {
@@ -229,42 +224,12 @@ impl RowViewer<Row> for Viewer {
         }
     }
 
-    fn new_empty_row(&mut self) -> Row {
-        Row::default()
+    fn row_filter_hash(&mut self) -> &impl std::hash::Hash {
+        &self.name_filter
     }
 
-    fn set_cell_value(&mut self, src: &Row, dst: &mut Row, column: usize) {
-        match column {
-            NAME => dst.name.clone_from(&src.name),
-            AGE => dst.age = src.age,
-            GENDER => dst.gender = src.gender,
-            IS_STUDENT => dst.is_student = src.is_student,
-            GRADE => dst.grade = src.grade,
-            ROW_LOCKED => dst.row_locked = src.row_locked,
-            _ => unreachable!(),
-        }
-    }
-
-    fn confirm_cell_write_by_ui(
-        &mut self,
-        current: &Row,
-        _next: &Row,
-        _column: usize,
-        _context: CellWriteContext,
-    ) -> bool {
-        if !self.row_protection {
-            return true;
-        }
-
-        !current.is_student
-    }
-
-    fn confirm_row_deletion_by_ui(&mut self, row: &Row) -> bool {
-        if !self.row_protection {
-            return true;
-        }
-
-        !row.is_student
+    fn filter_row(&mut self, row: &Row) -> bool {
+        row.name.contains(&self.name_filter)
     }
 
     fn show_cell_view(&mut self, ui: &mut egui::Ui, row: &Row, column: usize) {
@@ -288,8 +253,8 @@ impl RowViewer<Row> for Viewer {
     ) -> Option<Box<Row>> {
         resp.dnd_release_payload::<String>()
             .map(|x| {
-                Box::new(Row{ 
-                    name: (*x).clone(), 
+                Box::new(Row{
+                    name: (*x).clone(),
                     age: 9999,
                     gender: Some(Gender::Female),
                     is_student: false,
@@ -316,7 +281,7 @@ impl RowViewer<Row> for Viewer {
             AGE => ui.add(egui::DragValue::new(&mut row.age).speed(1.0)),
             GENDER => {
                 let gender = &mut row.gender;
-                
+
                 egui::ComboBox::new(ui.id().with("gender"), "".to_string())
                     .selected_text(gender.map(|gender|gender.to_string()).unwrap_or("Unspecified".to_string()))
                     .show_ui(ui, |ui|{
@@ -360,12 +325,63 @@ impl RowViewer<Row> for Viewer {
         .into()
     }
 
-    fn row_filter_hash(&mut self) -> &impl std::hash::Hash {
-        &self.name_filter
+    fn set_cell_value(&mut self, src: &Row, dst: &mut Row, column: usize) {
+        match column {
+            NAME => dst.name.clone_from(&src.name),
+            AGE => dst.age = src.age,
+            GENDER => dst.gender = src.gender,
+            IS_STUDENT => dst.is_student = src.is_student,
+            GRADE => dst.grade = src.grade,
+            ROW_LOCKED => dst.row_locked = src.row_locked,
+            _ => unreachable!(),
+        }
     }
 
-    fn filter_row(&mut self, row: &Row) -> bool {
-        row.name.contains(&self.name_filter)
+    fn confirm_cell_write_by_ui(
+        &mut self,
+        current: &Row,
+        _next: &Row,
+        _column: usize,
+        _context: CellWriteContext,
+    ) -> bool {
+        if !self.row_protection {
+            return true;
+        }
+
+        !current.is_student
+    }
+
+    fn confirm_row_deletion_by_ui(&mut self, row: &Row) -> bool {
+        if !self.row_protection {
+            return true;
+        }
+
+        !row.is_student
+    }
+
+    fn new_empty_row(&mut self) -> Row {
+        Row::default()
+    }
+
+    fn on_highlight_cell(&mut self, row: &Row, column: usize) {
+        println!("cell highlighted: row: {:?}, column: {}", row, column);
+    }
+
+    fn on_highlight_change(&mut self, highlighted: &[&Row], unhighlighted: &[&Row]) {
+        println!("highlight {:?}", highlighted);
+        println!("unhighlight {:?}", unhighlighted);
+    }
+
+    fn on_row_updated(&mut self, row_index: usize, new_row: &Row, old_row: &Row) {
+        println!("row updated. row_id: {}, new_row: {:?}, old_row: {:?}", row_index, new_row, old_row);
+    }
+
+    fn on_row_inserted(&mut self, row_index: usize, row: &Row) {
+        println!("row inserted. row_id: {}, values: {:?}", row_index, row);
+    }
+
+    fn on_row_removed(&mut self, row_index: usize, row: &Row) {
+        println!("row removed. row_id: {}, values: {:?}", row_index, row);
     }
 
     fn hotkeys(
@@ -379,23 +395,6 @@ impl RowViewer<Row> for Viewer {
 
     fn persist_ui_state(&self) -> bool {
         true
-    }
-
-    fn on_highlight_change(&mut self, highlighted: &[&Row], unhighlighted: &[&Row]) {
-        println!("highlight {:?}", highlighted);
-        println!("unhighlight {:?}", unhighlighted);
-    }
-
-    fn on_row_updated(&mut self, row_index: usize, new_row: &Row, old_row: &Row) {
-        println!("row updated. row_id: {}, new_row: {:?}, old_row: {:?}", row_index, new_row, old_row);
-    }
-    
-    fn on_row_inserted(&mut self, row_index: usize, row: &Row) {
-        println!("row inserted. row_id: {}, values: {:?}", row_index, row);
-    }
-
-    fn on_row_removed(&mut self, row_index: usize, row: &Row) {
-        println!("row removed. row_id: {}, values: {:?}", row_index, row);
     }
 }
 
