@@ -1,6 +1,4 @@
 use std::{borrow::Cow, iter::repeat_with};
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
 use egui::{Response, Sense, Widget};
 use egui::scroll_area::ScrollBarVisibility;
 use egui_data_table::{
@@ -10,32 +8,8 @@ use egui_data_table::{
 
 use egui_material_icons::icons;
 
-/* ----------------------------------------- Columns -------------------------------------------- */
-
-mod columns {
-    
-    // column indices
-    // columns can easily be reordered simply by changing the values of these indices.
-    pub const NAME: usize = 0;
-    pub const AGE: usize = 1;
-    pub const GENDER: usize = 2;
-    pub const IS_STUDENT: usize = 3;
-    pub const GRADE: usize = 4;
-    pub const ROW_LOCKED: usize = 5;
-    
-    /// count of columns
-    pub const COLUMN_COUNT: usize = 6;
-
-    pub const COLUMN_NAMES: [&str; COLUMN_COUNT] = [
-        "Name (Click to sort)",
-        "Age",
-        "Gender",
-        "Is Student (Not sortable)",
-        "Grade",
-        "Row locked",
-    ];
-}
-use columns::*;
+use crate::columns::*;
+use crate::data::*;
 
 /* ----------------------------------------- Data Scheme ---------------------------------------- */
 
@@ -45,101 +19,6 @@ struct Viewer {
     hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
 }
 
-#[derive(Debug, Clone)]
-struct Row {
-    name: String,
-    age: i32,
-    gender: Option<Gender>,
-    is_student: bool,
-    grade: Grade,
-    row_locked: bool
-}
-
-impl Default for Row {
-    fn default() -> Self {
-        Row {
-            name: "".to_string(),
-            age: 0,
-            gender: None,
-            is_student: false,
-            grade: Grade::F,
-            row_locked: false
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-enum Grade {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-}
-
-impl Display for Grade {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Grade::A => write!(f, "A"),
-            Grade::B => write!(f, "B"),
-            Grade::C => write!(f, "C"),
-            Grade::D => write!(f, "D"),
-            Grade::E => write!(f, "E"),
-            Grade::F => write!(f, "F"),
-        }
-    }
-}
-
-impl TryFrom<i32> for Grade {
-    type Error = ();
-
-    fn try_from(input: i32) -> Result<Self, Self::Error> {
-        let value = match input {
-            0 => Grade::A,
-            1 => Grade::B,
-            2 => Grade::C,
-            3 => Grade::D,
-            4 => Grade::E,
-            5 => Grade::F,
-            _ => return Err(())
-        };
-        Ok(value)
-    }
-}
-
-impl FromStr for Grade {
-    type Err = ();
-
-    fn from_str(input: &str) -> Result<Self, Self::Err> {
-        let value = match input {
-            "A" => Grade::A,
-            "B" => Grade::B,
-            "C" => Grade::C,
-            "D" => Grade::D,
-            "E" => Grade::E,
-            "F" => Grade::F,
-            _ => return Err(()),
-        };
-
-        Ok(value)
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-enum Gender {
-    Male,
-    Female,
-}
-
-impl Display for Gender {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Gender::Male => write!(f, "Male"),
-            Gender::Female => write!(f, "Female"),
-        }
-    }
-}
 
 
 /* -------------------------------------------- Codec ------------------------------------------- */
@@ -193,8 +72,10 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn column_name(&mut self, column: usize) -> Cow<'static, str> {
-        COLUMN_NAMES[column]
-            .into()
+        COLUMN_NAMES.get(column)
+            .copied()
+            .map(Cow::Borrowed)
+            .unwrap_or_else(|| Cow::Owned(format!("Column {}", column)))
     }
 
     fn try_create_codec(&mut self, _: bool) -> Option<impl RowCodec<Row>> {
@@ -238,7 +119,7 @@ impl RowViewer<Row> for Viewer {
         let _ = match column {
             NAME => ui.label(&row.name),
             AGE => ui.label(row.age.to_string()),
-            GENDER => ui.label(row.gender.map(|gender|gender.to_string()).unwrap_or("Unspecified".to_string())),
+            GENDER => ui.label(row.gender.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string())),
             IS_STUDENT => ui.checkbox(&mut { row.is_student }, ""),
             GRADE => ui.label(row.grade.to_string()),
             ROW_LOCKED => ui.checkbox(&mut { row.row_locked }, ""),
@@ -285,7 +166,7 @@ impl RowViewer<Row> for Viewer {
                 let gender = &mut row.gender;
 
                 egui::ComboBox::new(ui.id().with("gender"), "".to_string())
-                    .selected_text(gender.map(|gender|gender.to_string()).unwrap_or("Unspecified".to_string()))
+                    .selected_text(gender.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string()))
                     .show_ui(ui, |ui|{
                         if ui
                             .add(egui::Button::selectable(

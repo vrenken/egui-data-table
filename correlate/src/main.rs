@@ -1,6 +1,8 @@
 mod correlate;
-
 use correlate::CorrelateApp;
+
+mod columns;
+mod data;
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {
