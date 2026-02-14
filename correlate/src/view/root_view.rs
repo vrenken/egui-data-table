@@ -34,21 +34,6 @@ impl Default for CorrelateApp {
 
         let mut data_sources = Vec::new();
         for source in &config.data_sources {
-            if source == "Students" {
-                let configs = crate::data::get_default_column_configs();
-                let rows = crate::data::get_rows(1000, &configs);
-                data_sources.push(DataSource {
-                    path: "Students".to_string(),
-                    sheets: vec![DataSheet {
-                        name: "Students".to_string(),
-                        column_configs: configs,
-                        table: rows.into_iter().collect(),
-                    }],
-                    selected_sheet_index: 0,
-                });
-                continue;
-            }
-
             match crate::data::load_xlsx(source) {
                 Ok(excel_sheets) => {
                     let sheets = excel_sheets.into_iter().map(|s| DataSheet {
@@ -70,17 +55,25 @@ impl Default for CorrelateApp {
         }
 
         if data_sources.is_empty() {
-            let configs = crate::data::get_default_column_configs();
-            let rows = crate::data::get_rows(1000, &configs);
-            data_sources.push(DataSource {
-                path: "Random Data".to_string(),
-                sheets: vec![DataSheet {
-                    name: "Random Data".to_string(),
-                    column_configs: configs.clone(),
-                    table: rows.into_iter().collect(),
-                }],
-                selected_sheet_index: 0,
-            });
+            let selected_index = None;
+            let table = egui_data_table::DataTable::new();
+            let viewer = Viewer {
+                name_filter: String::new(),
+                hotkeys: Vec::new(),
+                row_protection: false,
+                column_configs: Vec::new(),
+            };
+
+            return Self {
+                config,
+                table,
+                viewer,
+                data_sources,
+                selected_index,
+                style_override: Default::default(),
+                scroll_bar_always_visible: false,
+                pending_file_to_add: None,
+            };
         }
 
         let selected_index = config.selected_index.unwrap_or(0).min(data_sources.len() - 1);
