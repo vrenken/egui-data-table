@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning].
 - Ability to add CSV files from the context menu.
 
 ### Changed
-- 
+- Removed default sample data sources ("Students" and "Random Data") and associated generator logic.
 ### Fixed
 - 
 ### Exposed
