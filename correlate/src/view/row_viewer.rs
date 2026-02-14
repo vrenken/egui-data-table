@@ -339,6 +339,23 @@ impl RowViewer<Row> for Viewer {
             self.add_column_requested = Some(column);
             ui.close();
         }
+
+        ui.separator();
+
+        if column > 0 {
+            if ui.button("Move Left").clicked() {
+                self.column_configs.swap(column, column - 1);
+                self.save_requested = true;
+                ui.close();
+            }
+        }
+        if column < self.column_configs.len() - 1 {
+            if ui.button("Move Right").clicked() {
+                self.column_configs.swap(column, column + 1);
+                self.save_requested = true;
+                ui.close();
+            }
+        }
     }
 
     fn hotkeys(
