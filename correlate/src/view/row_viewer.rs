@@ -1,10 +1,11 @@
 ﻿use std::borrow::Cow;
-use egui::Response;
+use egui::{Response, Key};
 use egui_data_table::RowViewer;
 use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
 use crate::data::*;
 use crate::data::column_config::ColumnConfig;
 use crate::data::column_type::ColumnType;
+use crate::view::app::types::RenamingTarget;
 
 pub struct Viewer {
     pub name_filter: String,
@@ -12,6 +13,10 @@ pub struct Viewer {
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
     pub captured_order: Vec<usize>,
     pub add_column_requested: Option<usize>,
+    pub rename_row_requested: Option<usize>,
+    pub rename_column_requested: Option<usize>,
+    pub renaming_item: Option<(RenamingTarget, String)>,
+    pub rename_committed: bool,
     pub save_requested: bool,
     pub column_configs: Vec<ColumnConfig>,
 }
@@ -24,7 +29,7 @@ impl RowViewer<Row> for Viewer {
     fn column_name(&mut self, column: usize) -> Cow<'static, str> {
         self.column_configs.get(column)
             .map(|c| {
-                let mut name = c.name.clone();
+                let mut name = c.display_name.as_ref().unwrap_or(&c.name).clone();
                 if c.is_key {
                     name = format!("🔑 {}", name);
                 }
@@ -355,6 +360,77 @@ impl RowViewer<Row> for Viewer {
                 self.save_requested = true;
                 ui.close();
             }
+        }
+    }
+
+    fn row_header_double_clicked(&mut self, row: usize) {
+        self.rename_row_requested = Some(row);
+    }
+
+    fn column_header_double_clicked(&mut self, column: usize) {
+        self.rename_column_requested = Some(column);
+    }
+
+    fn show_column_header(&mut self, ui: &mut egui::Ui, column: usize) {
+        let renaming_this_col = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::Column(column));
+
+        if renaming_this_col {
+            let (_, current_name) = self.renaming_item.as_mut().unwrap();
+            let res = ui.text_edit_singleline(current_name);
+            if res.lost_focus() || ui.input(|i| i.key_pressed(Key::Enter)) {
+                self.rename_committed = true;
+            }
+            if ui.input(|i| i.key_pressed(Key::Escape)) {
+                self.renaming_item = None;
+            }
+            res.request_focus();
+        } else {
+            ui.add(egui::Label::new(self.column_name(column)).selectable(false));
+        }
+    }
+
+    fn show_row_header(&mut self, ui: &mut egui::Ui, row: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize) {
+        let renaming_this_row = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::Row(row));
+        
+        if renaming_this_row {
+            let (_, current_name) = self.renaming_item.as_mut().unwrap();
+            let res = ui.text_edit_singleline(current_name);
+            if res.lost_focus() || ui.input(|i| i.key_pressed(Key::Enter)) {
+                self.rename_committed = true;
+            }
+            if ui.input(|i| i.key_pressed(Key::Escape)) {
+                self.renaming_item = None;
+            }
+            res.request_focus();
+        } else {
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                ui.separator();
+    
+                if has_any_sort {
+                    ui.monospace(
+                        egui::RichText::from(format!(
+                            "{:·>width$}",
+                            row,
+                            width = row_id_digits
+                        ))
+                        .strong(),
+                    );
+                } else {
+                    ui.monospace(
+                        egui::RichText::from(format!("{:>width$}", "", width = row_id_digits))
+                            .strong(),
+                    );
+                }
+    
+                ui.monospace(
+                    egui::RichText::from(format!(
+                        "{:·>width$}",
+                        vis_row + 1,
+                        width = vis_row_digits
+                    ))
+                    .weak(),
+                );
+            });
         }
     }
 

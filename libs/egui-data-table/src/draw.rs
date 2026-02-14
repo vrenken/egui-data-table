@@ -208,9 +208,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                     let mut painter = None;
                     let (col_rect, resp) = h.col(|ui| {
                         egui::Sides::new().show(ui, |ui| {
-                            ui.add(Label::new(viewer.column_name(col.0))
-                                .selectable(false)
-                            );
+                            viewer.show_column_header(ui, col.0);
                         }, |ui|{
                             if let Some(pos) = s.sort().iter().position(|(c, ..)| c == &col) {
                                 let is_asc = s.sort()[pos].1 .0 as usize;
@@ -254,7 +252,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                         }
                     }
 
-                    if viewer.is_sortable_column(col.0) && resp.clicked_by(PointerButton::Primary) {
+                    if viewer.is_sortable_column(col.0) && resp.clicked_by(PointerButton::Primary) && !resp.double_clicked() {
                         let mut sort = s.sort().to_owned();
                         match sort.iter_mut().find(|(c, ..)| c == &col) {
                             Some((_, asc)) => match asc.0 {
@@ -267,6 +265,10 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                         }
 
                         commands.push(Command::SetColumnSort(sort));
+                    }
+
+                    if resp.double_clicked() {
+                        viewer.column_header_double_clicked(col.0);
                     }
 
                     if resp.dnd_hover_payload::<VisColumnPos>().is_some() {
@@ -477,38 +479,22 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                 // Calculate the position where values start.
                 row_elem_start = ui.max_rect().right_top();
 
-                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    ui.separator();
-
-                    if has_any_sort {
-                        ui.monospace(
-                            RichText::from(f!(
-                                "{:·>width$}",
-                                row_id.0,
-                                width = row_id_digits as usize
-                            ))
-                            .strong(),
-                        );
-                    } else {
-                        ui.monospace(
-                            RichText::from(f!("{:>width$}", "", width = row_id_digits as usize))
-                                .strong(),
-                        );
-                    }
-
-                    ui.monospace(
-                        RichText::from(f!(
-                            "{:·>width$}",
-                            vis_row.0 + 1,
-                            width = vis_row_digits as usize
-                        ))
-                        .weak(),
-                    );
-                });
+                viewer.show_row_header(
+                    ui,
+                    row_id.0,
+                    vis_row.0,
+                    has_any_sort,
+                    row_id_digits as usize,
+                    vis_row_digits as usize,
+                )
             });
 
             if check_mouse_dragging_selection(&head_rect, &head_resp) {
                 s.cci_sel_update_row(vis_row);
+            }
+
+            if head_resp.double_clicked() {
+                viewer.row_header_double_clicked(row_id.0);
             }
 
             /* -------------------------------- Columns Rendering ------------------------------- */

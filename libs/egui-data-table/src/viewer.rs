@@ -262,6 +262,49 @@ pub trait RowViewer<R>: 'static {
     /// Add custom items to the column header context menu.
     fn column_header_context_menu(&mut self, _ui: &mut egui::Ui, _column: usize) {}
 
+    /// Called when a row header has been double-clicked.
+    fn row_header_double_clicked(&mut self, _row: usize) {}
+
+    /// Called when a column header has been double-clicked.
+    fn column_header_double_clicked(&mut self, _column: usize) {}
+
+    /// Show the column header UI.
+    fn show_column_header(&mut self, ui: &mut egui::Ui, column: usize) {
+        ui.add(egui::Label::new(self.column_name(column)).selectable(false));
+    }
+
+    /// Show the row header UI.
+    fn show_row_header(&mut self, ui: &mut egui::Ui, row: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize) {
+        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+            ui.separator();
+
+            if has_any_sort {
+                ui.monospace(
+                    egui::RichText::from(format!(
+                        "{:·>width$}",
+                        row,
+                        width = row_id_digits
+                    ))
+                    .strong(),
+                );
+            } else {
+                ui.monospace(
+                    egui::RichText::from(format!("{:>width$}", "", width = row_id_digits))
+                        .strong(),
+                );
+            }
+
+            ui.monospace(
+                egui::RichText::from(format!(
+                    "{:·>width$}",
+                    vis_row + 1,
+                    width = vis_row_digits
+                ))
+                .weak(),
+            );
+        });
+    }
+
     /// Return hotkeys for the current context.
     fn hotkeys(&mut self, context: &UiActionContext) -> Vec<(egui::KeyboardShortcut, UiAction)> {
         self::default_hotkeys(context)

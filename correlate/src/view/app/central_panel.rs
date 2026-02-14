@@ -1,9 +1,14 @@
 ﻿use egui::scroll_area::ScrollBarVisibility;
 use egui_data_table::RowViewer;
 use crate::view::CorrelateApp;
+use crate::view::app::types::RenamingTarget;
+use crate::data::CellValue;
 
 impl CorrelateApp {
     pub fn ui_central_panel(&mut self, ctx: &egui::Context) {
+        // Sync renaming state to viewer
+        self.viewer.renaming_item = self.renaming_item.clone();
+
         egui::CentralPanel::default().show(ctx, |ui| {
             match self.scroll_bar_always_visible {
                 true => {
@@ -20,6 +25,67 @@ impl CorrelateApp {
                 egui_data_table::Renderer::new(&mut self.table, &mut self.viewer)
                     .with_style(self.style_override),
             );
+
+            // Sync renaming state back from viewer
+            self.renaming_item = self.viewer.renaming_item.clone();
+
+            // Handle row renaming request
+            if let Some(row_idx) = self.viewer.rename_row_requested.take() {
+                let name_col_idx = self.viewer.column_configs.iter().position(|c| c.is_name)
+                    .or_else(|| self.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
+                    .or_else(|| self.viewer.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+                    .unwrap_or(0);
+                
+                if let Some(row) = self.table.get(row_idx) {
+                    let current_name = match &row.cells[name_col_idx] {
+                        CellValue::String(s) => s.clone(),
+                        CellValue::Int(i) => i.to_string(),
+                        CellValue::Bool(b) => b.to_string(),
+                    };
+                    self.renaming_item = Some((RenamingTarget::Row(row_idx), current_name));
+                    self.viewer.renaming_item = self.renaming_item.clone();
+                }
+            }
+
+            // Handle column renaming request
+            if let Some(col_idx) = self.viewer.rename_column_requested.take() {
+                if let Some(config) = self.viewer.column_configs.get(col_idx) {
+                    let display_name = config.display_name.as_ref().unwrap_or(&config.name).clone();
+                    self.renaming_item = Some((RenamingTarget::Column(col_idx), display_name));
+                    self.viewer.renaming_item = self.renaming_item.clone();
+                }
+            }
+
+            // Handle row renaming completion
+            if self.viewer.rename_committed {
+                self.viewer.rename_committed = false;
+                if let Some((target, new_name)) = self.renaming_item.take() {
+                    match target {
+                        RenamingTarget::Row(row_idx) => {
+                            let name_col_idx = self.viewer.column_configs.iter().position(|c| c.is_name)
+                                .or_else(|| self.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
+                                .or_else(|| self.viewer.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+                                .unwrap_or(0);
+
+                            if let Some(row) = self.table.get_mut(row_idx) {
+                                row.cells[name_col_idx] = CellValue::String(new_name);
+                                self.viewer.save_requested = true;
+                            }
+                        }
+                        RenamingTarget::Column(col_idx) => {
+                            if let Some(config) = self.viewer.column_configs.get_mut(col_idx) {
+                                config.display_name = if new_name.is_empty() || new_name == config.name { None } else { Some(new_name) };
+                                if config.is_virtual {
+                                    config.name = config.display_name.clone().unwrap();
+                                }
+                                self.viewer.save_requested = true;
+                            }
+                        }
+                        _ => {}
+                    }
+                    self.viewer.renaming_item = None;
+                }
+            }
 
             // Handle column reordering from the data table
             if let Some(visual_order) = self.table.visual_column_order() {
@@ -57,6 +123,7 @@ impl CorrelateApp {
                 if let Some(at) = add_column_at {
                     let new_column = crate::data::ColumnConfig {
                         name: format!("New Column {}", self.viewer.column_configs.len() + 1),
+                        display_name: None,
                         column_type: crate::data::ColumnType::String,
                         is_sortable: true,
                         is_key: false,

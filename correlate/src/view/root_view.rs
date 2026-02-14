@@ -55,6 +55,10 @@ impl Default for CorrelateApp {
                 hotkeys: Vec::new(),
                 captured_order: Vec::new(),
                 add_column_requested: None,
+                rename_row_requested: None,
+                rename_column_requested: None,
+                renaming_item: None,
+                rename_committed: false,
                 save_requested: false,
                 column_configs: Vec::new(),
             };
@@ -83,6 +87,10 @@ impl Default for CorrelateApp {
             hotkeys: Vec::new(),
             captured_order: Vec::new(),
             add_column_requested: None,
+            rename_row_requested: None,
+            rename_column_requested: None,
+            renaming_item: None,
+            rename_committed: false,
             save_requested: false,
             column_configs: sheet.column_configs.clone(),
         };
