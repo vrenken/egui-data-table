@@ -12,16 +12,8 @@
           "is_key": true,
           "is_name": true,
           "is_virtual": false,
+          "order": 0,
           "width": 348.0
-        },
-        {
-          "name": "Date",
-          "column_type": "String",
-          "is_sortable": true,
-          "is_key": false,
-          "is_name": false,
-          "is_virtual": false,
-          "width": 89.125
         },
         {
           "name": "Number",
@@ -30,7 +22,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "width": 170.0
+          "order": 1,
+          "width": 138.34375
         },
         {
           "name": "Currency",
@@ -39,7 +32,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "width": 115.0
+          "order": 2,
+          "width": 82.15625
         },
         {
           "name": "New Column 13",
@@ -48,6 +42,27 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
+          "order": 3,
+          "width": 172.0
+        },
+        {
+          "name": "Date",
+          "column_type": "String",
+          "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 4,
+          "width": 138.34375
+        },
+        {
+          "name": "New Column 14",
+          "column_type": "String",
+          "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": true,
+          "order": 5,
           "width": 138.34375
         },
         {
@@ -57,6 +72,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 6,
           "width": 74.15625
         },
         {
@@ -66,6 +82,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 7,
           "width": 97.125
         },
         {
@@ -75,6 +92,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 8,
           "width": 89.125
         },
         {
@@ -84,6 +102,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
+          "order": 9,
           "width": 164.46875
         },
         {
@@ -93,6 +112,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
+          "order": 10,
           "width": 131.34375
         },
         {
@@ -102,6 +122,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
+          "order": 11,
           "width": 138.34375
         },
         {
@@ -111,6 +132,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
+          "order": 12,
           "width": 498.21875
         },
         {
@@ -120,6 +142,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
+          "order": 13,
           "width": 138.34375
         }
       ],
@@ -136,6 +159,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 0,
           "width": 1994.9062
         }
       ],

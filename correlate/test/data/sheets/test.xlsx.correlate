@@ -12,6 +12,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 0,
           "width": 348.0
         },
         {
@@ -21,6 +22,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 1,
           "width": 89.125
         },
         {
@@ -30,6 +32,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 2,
           "width": 170.0
         },
         {
@@ -39,6 +42,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 3,
           "width": 115.0
         },
         {
@@ -48,6 +52,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 4,
           "width": 74.15625
         },
         {
@@ -57,6 +62,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 5,
           "width": 89.125
         },
         {
@@ -66,6 +72,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
+          "order": 6,
           "width": 89.125
         }
       ],
