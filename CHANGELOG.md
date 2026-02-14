@@ -9,9 +9,12 @@ and this project adheres to [Semantic Versioning].
 
 ### Added
 - Ability to mark a column as the "name" column from the column header context menu. This column is marked with a 🏷️ icon.
+- Ability to reorder columns from the column header context menu using "Move Left" and "Move Right". Column order is now persisted to the `.correlate` file.
 
 ### Fixed
 - Fixed an issue where renamed data sources and sheets were not persisted to the `.correlate` file.
+- Fixed an issue where the column order was not correctly updated in the `.correlate` file after reordering.
+- Fixed an issue where drag-and-drop column reordering did not synchronize with the underlying data and configuration.
 
 ## [0.1.0] - 2026-02-14
 

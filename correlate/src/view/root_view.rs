@@ -392,8 +392,13 @@ impl eframe::App for CorrelateApp {
                         }
 
                         // Also save .correlate files for all data sources
-                        for ds in &self.data_sources {
+                        for ds in self.data_sources.iter_mut() {
                             let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
+                            for sheet in &mut ds.sheets {
+                                for (i, config) in sheet.column_configs.iter_mut().enumerate() {
+                                    config.order = i;
+                                }
+                            }
                             let source_config = crate::data::SourceConfig {
                                 name: ds.name.clone(),
                                 sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
@@ -436,6 +441,11 @@ impl eframe::App for CorrelateApp {
 
                 // Save .correlate file when switching away from a source
                 let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
+                for sheet in &mut old_ds.sheets {
+                    for (i, config) in sheet.column_configs.iter_mut().enumerate() {
+                        config.order = i;
+                    }
+                }
                 let source_config = crate::data::SourceConfig {
                     name: old_ds.name.clone(),
                     sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
@@ -508,6 +518,11 @@ impl eframe::App for CorrelateApp {
 
                         // Save .correlate file when switching away from a source
                         let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
+                        for sheet in &mut old_ds.sheets {
+                            for (i, config) in sheet.column_configs.iter_mut().enumerate() {
+                                config.order = i;
+                            }
+                        }
                         let source_config = crate::data::SourceConfig {
                             name: old_ds.name.clone(),
                             sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
@@ -561,6 +576,36 @@ impl eframe::App for CorrelateApp {
                     .with_style(self.style_override),
             );
 
+            // Handle column reordering from the data table
+            if let Some(visual_order) = self.table.visual_column_order() {
+                let is_identity = visual_order.iter().enumerate().all(|(i, &c)| i == c);
+                if !is_identity {
+                    // Reorder column_configs in the viewer
+                    let mut new_configs = Vec::with_capacity(self.viewer.column_configs.len());
+                    for &idx in &visual_order {
+                        new_configs.push(self.viewer.column_configs[idx].clone());
+                    }
+                    self.viewer.column_configs = new_configs;
+
+                    // Reorder cells in all rows
+                    let mut rows = self.table.take();
+                    for row in &mut rows {
+                        let mut new_cells = Vec::with_capacity(row.cells.len());
+                        for &idx in &visual_order {
+                            new_cells.push(row.cells[idx].clone());
+                        }
+                        row.cells = new_cells;
+                    }
+                    self.table.replace(rows);
+
+                    // Reset visual order in the library to identity
+                    self.table.reset_visual_column_order();
+
+                    // Mark as needing save
+                    self.viewer.save_requested = true;
+                }
+            }
+
             let column_count_changed = self.table.is_empty() || self.viewer.num_columns() != self.table[0].cells.len();
 
             if self.viewer.add_column_requested.is_some() || self.viewer.save_requested || column_count_changed {
@@ -575,6 +620,7 @@ impl eframe::App for CorrelateApp {
                         is_key: false,
                         is_name: false,
                         is_virtual: true,
+                        order: self.viewer.column_configs.len(),
                         width: None,
                     };
 
@@ -602,6 +648,9 @@ impl eframe::App for CorrelateApp {
                     let ds = &mut self.data_sources[idx];
                     let sheet = &mut ds.sheets[ds.selected_sheet_index];
                     sheet.column_configs = self.viewer.column_configs.clone();
+                    for (i, config) in sheet.column_configs.iter_mut().enumerate() {
+                        config.order = i;
+                    }
                     sheet.table = self.table.clone();
 
                     // Save .correlate file
@@ -623,8 +672,13 @@ impl eframe::App for CorrelateApp {
         });
 
         if let Some(index) = self.save_requested.take() {
-            if let Some(ds) = self.data_sources.get(index) {
+            if let Some(ds) = self.data_sources.get_mut(index) {
                 let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
+                for sheet in &mut ds.sheets {
+                    for (i, config) in sheet.column_configs.iter_mut().enumerate() {
+                        config.order = i;
+                    }
+                }
                 let source_config = crate::data::SourceConfig {
                     name: ds.name.clone(),
                     sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
