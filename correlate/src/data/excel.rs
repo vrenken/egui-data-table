@@ -2,42 +2,59 @@
 use umya_spreadsheet::*;
 use crate::data::{CellValue, ColumnConfig, ColumnType, Gender, Grade, Row};
 
-pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<(Vec<ColumnConfig>, Vec<Row>), String> {
+pub struct ExcelSheet {
+    pub name: String,
+    pub column_configs: Vec<ColumnConfig>,
+    pub rows: Vec<Row>,
+}
+
+pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
     let book = reader::xlsx::read(path).map_err(|e| e.to_string())?;
-    let sheet = book.get_sheet(&0).ok_or("No sheets found in excel file")?;
+    let mut sheets = Vec::new();
 
-    let (max_col, max_row) = sheet.get_highest_column_and_row();
+    for sheet_idx in 0..book.get_sheet_count() {
+        let sheet = book.get_sheet(&sheet_idx).ok_or(format!("Sheet {} not found", sheet_idx))?;
+        let sheet_name = sheet.get_name().to_string();
 
-    let mut column_configs = Vec::new();
+        let (max_col, max_row) = sheet.get_highest_column_and_row();
 
-    // 1. Infer ColumnConfig from the first row (headers)
-    for col_idx in 1..=max_col {
-        let col_name = sheet.get_formatted_value((col_idx, 1));
-        
-        // Infer type from the second row (first data row)
-        let first_data_value = sheet.get_formatted_value((col_idx, 2));
-        let column_type = infer_column_type(&col_name, &first_data_value);
+        let mut column_configs = Vec::new();
 
-        column_configs.push(ColumnConfig {
-            name: col_name,
-            column_type,
-            is_sortable: true,
+        // 1. Infer ColumnConfig from the first row (headers)
+        for col_idx in 1..=max_col {
+            let col_name = sheet.get_formatted_value((col_idx, 1));
+            
+            // Infer type from the second row (first data row)
+            let first_data_value = sheet.get_formatted_value((col_idx, 2));
+            let column_type = infer_column_type(&col_name, &first_data_value);
+
+            column_configs.push(ColumnConfig {
+                name: col_name,
+                column_type,
+                is_sortable: true,
+            });
+        }
+
+        // 2. Load data rows
+        let mut rows = Vec::new();
+        for row_idx in 2..=max_row {
+            let mut cells = Vec::new();
+            for col_idx in 1..=max_col {
+                let value = sheet.get_formatted_value((col_idx, row_idx));
+                let config = &column_configs[(col_idx - 1) as usize];
+                cells.push(map_cell_value(&value, config.column_type));
+            }
+            rows.push(Row { cells });
+        }
+
+        sheets.push(ExcelSheet {
+            name: sheet_name,
+            column_configs,
+            rows,
         });
     }
 
-    // 2. Load data rows
-    let mut rows = Vec::new();
-    for row_idx in 2..=max_row {
-        let mut cells = Vec::new();
-        for col_idx in 1..=max_col {
-            let value = sheet.get_formatted_value((col_idx, row_idx));
-            let config = &column_configs[(col_idx - 1) as usize];
-            cells.push(map_cell_value(&value, config.column_type));
-        }
-        rows.push(Row { cells });
-    }
-
-    Ok((column_configs, rows))
+    Ok(sheets)
 }
 
 fn infer_column_type(name: &str, sample_value: &str) -> ColumnType {

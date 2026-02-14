@@ -3,10 +3,16 @@ use egui::scroll_area::ScrollBarVisibility;
 use crate::data::Row;
 use crate::view::Viewer;
 
-pub struct DataSource {
-    pub path: String,
+pub struct DataSheet {
+    pub name: String,
     pub column_configs: Vec<crate::data::ColumnConfig>,
     pub table: egui_data_table::DataTable<Row>,
+}
+
+pub struct DataSource {
+    pub path: String,
+    pub sheets: Vec<DataSheet>,
+    pub selected_sheet_index: usize,
 }
 
 pub struct CorrelateApp {
@@ -33,18 +39,28 @@ impl Default for CorrelateApp {
                 let rows = crate::data::get_rows(1000, &configs);
                 data_sources.push(DataSource {
                     path: "Students".to_string(),
-                    column_configs: configs,
-                    table: rows.into_iter().collect(),
+                    sheets: vec![DataSheet {
+                        name: "Students".to_string(),
+                        column_configs: configs,
+                        table: rows.into_iter().collect(),
+                    }],
+                    selected_sheet_index: 0,
                 });
                 continue;
             }
 
             match crate::data::load_xlsx(source) {
-                Ok((column_configs, rows)) => {
+                Ok(excel_sheets) => {
+                    let sheets = excel_sheets.into_iter().map(|s| DataSheet {
+                        name: s.name,
+                        column_configs: s.column_configs,
+                        table: s.rows.into_iter().collect(),
+                    }).collect();
+
                     data_sources.push(DataSource {
                         path: source.to_string(),
-                        column_configs,
-                        table: rows.into_iter().collect(),
+                        sheets,
+                        selected_sheet_index: 0,
                     });
                 }
                 Err(e) => {
@@ -58,19 +74,24 @@ impl Default for CorrelateApp {
             let rows = crate::data::get_rows(1000, &configs);
             data_sources.push(DataSource {
                 path: "Random Data".to_string(),
-                column_configs: configs.clone(),
-                table: rows.into_iter().collect(),
+                sheets: vec![DataSheet {
+                    name: "Random Data".to_string(),
+                    column_configs: configs.clone(),
+                    table: rows.into_iter().collect(),
+                }],
+                selected_sheet_index: 0,
             });
         }
 
         let selected_index = config.selected_index.unwrap_or(0).min(data_sources.len() - 1);
         let ds = &data_sources[selected_index];
-        let table = ds.table.clone();
+        let sheet = &ds.sheets[ds.selected_sheet_index];
+        let table = sheet.table.clone();
         let viewer = Viewer {
             name_filter: String::new(),
             hotkeys: Vec::new(),
             row_protection: false,
-            column_configs: ds.column_configs.clone(),
+            column_configs: sheet.column_configs.clone(),
         };
 
         Self {
@@ -89,6 +110,7 @@ impl Default for CorrelateApp {
 impl eframe::App for CorrelateApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         let mut newly_selected_index = None;
+        let mut newly_selected_sheet_index = None;
 
         fn is_send<T: Send>(_: &T) {}
         fn is_sync<T: Sync>(_: &T) {}
@@ -197,18 +219,29 @@ impl eframe::App for CorrelateApp {
                                             .and_then(|n| n.to_str())
                                             .unwrap_or(&ds.path);
                                         
-                                        ui.horizontal(|ui| {
-                                            ui.label(""); // Folder/Open icon
-                                            let selected = self.selected_index == Some(index);
-                                            if ui.selectable_label(selected, file_name)
-                                                .on_hover_text(&ds.path)
-                                                .clicked() 
-                                            {
-                                                if self.selected_index != Some(index) {
-                                                    newly_selected_index = Some(index);
+                                        let header = egui::collapsing_header::CollapsingHeader::new(format!(" {}", file_name))
+                                            .default_open(true)
+                                            .show(ui, |ui| {
+                                                for (sheet_idx, sheet) in ds.sheets.iter().enumerate() {
+                                                    let selected = self.selected_index == Some(index) && ds.selected_sheet_index == sheet_idx;
+                                                    if ui.selectable_label(selected, format!("  📄 {}", sheet.name))
+                                                        .on_hover_text(&ds.path)
+                                                        .clicked() 
+                                                    {
+                                                        if self.selected_index != Some(index) || ds.selected_sheet_index != sheet_idx {
+                                                            newly_selected_index = Some(index);
+                                                            newly_selected_sheet_index = Some(sheet_idx);
+                                                        }
+                                                    }
                                                 }
+                                            });
+                                        
+                                        if header.header_response.clicked() {
+                                            if self.selected_index != Some(index) {
+                                                newly_selected_index = Some(index);
+                                                newly_selected_sheet_index = Some(ds.selected_sheet_index);
                                             }
-                                        });
+                                        }
                                     }
 
                                     if self.data_sources.is_empty() {
@@ -260,39 +293,53 @@ impl eframe::App for CorrelateApp {
             });
 
         if let Some(index) = newly_selected_index {
+            let sheet_idx = newly_selected_sheet_index.unwrap_or(0);
+            
             // Save current table state back to its source
             if let Some(old_idx) = self.selected_index {
-                self.data_sources[old_idx].table = self.table.clone();
+                let old_ds = &mut self.data_sources[old_idx];
+                old_ds.sheets[old_ds.selected_sheet_index].table = self.table.clone();
             }
 
             // Switch to new source
             self.selected_index = Some(index);
-            let ds = &self.data_sources[index];
-            self.table = ds.table.clone();
-            self.viewer.column_configs = ds.column_configs.clone();
+            let ds = &mut self.data_sources[index];
+            ds.selected_sheet_index = sheet_idx;
+            let sheet = &ds.sheets[sheet_idx];
+            self.table = sheet.table.clone();
+            self.viewer.column_configs = sheet.column_configs.clone();
         }
 
         if let Some(path) = self.pending_file_to_add.take() {
             let path_str = path.to_string_lossy().to_string();
             match crate::data::load_xlsx(&path_str) {
-                Ok((column_configs, rows)) => {
+                Ok(excel_sheets) => {
                     let new_index = self.data_sources.len();
+                    let sheets: Vec<DataSheet> = excel_sheets.into_iter().map(|s| DataSheet {
+                        name: s.name,
+                        column_configs: s.column_configs,
+                        table: s.rows.into_iter().collect(),
+                    }).collect();
+
                     self.data_sources.push(DataSource {
                         path: path_str.clone(),
-                        column_configs,
-                        table: rows.into_iter().collect(),
+                        sheets,
+                        selected_sheet_index: 0,
                     });
                     
                     // Save current table state
                     if let Some(old_idx) = self.selected_index {
-                        self.data_sources[old_idx].table = self.table.clone();
+                        let old_ds = &mut self.data_sources[old_idx];
+                        old_ds.sheets[old_ds.selected_sheet_index].table = self.table.clone();
                     }
 
                     // Switch to new source
                     self.selected_index = Some(new_index);
-                    let ds = &self.data_sources[new_index];
-                    self.table = ds.table.clone();
-                    self.viewer.column_configs = ds.column_configs.clone();
+                    let ds = &mut self.data_sources[new_index];
+                    ds.selected_sheet_index = 0;
+                    let sheet = &ds.sheets[0];
+                    self.table = sheet.table.clone();
+                    self.viewer.column_configs = sheet.column_configs.clone();
 
                     // Persist to config
                     self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
