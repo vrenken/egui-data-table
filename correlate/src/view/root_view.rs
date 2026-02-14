@@ -3,9 +3,17 @@ use egui::scroll_area::ScrollBarVisibility;
 use crate::data::Row;
 use crate::view::Viewer;
 
+pub struct DataSource {
+    pub path: String,
+    pub column_configs: Vec<crate::data::ColumnConfig>,
+    pub table: egui_data_table::DataTable<Row>,
+}
+
 pub struct CorrelateApp {
     table: egui_data_table::DataTable<Row>,
     viewer: Viewer,
+    data_sources: Vec<DataSource>,
+    selected_index: Option<usize>,
     style_override: egui_data_table::Style,
     scroll_bar_always_visible: bool,
 }
@@ -13,21 +21,51 @@ pub struct CorrelateApp {
 impl Default for CorrelateApp {
 
     fn default() -> Self {
-        let (column_configs, rows) = crate::data::load_xlsx("correlate/test/data/cities/de.xlsx").unwrap_or_else(|e| {
-            log::error!("Failed to load de.xlsx: {}", e);
+        let paths = vec![
+            "correlate/test/data/cities/de.xlsx",
+            "correlate/test/data/cities/nl.xlsx",
+        ];
+
+        let mut data_sources = Vec::new();
+        for path in paths {
+            match crate::data::load_xlsx(path) {
+                Ok((column_configs, rows)) => {
+                    data_sources.push(DataSource {
+                        path: path.to_string(),
+                        column_configs,
+                        table: rows.into_iter().collect(),
+                    });
+                }
+                Err(e) => {
+                    log::error!("Failed to load {}: {}", path, e);
+                }
+            }
+        }
+
+        if data_sources.is_empty() {
             let configs = crate::data::get_default_column_configs();
             let rows = crate::data::get_rows(1000, &configs);
-            (configs, rows)
-        });
+            data_sources.push(DataSource {
+                path: "Random Data".to_string(),
+                column_configs: configs.clone(),
+                table: rows.into_iter().collect(),
+            });
+        }
+
+        let ds = &data_sources[0];
+        let table = ds.table.clone();
+        let viewer = Viewer {
+            name_filter: String::new(),
+            hotkeys: Vec::new(),
+            row_protection: false,
+            column_configs: ds.column_configs.clone(),
+        };
 
         Self {
-            table: rows.into_iter().collect(),
-            viewer: Viewer {
-                name_filter: String::new(),
-                hotkeys: Vec::new(),
-                row_protection: false,
-                column_configs,
-            },
+            table,
+            viewer,
+            data_sources,
+            selected_index: Some(0),
             style_override: Default::default(),
             scroll_bar_always_visible: false,
         }
@@ -36,6 +74,8 @@ impl Default for CorrelateApp {
 
 impl eframe::App for CorrelateApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        let mut newly_selected_index = None;
+
         fn is_send<T: Send>(_: &T) {}
         fn is_sync<T: Sync>(_: &T) {}
 
@@ -123,10 +163,47 @@ impl eframe::App for CorrelateApp {
             });
         });
         
-        egui::SidePanel::left("Hotkeys")
-            .default_width(500.)
+        egui::SidePanel::left("left_panel")
+            .default_width(250.)
             .show(ctx, |ui| {
                 ui.vertical_centered_justified(|ui| {
+                    ui.heading("Hierarchy");
+                    ui.separator();
+
+                    egui::ScrollArea::vertical()
+                        .id_salt("hierarchy_scroll")
+                        .show(ui, |ui| {
+                            ui.set_min_width(ui.available_width());
+                            egui::collapsing_header::CollapsingHeader::new(egui::RichText::new("📁 Data Sources").strong())
+                                .default_open(true)
+                                .show(ui, |ui| {
+                                    for (index, ds) in self.data_sources.iter().enumerate() {
+                                        let file_name = std::path::Path::new(&ds.path)
+                                            .file_name()
+                                            .and_then(|n| n.to_str())
+                                            .unwrap_or(&ds.path);
+                                        
+                                        ui.horizontal(|ui| {
+                                            ui.label(""); // Folder/Open icon
+                                            let selected = self.selected_index == Some(index);
+                                            if ui.selectable_label(selected, file_name)
+                                                .on_hover_text(&ds.path)
+                                                .clicked() 
+                                            {
+                                                if self.selected_index != Some(index) {
+                                                    newly_selected_index = Some(index);
+                                                }
+                                            }
+                                        });
+                                    }
+
+                                    if self.data_sources.is_empty() {
+                                        ui.label("No files loaded");
+                                    }
+                                });
+                        });
+
+                    ui.add_space(20.);
                     ui.heading("Hotkeys");
                     ui.separator();
                     ui.add_space(0.);
@@ -140,6 +217,19 @@ impl eframe::App for CorrelateApp {
                     }
                 });
             });
+
+        if let Some(index) = newly_selected_index {
+            // Save current table state back to its source
+            if let Some(old_idx) = self.selected_index {
+                self.data_sources[old_idx].table = self.table.clone();
+            }
+
+            // Switch to new source
+            self.selected_index = Some(index);
+            let ds = &self.data_sources[index];
+            self.table = ds.table.clone();
+            self.viewer.column_configs = ds.column_configs.clone();
+        }
 
         egui::CentralPanel::default().show(ctx, |ui| {
             match self.scroll_bar_always_visible {
