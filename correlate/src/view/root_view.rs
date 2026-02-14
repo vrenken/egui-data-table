@@ -10,34 +10,45 @@ pub struct DataSource {
 }
 
 pub struct CorrelateApp {
+    config: crate::data::Config,
     table: egui_data_table::DataTable<Row>,
     viewer: Viewer,
     data_sources: Vec<DataSource>,
     selected_index: Option<usize>,
     style_override: egui_data_table::Style,
     scroll_bar_always_visible: bool,
+    pending_file_to_add: Option<std::path::PathBuf>,
 }
 
 impl Default for CorrelateApp {
 
     fn default() -> Self {
-        let paths = vec![
-            "correlate/test/data/cities/de.xlsx",
-            "correlate/test/data/cities/nl.xlsx",
-        ];
+        let config_path = "config.json";
+        let config = crate::data::Config::load(config_path).unwrap_or_default();
 
         let mut data_sources = Vec::new();
-        for path in paths {
-            match crate::data::load_xlsx(path) {
+        for source in &config.data_sources {
+            if source == "Students" {
+                let configs = crate::data::get_default_column_configs();
+                let rows = crate::data::get_rows(1000, &configs);
+                data_sources.push(DataSource {
+                    path: "Students".to_string(),
+                    column_configs: configs,
+                    table: rows.into_iter().collect(),
+                });
+                continue;
+            }
+
+            match crate::data::load_xlsx(source) {
                 Ok((column_configs, rows)) => {
                     data_sources.push(DataSource {
-                        path: path.to_string(),
+                        path: source.to_string(),
                         column_configs,
                         table: rows.into_iter().collect(),
                     });
                 }
                 Err(e) => {
-                    log::error!("Failed to load {}: {}", path, e);
+                    log::error!("Failed to load {}: {}", source, e);
                 }
             }
         }
@@ -52,7 +63,8 @@ impl Default for CorrelateApp {
             });
         }
 
-        let ds = &data_sources[0];
+        let selected_index = config.selected_index.unwrap_or(0).min(data_sources.len() - 1);
+        let ds = &data_sources[selected_index];
         let table = ds.table.clone();
         let viewer = Viewer {
             name_filter: String::new(),
@@ -62,12 +74,14 @@ impl Default for CorrelateApp {
         };
 
         Self {
+            config,
             table,
             viewer,
             data_sources,
-            selected_index: Some(0),
+            selected_index: Some(selected_index),
             style_override: Default::default(),
             scroll_bar_always_visible: false,
+            pending_file_to_add: None,
         }
     }
 }
@@ -174,7 +188,7 @@ impl eframe::App for CorrelateApp {
                         .id_salt("hierarchy_scroll")
                         .show(ui, |ui| {
                             ui.set_min_width(ui.available_width());
-                            egui::collapsing_header::CollapsingHeader::new(egui::RichText::new("📁 Data Sources").strong())
+                            let header_response = egui::collapsing_header::CollapsingHeader::new(egui::RichText::new("📁 Data Sources").strong())
                                 .default_open(true)
                                 .show(ui, |ui| {
                                     for (index, ds) in self.data_sources.iter().enumerate() {
@@ -201,7 +215,34 @@ impl eframe::App for CorrelateApp {
                                         ui.label("No files loaded");
                                     }
                                 });
+                            
+                            header_response.header_response.context_menu(|ui| {
+                                if ui.button("Add").clicked() {
+                                    if let Some(path) = rfd::FileDialog::new()
+                                        .add_filter("Excel Files", &["xlsx"])
+                                        .pick_file() 
+                                    {
+                                        self.pending_file_to_add = Some(path);
+                                    }
+                                    ui.close();
+                                }
+                            });
                         });
+
+                    ui.add_space(20.);
+                    ui.heading("Configuration");
+                    ui.separator();
+                    if ui.button(" Reload config.json").clicked() {
+                        *self = Self::default();
+                    }
+                    if ui.button("💾 Save as default").clicked() {
+                        let config_path = "config.json";
+                        self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
+                        self.config.selected_index = self.selected_index;
+                        if let Err(e) = self.config.save(config_path) {
+                            log::error!("Failed to save config: {}", e);
+                        }
+                    }
 
                     ui.add_space(20.);
                     ui.heading("Hotkeys");
@@ -229,6 +270,42 @@ impl eframe::App for CorrelateApp {
             let ds = &self.data_sources[index];
             self.table = ds.table.clone();
             self.viewer.column_configs = ds.column_configs.clone();
+        }
+
+        if let Some(path) = self.pending_file_to_add.take() {
+            let path_str = path.to_string_lossy().to_string();
+            match crate::data::load_xlsx(&path_str) {
+                Ok((column_configs, rows)) => {
+                    let new_index = self.data_sources.len();
+                    self.data_sources.push(DataSource {
+                        path: path_str.clone(),
+                        column_configs,
+                        table: rows.into_iter().collect(),
+                    });
+                    
+                    // Save current table state
+                    if let Some(old_idx) = self.selected_index {
+                        self.data_sources[old_idx].table = self.table.clone();
+                    }
+
+                    // Switch to new source
+                    self.selected_index = Some(new_index);
+                    let ds = &self.data_sources[new_index];
+                    self.table = ds.table.clone();
+                    self.viewer.column_configs = ds.column_configs.clone();
+
+                    // Persist to config
+                    self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
+                    self.config.selected_index = self.selected_index;
+                    let config_path = "config.json";
+                    if let Err(e) = self.config.save(config_path) {
+                        log::error!("Failed to save config: {}", e);
+                    }
+                }
+                Err(e) => {
+                    log::error!("Failed to load {}: {}", path_str, e);
+                }
+            }
         }
 
         egui::CentralPanel::default().show(ctx, |ui| {

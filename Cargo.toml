@@ -21,7 +21,8 @@ eframe =                    { version = "0.33.3"}
 fastrand =                  { version = "2.3.0" }
 tap =                       { version = "1.0.1" }
 itertools =                 { version = "0.14.0" }
-serde =                     { version = "1.0.228" }
+serde =                     { version = "1.0.228", features = ["derive"] }
+serde_json =                { version = "1.0.138" }
 thiserror =                 { version = "2.0.18" }
 log =                       { version = "0.4.29" }
 env_logger =                { version = "0.11.9" }
@@ -32,5 +33,6 @@ wasm-bindgen-futures =      { version = "0.4.58" }
 web-sys =                   { version = "0.3.85" }
 
 umya-spreadsheet =          { version = "2.3.3" }
+rfd =                       { version = "0.15.2" }
 
 

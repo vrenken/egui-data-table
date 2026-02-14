@@ -21,7 +21,9 @@ names =                 { workspace = true }
 tap =                   { workspace = true }
 log =                   { workspace = true }
 serde =                 { workspace = true, optional = true, features = ["derive"] }
+serde_json =            { workspace = true }
 umya-spreadsheet =      { workspace = true }
+rfd =                   { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen-futures =  { version = "0.4" }

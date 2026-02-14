@@ -1,0 +1,9 @@
+{
+  "data_sources": [
+    "correlate/test/data/cities/de.xlsx",
+    "correlate/test/data/cities/nl.xlsx",
+    "Students",
+    "correlate/test/data/sheets/test.xlsx"
+  ],
+  "selected_index": 0
+}
