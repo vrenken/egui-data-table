@@ -6,19 +6,14 @@ impl CorrelateApp {
         egui::TopBottomPanel::top("MenuBar").show(ctx, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.hyperlink_to(
-                    " kang-sw/egui-data-table",
-                    "https://github.com/kang-sw/egui-data-table",
+                    " vrenken/etalii-correlate",
+                    "https://github.com/vrenken/etalii-correlate",
                 );
 
                 // later in some ui:
                 ui
                     .button(egui_material_icons::icons::ICON_STRATEGY)
                     .clicked();
-
-                ui.hyperlink_to(
-                    "(source)",
-                    "https://github.com/kang-sw/egui-data-table/blob/master/examples/demo.rs",
-                );
 
                 ui.separator();
 

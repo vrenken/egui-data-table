@@ -4,3 +4,5 @@ pub mod menu_bar;
 pub mod bottom_panel;
 pub mod central_panel;
 pub mod hierarchy_panel;
+pub mod central_panel_header_menu;
+pub mod central_panel_row_context_menu;
