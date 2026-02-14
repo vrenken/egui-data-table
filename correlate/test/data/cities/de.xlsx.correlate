@@ -10,38 +10,43 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": true,
+          "is_name": true,
           "is_virtual": false,
-          "width": 501.0
+          "width": 342.0
         },
         {
           "name": "lat",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_name": false,
           "is_virtual": false,
-          "width": 46.34375
+          "width": 48.4375
         },
         {
           "name": "lng",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_name": false,
           "is_virtual": false,
-          "width": 48.4375
+          "width": 75.15625
         },
         {
           "name": "country",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_name": false,
           "is_virtual": false,
-          "width": 75.15625
+          "width": 120.0
         },
         {
           "name": "iso2",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_name": false,
           "is_virtual": false,
           "width": 54.34375
         },
@@ -50,14 +55,16 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_name": false,
           "is_virtual": false,
-          "width": 105.125
+          "width": 331.0625
         },
         {
           "name": "capital",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_name": false,
           "is_virtual": false,
           "width": 69.3125
         },
@@ -66,6 +73,7 @@
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
+          "is_name": false,
           "is_virtual": false,
           "width": 93.40625
         },
@@ -74,6 +82,7 @@
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
+          "is_name": false,
           "is_virtual": false,
           "width": 1346.8125
         }
