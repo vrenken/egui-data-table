@@ -50,6 +50,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
                 name: header.to_string(),
                 column_type,
                 is_sortable: true,
+                is_key: false,
                 width: None,
             });
         }

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning].
 
 ### Added
 - Ability to add CSV files from the context menu.
+- Ability to mark columns as keys from the cell and column header context menus.
 
 ### Changed
 - Removed default sample data sources ("Students" and "Random Data") and associated generator logic.
@@ -31,7 +32,7 @@ and this project adheres to [Semantic Versioning].
 - [ ] Ability to work with multiple data sheets from Excel
 - [x] Ability to work with CSV files
 - [ ] Ability to add new data
-- [ ] Ability to mark columns as keys
+- [x] Ability to mark columns as keys
 
 <!-- Links -->
 [keep a changelog]: https://keepachangelog.com/en/1.0.0/

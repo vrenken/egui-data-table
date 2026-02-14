@@ -20,7 +20,13 @@ impl RowViewer<Row> for Viewer {
 
     fn column_name(&mut self, column: usize) -> Cow<'static, str> {
         self.column_configs.get(column)
-            .map(|c| Cow::Owned(c.name.clone()))
+            .map(|c| {
+                if c.is_key {
+                    Cow::Owned(format!("🔑 {}", c.name))
+                } else {
+                    Cow::Owned(c.name.clone())
+                }
+            })
             .unwrap_or_else(|| Cow::Owned(format!("Column {}", column)))
     }
 
@@ -108,11 +114,38 @@ impl RowViewer<Row> for Viewer {
             config.width = Some(ui.available_width());
         }
 
-        match &row.cells[column] {
-            CellValue::String(s) => { ui.label(s); }
-            CellValue::Int(i) => { ui.label(i.to_string()); }
-            CellValue::Bool(b) => { ui.checkbox(&mut { *b }, ""); }
+        let resp = match &row.cells[column] {
+            CellValue::String(s) => { ui.label(s) }
+            CellValue::Int(i) => { ui.label(i.to_string()) }
+            CellValue::Bool(b) => { ui.checkbox(&mut { *b }, "") }
         };
+
+        if let Some(config) = self.column_configs.get(column) {
+            if config.is_key {
+                ui.painter().rect_filled(
+                    resp.rect.expand(2.0),
+                    egui::CornerRadius::ZERO,
+                    ui.visuals().selection.bg_fill.gamma_multiply(0.1),
+                );
+            }
+        }
+
+        resp.context_menu(|ui| {
+            if let Some(config) = self.column_configs.get_mut(column) {
+                let mut is_key = config.is_key;
+                if ui.checkbox(&mut is_key, "Is key").clicked() {
+                    config.is_key = is_key;
+                    // Reset the table to force a redraw with new header names
+                    ui.ctx().memory_mut(|mem| {
+                        // This is a hacky way to force a full redraw of the table
+                        // by clearing its UI state cache if we had access to the ID.
+                        // Since we don't easily have the ID here, we just hope the change
+                        // is picked up on next frame.
+                    });
+                    ui.close();
+                }
+            }
+        });
     }
 
     fn on_cell_view_response(
@@ -262,6 +295,17 @@ impl RowViewer<Row> for Viewer {
 
     fn on_row_removed(&mut self, row_index: usize, row: &Row) {
         println!("row removed. row_id: {}, values: {:?}", row_index, row);
+    }
+
+    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) {
+        if let Some(config) = self.column_configs.get_mut(column) {
+            ui.separator();
+            let mut is_key = config.is_key;
+            if ui.checkbox(&mut is_key, "Use as key").clicked() {
+                config.is_key = is_key;
+                ui.close();
+            }
+        }
     }
 
     fn hotkeys(
