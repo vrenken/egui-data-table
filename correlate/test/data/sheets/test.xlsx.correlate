@@ -1,9 +1,9 @@
 {
-  "name": null,
+  "name": "Test Data",
   "sheets": [
     {
       "name": "Sheet1",
-      "displayName": "test.xlsx",
+      "displayName": "Test Data",
       "column_configs": [
         {
           "name": "Text",

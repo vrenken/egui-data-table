@@ -1,102 +1,184 @@
 {
+  "name": "Students",
   "sheets": [
     {
       "name": "student-dataset.csv",
+      "displayName": "Students",
       "column_configs": [
         {
           "name": "id",
+          "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 0,
           "width": 41.59375
         },
         {
           "name": "name",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 1,
           "width": 99.3125
         },
         {
           "name": "nationality",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 2,
           "width": 95.96875
         },
         {
           "name": "city",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 3,
           "width": 89.5625
         },
         {
           "name": "latitude",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 4,
           "width": 76.125
         },
         {
           "name": "longitude",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 5,
           "width": 86.125
         },
         {
           "name": "gender",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 6,
           "width": 71.875
         },
         {
           "name": "ethnic.group",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 7,
           "width": 104.59375
         },
         {
           "name": "age",
+          "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 8,
           "width": 52.125
         },
         {
           "name": "english.grade",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 9,
           "width": 109.125
         },
         {
           "name": "math.grade",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 10,
           "width": 98.125
         },
         {
           "name": "sciences.grade",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 11,
           "width": 115.125
         },
         {
           "name": "language.grade",
+          "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 12,
           "width": 121.125
         },
         {
           "name": "portfolio.rating",
+          "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 13,
           "width": 119.4375
         },
         {
           "name": "coverletter.rating",
+          "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 14,
           "width": 132.4375
         },
         {
           "name": "refletter.rating",
+          "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "order": 15,
           "width": 462.25
         }
       ],

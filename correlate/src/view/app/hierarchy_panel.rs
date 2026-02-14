@@ -18,7 +18,7 @@ impl CorrelateApp {
                         .id_salt("hierarchy_scroll")
                         .show(ui, |ui| {
                             ui.set_min_width(ui.available_width());
-                            let header_response = egui::collapsing_header::CollapsingHeader::new(egui::RichText::new("📁 Data Sources").strong())
+                            let header_response = egui::collapsing_header::CollapsingHeader::new(egui::RichText::new(format!("{} Data Sources", egui_material_icons::icons::ICON_HOME_STORAGE)).strong())
                                 .default_open(true)
                                 .show(ui, |ui| {
                                     for (index, ds) in self.data_sources.iter_mut().enumerate() {
@@ -30,14 +30,25 @@ impl CorrelateApp {
                                         
                                         let display_name = ds.name.as_ref().unwrap_or(&default_file_name).clone();
                                         
+                                        let extension = std::path::Path::new(&ds.path)
+                                            .extension()
+                                            .and_then(|e| e.to_str())
+                                            .unwrap_or("");
+                                        
+                                        let icon = if extension == "csv" {
+                                            egui_material_icons::icons::ICON_CSV
+                                        } else {
+                                            egui_material_icons::icons::ICON_TABLE_CHART
+                                        };
+
                                         if ds.sheets.len() > 1 {
-                                            let mut header = egui::collapsing_header::CollapsingHeader::new(format!(" {}", display_name))
+                                            let mut header = egui::collapsing_header::CollapsingHeader::new(format!("{} {}", icon, display_name))
                                                 .default_open(true);
                                             
                                             let renaming_this_ds = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::DataSource(index));
 
                                             if renaming_this_ds {
-                                                header = egui::collapsing_header::CollapsingHeader::new(" ");
+                                                header = egui::collapsing_header::CollapsingHeader::new(format!("{} ", icon));
                                             }
 
                                             let header_res = header.show(ui, |ui| {
@@ -113,7 +124,7 @@ impl CorrelateApp {
 
                                             if renaming_this_ds {
                                                 ui.horizontal(|ui| {
-                                                    ui.label(" ");
+                                                    ui.label(format!("{} ", icon));
                                                     let (_, current_name) = self.renaming_item.as_mut().unwrap();
                                                     let res = ui.text_edit_singleline(current_name);
                                                     if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
@@ -133,7 +144,7 @@ impl CorrelateApp {
                                                     res.request_focus();
                                                 });
                                             } else {
-                                                let res = ui.selectable_label(selected, format!(" {}", display_name))
+                                                let res = ui.selectable_label(selected, format!("{} {}", icon, display_name))
                                                     .on_hover_text(&ds.path);
                                                 
                                                 if res.clicked() {

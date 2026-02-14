@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning].
 ## [Unreleased]
 
 ### Added
+- Specific icons for Excel and CSV data sources in the hierarchy treeview.
 - Ability to mark a column as the "name" column from the column header context menu. This column is marked with a 🏷️ icon.
 - Ability to reorder columns from the column header menu using "Move Left" and "Move Right". Column order is now persisted to the `.correlate` file.
 - Ability to rename a row by double-clicking its row header. The new name is persisted to the "name" column.
