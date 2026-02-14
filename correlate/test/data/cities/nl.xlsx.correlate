@@ -8,7 +8,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
-          "width": 210.0
+          "width": 382.0
         },
         {
           "name": "lat",

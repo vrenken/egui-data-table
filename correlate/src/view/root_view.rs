@@ -211,27 +211,40 @@ impl eframe::App for CorrelateApp {
                                             .and_then(|n| n.to_str())
                                             .unwrap_or(&ds.path);
                                         
-                                        let header = egui::collapsing_header::CollapsingHeader::new(format!(" {}", file_name))
-                                            .default_open(true)
-                                            .show(ui, |ui| {
-                                                for (sheet_idx, sheet) in ds.sheets.iter().enumerate() {
-                                                    let selected = self.selected_index == Some(index) && ds.selected_sheet_index == sheet_idx;
-                                                    if ui.selectable_label(selected, format!("  📄 {}", sheet.name))
-                                                        .on_hover_text(&ds.path)
-                                                        .clicked() 
-                                                    {
-                                                        if self.selected_index != Some(index) || ds.selected_sheet_index != sheet_idx {
-                                                            newly_selected_index = Some(index);
-                                                            newly_selected_sheet_index = Some(sheet_idx);
+                                        if ds.sheets.len() > 1 {
+                                            let header = egui::collapsing_header::CollapsingHeader::new(format!(" {}", file_name))
+                                                .default_open(true)
+                                                .show(ui, |ui| {
+                                                    for (sheet_idx, sheet) in ds.sheets.iter().enumerate() {
+                                                        let selected = self.selected_index == Some(index) && ds.selected_sheet_index == sheet_idx;
+                                                        if ui.selectable_label(selected, format!("  📄 {}", sheet.name))
+                                                            .on_hover_text(&ds.path)
+                                                            .clicked()
+                                                        {
+                                                            if self.selected_index != Some(index) || ds.selected_sheet_index != sheet_idx {
+                                                                newly_selected_index = Some(index);
+                                                                newly_selected_sheet_index = Some(sheet_idx);
+                                                            }
                                                         }
                                                     }
+                                                });
+
+                                            if header.header_response.clicked() {
+                                                if self.selected_index != Some(index) {
+                                                    newly_selected_index = Some(index);
+                                                    newly_selected_sheet_index = Some(ds.selected_sheet_index);
                                                 }
-                                            });
-                                        
-                                        if header.header_response.clicked() {
-                                            if self.selected_index != Some(index) {
-                                                newly_selected_index = Some(index);
-                                                newly_selected_sheet_index = Some(ds.selected_sheet_index);
+                                            }
+                                        } else {
+                                            let selected = self.selected_index == Some(index);
+                                            if ui.selectable_label(selected, format!(" {}", file_name))
+                                                .on_hover_text(&ds.path)
+                                                .clicked()
+                                            {
+                                                if self.selected_index != Some(index) {
+                                                    newly_selected_index = Some(index);
+                                                    newly_selected_sheet_index = Some(0);
+                                                }
                                             }
                                         }
                                     }
