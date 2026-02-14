@@ -13,9 +13,15 @@ pub struct CorrelateApp {
 impl Default for CorrelateApp {
 
     fn default() -> Self {
-        let column_configs = crate::data::get_default_column_configs();
+        let (column_configs, rows) = crate::data::load_xlsx("correlate/test/data/cities/de.xlsx").unwrap_or_else(|e| {
+            log::error!("Failed to load de.xlsx: {}", e);
+            let configs = crate::data::get_default_column_configs();
+            let rows = crate::data::get_rows(1000, &configs);
+            (configs, rows)
+        });
+
         Self {
-            table: crate::data::get_rows(100000, &column_configs).into_iter().collect(),
+            table: rows.into_iter().collect(),
             viewer: Viewer {
                 name_filter: String::new(),
                 hotkeys: Vec::new(),
