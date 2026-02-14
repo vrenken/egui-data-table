@@ -42,6 +42,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
                     column_type,
                     is_sortable: true,
                     is_key: false,
+                    is_virtual: false,
                     width: None,
                 });
             }
@@ -55,12 +56,15 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
 
         // 2. Load data rows
         let mut rows = Vec::new();
+        let max_col_idx = column_configs.len();
         for row_idx in 2..=max_row {
             let mut cells = Vec::new();
-            for col_idx in 1..=max_col {
-                let value = sheet.get_formatted_value((col_idx, row_idx));
-                let config = &column_configs.get((col_idx - 1) as usize);
-                if let Some(config) = config {
+            for col_idx in 1..=max_col_idx {
+                let config = &column_configs.get(col_idx - 1).unwrap();
+                if config.is_virtual {
+                    cells.push(CellValue::String("".to_string()));
+                } else {
+                    let value = sheet.get_formatted_value((col_idx as u32, row_idx));
                     cells.push(map_cell_value(&value, config.column_type));
                 }
             }

@@ -51,6 +51,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
                 column_type,
                 is_sortable: true,
                 is_key: false,
+                is_virtual: false,
                 width: None,
             });
         }
@@ -60,9 +61,15 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
     for result in reader.records() {
         let record = result.map_err(|e| e.to_string())?;
         let mut cells = Vec::new();
-        for (i, value) in record.iter().enumerate() {
-            if let Some(config) = column_configs.get(i) {
-                cells.push(map_cell_value(value, config.column_type));
+        let mut physical_col_idx = 0;
+        for config in &column_configs {
+            if config.is_virtual {
+                cells.push(CellValue::String("".to_string()));
+            } else {
+                if let Some(value) = record.get(physical_col_idx) {
+                    cells.push(map_cell_value(value, config.column_type));
+                }
+                physical_col_idx += 1;
             }
         }
         rows.push(Row { cells });

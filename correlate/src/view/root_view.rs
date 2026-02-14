@@ -1,5 +1,6 @@
 ﻿use egui::{Sense, Widget};
 use egui::scroll_area::ScrollBarVisibility;
+use egui_data_table::RowViewer;
 use crate::data::Row;
 use crate::view::Viewer;
 
@@ -59,8 +60,10 @@ impl Default for CorrelateApp {
             let table = egui_data_table::DataTable::new();
             let viewer = Viewer {
                 name_filter: String::new(),
-                hotkeys: Vec::new(),
                 row_protection: false,
+                hotkeys: Vec::new(),
+                captured_order: Vec::new(),
+                add_column_requested: None,
                 column_configs: Vec::new(),
             };
 
@@ -82,8 +85,10 @@ impl Default for CorrelateApp {
         let table = sheet.table.clone();
         let viewer = Viewer {
             name_filter: String::new(),
-            hotkeys: Vec::new(),
             row_protection: false,
+            hotkeys: Vec::new(),
+            captured_order: Vec::new(),
+            add_column_requested: None,
             column_configs: sheet.column_configs.clone(),
         };
 
@@ -438,7 +443,63 @@ impl eframe::App for CorrelateApp {
             ui.add(
                 egui_data_table::Renderer::new(&mut self.table, &mut self.viewer)
                     .with_style(self.style_override),
-            )
+            );
+
+            let column_count_changed = self.table.is_empty() || self.viewer.num_columns() != self.table[0].cells.len();
+
+            if self.viewer.add_column_requested.is_some() || column_count_changed {
+                let add_column_at = self.viewer.add_column_requested.take();
+                
+                if let Some(at) = add_column_at {
+                    let new_column = crate::data::ColumnConfig {
+                        name: format!("New Column {}", self.viewer.column_configs.len() + 1),
+                        column_type: crate::data::ColumnType::String,
+                        is_sortable: true,
+                        is_key: false,
+                        is_virtual: true,
+                        width: None,
+                    };
+
+                    self.viewer.column_configs.insert(at + 1, new_column);
+
+                    // Update all rows in the table
+                    let mut rows = self.table.take();
+                    for row in &mut rows {
+                        row.cells.insert(at + 1, crate::data::CellValue::String("".to_string()));
+                    }
+                    self.table.replace(rows);
+                } else if column_count_changed {
+                    // Update all rows in the table if needed (e.g. loading from file with virtual columns)
+                    let mut rows = self.table.take();
+                    for row in &mut rows {
+                        while row.cells.len() < self.viewer.column_configs.len() {
+                            row.cells.push(crate::data::CellValue::String("".to_string()));
+                        }
+                    }
+                    self.table.replace(rows);
+                }
+
+                // Save state back to DataSource
+                if let Some(idx) = self.selected_index {
+                    let ds = &mut self.data_sources[idx];
+                    let sheet = &mut ds.sheets[ds.selected_sheet_index];
+                    sheet.column_configs = self.viewer.column_configs.clone();
+                    sheet.table = self.table.clone();
+
+                    // Save .correlate file
+                    let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
+                    let source_config = crate::data::SourceConfig {
+                        sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
+                            name: s.name.clone(),
+                            column_configs: s.column_configs.clone(),
+                            sort_config: None,
+                        }).collect(),
+                    };
+                    if let Err(e) = source_config.save(companion_path) {
+                        log::error!("Failed to save companion config for {}: {}", ds.path, e);
+                    }
+                }
+            }
         });
     }
 }

@@ -10,6 +10,8 @@ pub struct Viewer {
     pub name_filter: String,
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
+    pub captured_order: Vec<usize>,
+    pub add_column_requested: Option<usize>,
     pub column_configs: Vec<ColumnConfig>,
 }
 
@@ -21,11 +23,14 @@ impl RowViewer<Row> for Viewer {
     fn column_name(&mut self, column: usize) -> Cow<'static, str> {
         self.column_configs.get(column)
             .map(|c| {
+                let mut name = c.name.clone();
                 if c.is_key {
-                    Cow::Owned(format!("🔑 {}", c.name))
-                } else {
-                    Cow::Owned(c.name.clone())
+                    name = format!("🔑 {}", name);
                 }
+                if c.is_virtual {
+                    name = format!("🧪 {}", name);
+                }
+                Cow::Owned(name)
             })
             .unwrap_or_else(|| Cow::Owned(format!("Column {}", column)))
     }
@@ -303,6 +308,11 @@ impl RowViewer<Row> for Viewer {
             let mut is_key = config.is_key;
             if ui.checkbox(&mut is_key, "Use as key").clicked() {
                 config.is_key = is_key;
+                ui.close();
+            }
+
+            if ui.button("Add column").clicked() {
+                self.add_column_requested = Some(column);
                 ui.close();
             }
         }

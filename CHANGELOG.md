@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning].
 ### Added
 - Ability to add CSV files from the context menu.
 - Ability to mark columns as keys from the cell and column header context menus.
+- Ability to add virtual columns from the column header context menu, which are stored in the `.correlate` file and marked with a 🧪 icon.
 
 ### Changed
 - Removed default sample data sources ("Students" and "Random Data") and associated generator logic.

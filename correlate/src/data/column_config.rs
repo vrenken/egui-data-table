@@ -9,5 +9,7 @@ pub struct ColumnConfig {
     #[serde(default)]
     pub is_key: bool,
     #[serde(default)]
+    pub is_virtual: bool,
+    #[serde(default)]
     pub width: Option<f32>,
 }
