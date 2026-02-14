@@ -16,9 +16,7 @@ impl RowCodec<Row> for Codec {
             let cell = match config.column_type {
                 ColumnType::String => CellValue::String("".to_string()),
                 ColumnType::Int => CellValue::Int(0),
-                ColumnType::Gender => CellValue::Gender(None),
                 ColumnType::Bool => CellValue::Bool(false),
-                ColumnType::Grade => CellValue::Grade(crate::data::Grade::F),
             };
             cells.push(cell);
         }
@@ -31,12 +29,6 @@ impl RowCodec<Row> for Codec {
                 CellValue::String(s) => dst.push_str(s),
                 CellValue::Int(i) => dst.push_str(&i.to_string()),
                 CellValue::Bool(b) => dst.push_str(&b.to_string()),
-                CellValue::Grade(g) => dst.push_str(&g.to_string()),
-                CellValue::Gender(g) => {
-                    if let Some(gender) = g {
-                        dst.push_str(&gender.to_string());
-                    }
-                }
             }
         }
     }
@@ -64,16 +56,6 @@ impl RowCodec<Row> for Codec {
                 if let CellValue::Bool(ref mut b) = dst_row.cells[column] {
                     *b = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
                 }
-            }
-            ColumnType::Grade => {
-                if let CellValue::Grade(ref mut g) = dst_row.cells[column] {
-                    *g = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
-                }
-            }
-            ColumnType::Gender => {
-                // Gender decoding wasn't explicitly handled in original decode_column cases
-                // but it was in encode_column. Let's add it if needed.
-                // The original code only had NAME, AGE, IS_STUDENT, GRADE, ROW_LOCKED.
             }
         }
 

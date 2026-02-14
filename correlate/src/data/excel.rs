@@ -1,6 +1,6 @@
 ﻿use std::path::Path;
 use umya_spreadsheet::*;
-use crate::data::{CellValue, ColumnConfig, ColumnType, Gender, Grade, Row, SheetConfig, SourceConfig};
+use crate::data::{CellValue, ColumnConfig, ColumnType, Row, SheetConfig, SourceConfig};
 
 pub struct ExcelSheet {
     pub name: String,
@@ -86,13 +86,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
 
 fn infer_column_type(name: &str, sample_value: &str) -> ColumnType {
     let name_lower = name.to_lowercase();
-    if name_lower.contains("gender") {
-        return ColumnType::Gender;
-    }
-    if name_lower.contains("grade") {
-        return ColumnType::Grade;
-    }
-    if name_lower.contains("is student") || name_lower.contains("locked") {
+    if name_lower.contains("locked") {
         return ColumnType::Bool;
     }
 
@@ -111,24 +105,12 @@ fn map_cell_value(value: &str, column_type: ColumnType) -> CellValue {
     match column_type {
         ColumnType::String => CellValue::String(value.to_string()),
         ColumnType::Int => CellValue::Int(value.parse().unwrap_or(0)),
-        ColumnType::Gender => {
-            let gender = match value.to_lowercase().as_str() {
-                "male" | "m" => Some(Gender::Male),
-                "female" | "f" => Some(Gender::Female),
-                _ => None,
-            };
-            CellValue::Gender(gender)
-        }
         ColumnType::Bool => {
             let b = match value.to_lowercase().as_str() {
                 "true" | "1" | "yes" | "y" => true,
                 _ => false,
             };
             CellValue::Bool(b)
-        }
-        ColumnType::Grade => {
-            let grade = value.parse::<Grade>().unwrap_or(Grade::F);
-            CellValue::Grade(grade)
         }
     }
 }

@@ -81,9 +81,7 @@ impl RowViewer<Row> for Viewer {
         match (&row_l.cells[column], &row_r.cells[column]) {
             (CellValue::String(l), CellValue::String(r)) => l.cmp(r),
             (CellValue::Int(l), CellValue::Int(r)) => l.cmp(r),
-            (CellValue::Gender(l), CellValue::Gender(r)) => l.cmp(r),
             (CellValue::Bool(l), CellValue::Bool(r)) => l.cmp(r),
-            (CellValue::Grade(l), CellValue::Grade(r)) => l.cmp(r),
             _ => std::cmp::Ordering::Equal,
         }
     }
@@ -113,9 +111,7 @@ impl RowViewer<Row> for Viewer {
         match &row.cells[column] {
             CellValue::String(s) => { ui.label(s); }
             CellValue::Int(i) => { ui.label(i.to_string()); }
-            CellValue::Gender(g) => { ui.label(g.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string())); }
             CellValue::Bool(b) => { ui.checkbox(&mut { *b }, ""); }
-            CellValue::Grade(g) => { ui.label(g.to_string()); }
         };
     }
 
@@ -132,9 +128,7 @@ impl RowViewer<Row> for Viewer {
                     let cell = match config.column_type {
                         ColumnType::String => CellValue::String((*x).clone()),
                         ColumnType::Int => CellValue::Int(9999),
-                        ColumnType::Gender => CellValue::Gender(Some(Gender::Female)),
                         ColumnType::Bool => CellValue::Bool(false),
-                        ColumnType::Grade => CellValue::Grade(Grade::A),
                     };
                     cells.push(cell);
                 }
@@ -157,43 +151,43 @@ impl RowViewer<Row> for Viewer {
                     .response
             }
             CellValue::Int(i) => ui.add(egui::DragValue::new(i).speed(1.0)),
-            CellValue::Gender(gender) => {
-                egui::ComboBox::new(ui.id().with("gender"), "".to_string())
-                    .selected_text(gender.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string()))
-                    .show_ui(ui, |ui|{
-                        if ui
-                            .add(egui::Button::selectable(
-                                matches!(gender, Some(g) if *g == Gender::Male),
-                                "Male"
-                            ))
-                            .clicked()
-                        {
-                            *gender = Some(Gender::Male);
-                        }
-                        if ui
-                            .add(egui::Button::selectable(
-                                matches!(gender, Some(g) if *g == Gender::Female),
-                                "Female"
-                            ))
-                            .clicked()
-                        {
-                            *gender = Some(Gender::Female);
-                        }
-
-                    }).response
-            }
+            // CellValue::Gender(gender) => {
+            //     egui::ComboBox::new(ui.id().with("gender"), "".to_string())
+            //         .selected_text(gender.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string()))
+            //         .show_ui(ui, |ui|{
+            //             if ui
+            //                 .add(egui::Button::selectable(
+            //                     matches!(gender, Some(g) if *g == Gender::Male),
+            //                     "Male"
+            //                 ))
+            //                 .clicked()
+            //             {
+            //                 *gender = Some(Gender::Male);
+            //             }
+            //             if ui
+            //                 .add(egui::Button::selectable(
+            //                     matches!(gender, Some(g) if *g == Gender::Female),
+            //                     "Female"
+            //                 ))
+            //                 .clicked()
+            //             {
+            //                 *gender = Some(Gender::Female);
+            //             }
+            //
+            //         }).response
+            // }
             CellValue::Bool(b) => ui.checkbox(b, ""),
-            CellValue::Grade(grade) => {
-                ui.horizontal_wrapped(|ui| {
-                    ui.radio_value(grade, Grade::A, "A")
-                        | ui.radio_value(grade, Grade::B, "B")
-                        | ui.radio_value(grade, Grade::C, "C")
-                        | ui.radio_value(grade, Grade::D, "D")
-                        | ui.radio_value(grade, Grade::E, "E")
-                        | ui.radio_value(grade, Grade::F, "F")
-                })
-                    .inner
-            }
+            // CellValue::Grade(grade) => {
+            //     ui.horizontal_wrapped(|ui| {
+            //         ui.radio_value(grade, Grade::A, "A")
+            //             | ui.radio_value(grade, Grade::B, "B")
+            //             | ui.radio_value(grade, Grade::C, "C")
+            //             | ui.radio_value(grade, Grade::D, "D")
+            //             | ui.radio_value(grade, Grade::E, "E")
+            //             | ui.radio_value(grade, Grade::F, "F")
+            //     })
+            //         .inner
+            // }
         }
             .into()
     }
@@ -242,9 +236,7 @@ impl RowViewer<Row> for Viewer {
             let cell = match config.column_type {
                 ColumnType::String => CellValue::String("".to_string()),
                 ColumnType::Int => CellValue::Int(0),
-                ColumnType::Gender => CellValue::Gender(None),
                 ColumnType::Bool => CellValue::Bool(false),
-                ColumnType::Grade => CellValue::Grade(Grade::F),
             };
             cells.push(cell);
         }

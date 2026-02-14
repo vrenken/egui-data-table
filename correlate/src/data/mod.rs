@@ -1,13 +1,5 @@
-﻿pub mod grade;
-pub use grade::*;
-
-pub mod row;
+﻿pub mod row;
 pub use row::*;
-
-pub mod gender;
-pub use gender::*;
-
-
 
 pub mod column_type;
 pub use column_type::*;

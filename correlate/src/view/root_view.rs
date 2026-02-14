@@ -147,8 +147,7 @@ impl eframe::App for CorrelateApp {
                 ui.menu_button("🎌 Flags", |ui| {
                     ui.checkbox(&mut self.viewer.row_protection, "Row Protection")
                         .on_hover_text(
-                            "If checked, any rows `Is Student` marked \
-                        won't be deleted or overwritten by UI actions.",
+                            "If checked, any rows marked won't be deleted or overwritten by UI actions.",
                         );
 
                     ui.checkbox(

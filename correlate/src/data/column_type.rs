@@ -4,7 +4,5 @@
 pub enum ColumnType {
     String,
     Int,
-    Gender,
     Bool,
-    Grade,
 }
