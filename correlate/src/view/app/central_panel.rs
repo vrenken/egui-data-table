@@ -40,6 +40,7 @@ impl CorrelateApp {
                     let current_name = match &row.cells[name_col_idx] {
                         CellValue::String(s) => s.clone(),
                         CellValue::Int(i) => i.to_string(),
+                        CellValue::Float(f) => f.to_string(),
                         CellValue::Bool(b) => b.to_string(),
                     };
                     self.renaming_item = Some((RenamingTarget::Row(row_idx), current_name));

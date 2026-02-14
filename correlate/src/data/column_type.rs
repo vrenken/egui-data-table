@@ -4,5 +4,6 @@
 pub enum ColumnType {
     String,
     Int,
+    Float,
     Bool,
 }

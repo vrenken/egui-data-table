@@ -16,6 +16,7 @@ impl RowCodec<Row> for Codec {
             let cell = match config.column_type {
                 ColumnType::String => CellValue::String("".to_string()),
                 ColumnType::Int => CellValue::Int(0),
+                ColumnType::Float => CellValue::Float(0.0),
                 ColumnType::Bool => CellValue::Bool(false),
             };
             cells.push(cell);
@@ -28,6 +29,7 @@ impl RowCodec<Row> for Codec {
             match cell {
                 CellValue::String(s) => dst.push_str(s),
                 CellValue::Int(i) => dst.push_str(&i.to_string()),
+                CellValue::Float(f) => dst.push_str(&f.to_string()),
                 CellValue::Bool(b) => dst.push_str(&b.to_string()),
             }
         }
@@ -50,6 +52,11 @@ impl RowCodec<Row> for Codec {
             ColumnType::Int => {
                 if let CellValue::Int(ref mut i) = dst_row.cells[column] {
                     *i = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
+                }
+            }
+            ColumnType::Float => {
+                if let CellValue::Float(ref mut f) = dst_row.cells[column] {
+                    *f = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
                 }
             }
             ColumnType::Bool => {

@@ -101,6 +101,7 @@ impl RowViewer<Row> for Viewer {
         match (&row_l.cells[column], &row_r.cells[column]) {
             (CellValue::String(l), CellValue::String(r)) => l.cmp(r),
             (CellValue::Int(l), CellValue::Int(r)) => l.cmp(r),
+            (CellValue::Float(l), CellValue::Float(r)) => l.partial_cmp(r).unwrap_or(std::cmp::Ordering::Equal),
             (CellValue::Bool(l), CellValue::Bool(r)) => l.cmp(r),
             _ => std::cmp::Ordering::Equal,
         }
@@ -131,6 +132,7 @@ impl RowViewer<Row> for Viewer {
         let resp = match &row.cells[column] {
             CellValue::String(s) => { ui.label(s) }
             CellValue::Int(i) => { ui.label(i.to_string()) }
+            CellValue::Float(f) => { ui.label(f.to_string()) }
             CellValue::Bool(b) => { ui.checkbox(&mut { *b }, "") }
         };
 
@@ -175,6 +177,7 @@ impl RowViewer<Row> for Viewer {
                     let cell = match config.column_type {
                         ColumnType::String => CellValue::String((*x).clone()),
                         ColumnType::Int => CellValue::Int(9999),
+                        ColumnType::Float => CellValue::Float(99.99),
                         ColumnType::Bool => CellValue::Bool(false),
                     };
                     cells.push(cell);
@@ -198,6 +201,7 @@ impl RowViewer<Row> for Viewer {
                     .response
             }
             CellValue::Int(i) => ui.add(egui::DragValue::new(i).speed(1.0)),
+            CellValue::Float(f) => ui.add(egui::DragValue::new(f).speed(0.1)),
             // CellValue::Gender(gender) => {
             //     egui::ComboBox::new(ui.id().with("gender"), "".to_string())
             //         .selected_text(gender.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string()))
@@ -283,6 +287,7 @@ impl RowViewer<Row> for Viewer {
             let cell = match config.column_type {
                 ColumnType::String => CellValue::String("".to_string()),
                 ColumnType::Int => CellValue::Int(0),
+                ColumnType::Float => CellValue::Float(0.0),
                 ColumnType::Bool => CellValue::Bool(false),
             };
             cells.push(cell);
