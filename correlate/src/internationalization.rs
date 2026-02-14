@@ -78,7 +78,7 @@ impl Translator for CustomEnglishTranslator {
     }
 }
 
-struct DemoApp {
+struct CorrelateApp {
     table: egui_data_table::DataTable<Row>,
     viewer: Viewer,
 
@@ -86,7 +86,7 @@ struct DemoApp {
     translators: HashMap<&'static str, Arc<dyn Translator>>,
 }
 
-impl Default for DemoApp {
+impl Default for CorrelateApp {
     fn default() -> Self {
 
         let translators: HashMap<&'static str, Arc<dyn Translator>> = vec![
@@ -200,7 +200,7 @@ impl RowViewer<Row> for Viewer {
     }
 }
 
-impl eframe::App for DemoApp {
+impl eframe::App for CorrelateApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 
         let mut language_keys: Vec<&str> = self.translators.keys().copied().collect();
@@ -245,7 +245,7 @@ fn main() {
             ..Default::default()
         },
         {
-            let mut app = DemoApp::default();
+            let mut app = CorrelateApp::default();
             move |ctx, frame| {
                 app.update(ctx, frame);
             }

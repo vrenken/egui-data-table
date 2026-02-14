@@ -37,12 +37,12 @@
 //     enabled_processes: HashMap<String, bool>,
 // }
 //
-// struct DemoApp {
+// struct CorrelateApp {
 //     table: egui_data_table::DataTable<PartStatesRow>,
 //     viewer: Viewer,
 // }
 //
-// impl Default for DemoApp {
+// impl Default for CorrelateApp {
 //     fn default() -> Self {
 //         let parts_states = vec![
 //             PartWithState {
@@ -199,7 +199,7 @@
 //     }
 // }
 //
-// impl eframe::App for DemoApp {
+// impl eframe::App for CorrelateApp {
 //     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 //         egui::TopBottomPanel::top("menubar").show(ctx, |ui| {
 //             egui::MenuBar::new().ui(ui, |ui| {
@@ -246,7 +246,7 @@
 //             ..Default::default()
 //         },
 //         {
-//             let mut app = DemoApp::default();
+//             let mut app = CorrelateApp::default();
 //             move |ctx, frame| {
 //                 app.update(ctx, frame);
 //             }
