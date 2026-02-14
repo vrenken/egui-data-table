@@ -1,0 +1,106 @@
+{
+  "sheets": [
+    {
+      "name": "student-dataset.csv",
+      "column_configs": [
+        {
+          "name": "id",
+          "column_type": "Int",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "name",
+          "column_type": "String",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "nationality",
+          "column_type": "String",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "city",
+          "column_type": "String",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "latitude",
+          "column_type": "String",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "longitude",
+          "column_type": "String",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "gender",
+          "column_type": "Gender",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "ethnic.group",
+          "column_type": "String",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "age",
+          "column_type": "Int",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "english.grade",
+          "column_type": "Grade",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "math.grade",
+          "column_type": "Grade",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "sciences.grade",
+          "column_type": "Grade",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "language.grade",
+          "column_type": "Grade",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "portfolio.rating",
+          "column_type": "Int",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "coverletter.rating",
+          "column_type": "Int",
+          "is_sortable": true,
+          "width": null
+        },
+        {
+          "name": "refletter.rating",
+          "column_type": "Int",
+          "is_sortable": true,
+          "width": null
+        }
+      ],
+      "sort_config": null
+    }
+  ]
+}
