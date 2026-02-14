@@ -279,9 +279,6 @@ impl eframe::App for CorrelateApp {
 
                         // Also save .correlate files for all data sources
                         for ds in &self.data_sources {
-                            if ds.path == "Students" || ds.path == "Random Data" {
-                                continue;
-                            }
                             let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
                             let source_config = crate::data::SourceConfig {
                                 sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
@@ -322,18 +319,16 @@ impl eframe::App for CorrelateApp {
                 old_sheet.column_configs = self.viewer.column_configs.clone();
 
                 // Save .correlate file when switching away from a source
-                if old_ds.path != "Students" && old_ds.path != "Random Data" {
-                    let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
-                    let source_config = crate::data::SourceConfig {
-                        sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
-                            name: s.name.clone(),
-                            column_configs: s.column_configs.clone(),
-                            sort_config: None,
-                        }).collect(),
-                    };
-                    if let Err(e) = source_config.save(companion_path) {
-                        log::error!("Failed to save companion config for {}: {}", old_ds.path, e);
-                    }
+                let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
+                let source_config = crate::data::SourceConfig {
+                    sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
+                        name: s.name.clone(),
+                        column_configs: s.column_configs.clone(),
+                        sort_config: None,
+                    }).collect(),
+                };
+                if let Err(e) = source_config.save(companion_path) {
+                    log::error!("Failed to save companion config for {}: {}", old_ds.path, e);
                 }
             }
 
@@ -388,18 +383,16 @@ impl eframe::App for CorrelateApp {
                         old_sheet.column_configs = self.viewer.column_configs.clone();
 
                         // Save .correlate file when switching away from a source
-                        if old_ds.path != "Students" && old_ds.path != "Random Data" {
-                            let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
-                            let source_config = crate::data::SourceConfig {
-                                sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
-                                    name: s.name.clone(),
-                                    column_configs: s.column_configs.clone(),
-                                    sort_config: None,
-                                }).collect(),
-                            };
-                            if let Err(e) = source_config.save(companion_path) {
-                                log::error!("Failed to save companion config for {}: {}", old_ds.path, e);
-                            }
+                        let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
+                        let source_config = crate::data::SourceConfig {
+                            sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
+                                name: s.name.clone(),
+                                column_configs: s.column_configs.clone(),
+                                sort_config: None,
+                            }).collect(),
+                        };
+                        if let Err(e) = source_config.save(companion_path) {
+                            log::error!("Failed to save companion config for {}: {}", old_ds.path, e);
                         }
                     }
 
