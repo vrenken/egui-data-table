@@ -31,3 +31,6 @@ names =                     { version = "0.14.0", default-features = false }
 wasm-bindgen-futures =      { version = "0.4.58" }
 web-sys =                   { version = "0.3.85" }
 
+umya-spreadsheet =          { version = "2.3.3" }
+
+
