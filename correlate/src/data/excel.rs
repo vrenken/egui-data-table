@@ -4,6 +4,7 @@ use crate::data::{CellValue, ColumnConfig, ColumnType, Row, SheetConfig, SourceC
 
 pub struct ExcelSheet {
     pub name: String,
+    pub custom_name: Option<String>,
     pub column_configs: Vec<ColumnConfig>,
     pub rows: Vec<Row>,
 }
@@ -14,6 +15,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
     let companion_path = SourceConfig::get_companion_path(&path);
     let source_config = SourceConfig::load(&companion_path).ok();
     
+    let custom_name = source_config.as_ref().and_then(|sc| sc.name.clone());
     let mut sheets = Vec::new();
     let mut config_sheets = Vec::new();
 
@@ -73,6 +75,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
 
         sheets.push(ExcelSheet {
             name: sheet_name,
+            custom_name: custom_name.clone(),
             column_configs,
             rows,
         });
@@ -80,7 +83,10 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
 
     // Save companion file if it didn't exist
     if source_config.is_none() {
-        let new_config = SourceConfig { sheets: config_sheets };
+        let new_config = SourceConfig {
+            name: None,
+            sheets: config_sheets,
+        };
         if let Err(e) = new_config.save(&companion_path) {
             log::error!("Failed to save companion config to {:?}: {}", companion_path, e);
         }

@@ -1,7 +1,8 @@
 {
+  "name": "Netherlands",
   "sheets": [
     {
-      "name": "Sheet1",
+      "name": "Netherlands",
       "column_configs": [
         {
           "name": "city",

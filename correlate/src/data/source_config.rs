@@ -5,6 +5,8 @@ use crate::data::ColumnConfig;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SourceConfig {
+    #[serde(default)]
+    pub name: Option<String>,
     pub sheets: Vec<SheetConfig>,
 }
 

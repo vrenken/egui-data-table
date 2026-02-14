@@ -12,8 +12,15 @@ pub struct DataSheet {
 
 pub struct DataSource {
     pub path: String,
+    pub name: Option<String>,
     pub sheets: Vec<DataSheet>,
     pub selected_sheet_index: usize,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum RenamingTarget {
+    DataSource(usize),
+    Sheet(usize, usize),
 }
 
 pub struct CorrelateApp {
@@ -25,6 +32,7 @@ pub struct CorrelateApp {
     style_override: egui_data_table::Style,
     scroll_bar_always_visible: bool,
     pending_file_to_add: Option<std::path::PathBuf>,
+    renaming_item: Option<(RenamingTarget, String)>,
 }
 
 impl Default for CorrelateApp {
@@ -37,6 +45,7 @@ impl Default for CorrelateApp {
         for source in &config.data_sources {
             match crate::data::load_xlsx(source) {
                 Ok(excel_sheets) => {
+                    let custom_name = excel_sheets.first().and_then(|s| s.custom_name.clone());
                     let sheets = excel_sheets.into_iter().map(|s| DataSheet {
                         name: s.name,
                         column_configs: s.column_configs,
@@ -45,6 +54,7 @@ impl Default for CorrelateApp {
 
                     data_sources.push(DataSource {
                         path: source.to_string(),
+                        name: custom_name,
                         sheets,
                         selected_sheet_index: 0,
                     });
@@ -76,6 +86,7 @@ impl Default for CorrelateApp {
                 style_override: Default::default(),
                 scroll_bar_always_visible: false,
                 pending_file_to_add: None,
+                renaming_item: None,
             };
         }
 
@@ -101,6 +112,7 @@ impl Default for CorrelateApp {
             style_override: Default::default(),
             scroll_bar_always_visible: false,
             pending_file_to_add: None,
+            renaming_item: None,
         }
     }
 }
@@ -210,45 +222,125 @@ impl eframe::App for CorrelateApp {
                             let header_response = egui::collapsing_header::CollapsingHeader::new(egui::RichText::new("📁 Data Sources").strong())
                                 .default_open(true)
                                 .show(ui, |ui| {
-                                    for (index, ds) in self.data_sources.iter().enumerate() {
-                                        let file_name = std::path::Path::new(&ds.path)
+                                    for (index, ds) in self.data_sources.iter_mut().enumerate() {
+                                        let default_file_name = std::path::Path::new(&ds.path)
                                             .file_name()
                                             .and_then(|n| n.to_str())
-                                            .unwrap_or(&ds.path);
+                                            .unwrap_or(&ds.path)
+                                            .to_string();
+                                        
+                                        let display_name = ds.name.as_ref().unwrap_or(&default_file_name).clone();
                                         
                                         if ds.sheets.len() > 1 {
-                                            let header = egui::collapsing_header::CollapsingHeader::new(format!(" {}", file_name))
-                                                .default_open(true)
-                                                .show(ui, |ui| {
-                                                    for (sheet_idx, sheet) in ds.sheets.iter().enumerate() {
+                                            let mut header = egui::collapsing_header::CollapsingHeader::new(format!(" {}", display_name))
+                                                .default_open(true);
+                                            
+                                            let renaming_this_ds = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::DataSource(index));
+
+                                            if renaming_this_ds {
+                                                header = egui::collapsing_header::CollapsingHeader::new(" ");
+                                            }
+
+                                            let header_res = header.show(ui, |ui| {
+                                                    for (sheet_idx, sheet) in ds.sheets.iter_mut().enumerate() {
                                                         let selected = self.selected_index == Some(index) && ds.selected_sheet_index == sheet_idx;
-                                                        if ui.selectable_label(selected, format!("  📄 {}", sheet.name))
-                                                            .on_hover_text(&ds.path)
-                                                            .clicked()
-                                                        {
-                                                            if self.selected_index != Some(index) || ds.selected_sheet_index != sheet_idx {
-                                                                newly_selected_index = Some(index);
-                                                                newly_selected_sheet_index = Some(sheet_idx);
+                                                        let renaming_this_sheet = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::Sheet(index, sheet_idx));
+
+                                                        if renaming_this_sheet {
+                                                            ui.horizontal(|ui| {
+                                                                ui.label("  📄 ");
+                                                                let (_, current_name) = self.renaming_item.as_mut().unwrap();
+                                                                let res = ui.text_edit_singleline(current_name);
+                                                                if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                                                    sheet.name = current_name.clone();
+                                                                    self.renaming_item = None;
+                                                                }
+                                                                if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                                                    self.renaming_item = None;
+                                                                }
+                                                                res.request_focus();
+                                                            });
+                                                        } else {
+                                                            let res = ui.selectable_label(selected, format!("  📄 {}", sheet.name))
+                                                                .on_hover_text(&ds.path);
+                                                            
+                                                            if res.clicked() {
+                                                                if self.selected_index != Some(index) || ds.selected_sheet_index != sheet_idx {
+                                                                    newly_selected_index = Some(index);
+                                                                    newly_selected_sheet_index = Some(sheet_idx);
+                                                                }
+                                                            }
+
+                                                            if res.double_clicked() {
+                                                                self.renaming_item = Some((RenamingTarget::Sheet(index, sheet_idx), sheet.name.clone()));
                                                             }
                                                         }
                                                     }
                                                 });
 
-                                            if header.header_response.clicked() {
-                                                if self.selected_index != Some(index) {
-                                                    newly_selected_index = Some(index);
-                                                    newly_selected_sheet_index = Some(ds.selected_sheet_index);
+                                            if renaming_this_ds {
+                                                let mut rect = header_res.header_response.rect;
+                                                rect.min.x += 20.0; // Offset for icon
+                                                ui.allocate_ui_at_rect(rect, |ui| {
+                                                    let (_, current_name) = self.renaming_item.as_mut().unwrap();
+                                                    let res = ui.text_edit_singleline(current_name);
+                                                    if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                                        ds.name = if current_name.is_empty() || current_name == &default_file_name { None } else { Some(current_name.clone()) };
+                                                        self.renaming_item = None;
+                                                    }
+                                                    if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                                        self.renaming_item = None;
+                                                    }
+                                                    res.request_focus();
+                                                });
+                                            } else {
+                                                if header_res.header_response.clicked() {
+                                                    if self.selected_index != Some(index) {
+                                                        newly_selected_index = Some(index);
+                                                        newly_selected_sheet_index = Some(ds.selected_sheet_index);
+                                                    }
+                                                }
+                                                if header_res.header_response.double_clicked() {
+                                                    self.renaming_item = Some((RenamingTarget::DataSource(index), display_name.clone()));
                                                 }
                                             }
                                         } else {
                                             let selected = self.selected_index == Some(index);
-                                            if ui.selectable_label(selected, format!(" {}", file_name))
-                                                .on_hover_text(&ds.path)
-                                                .clicked()
-                                            {
-                                                if self.selected_index != Some(index) {
-                                                    newly_selected_index = Some(index);
-                                                    newly_selected_sheet_index = Some(0);
+                                            let renaming_this_ds = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::DataSource(index));
+
+                                            if renaming_this_ds {
+                                                ui.horizontal(|ui| {
+                                                    ui.label(" ");
+                                                    let (_, current_name) = self.renaming_item.as_mut().unwrap();
+                                                    let res = ui.text_edit_singleline(current_name);
+                                                    if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                                        ds.name = if current_name.is_empty() || current_name == &default_file_name { None } else { Some(current_name.clone()) };
+                                                        // Also sync the single sheet name if they match? 
+                                                        // Actually, the user likely wants to rename the displayed name.
+                                                        // If it's single sheet, we might want to rename the sheet itself too.
+                                                        if let Some(sheet) = ds.sheets.get_mut(0) {
+                                                            sheet.name = current_name.clone();
+                                                        }
+                                                        self.renaming_item = None;
+                                                    }
+                                                    if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                                        self.renaming_item = None;
+                                                    }
+                                                    res.request_focus();
+                                                });
+                                            } else {
+                                                let res = ui.selectable_label(selected, format!(" {}", display_name))
+                                                    .on_hover_text(&ds.path);
+                                                
+                                                if res.clicked() {
+                                                    if self.selected_index != Some(index) {
+                                                        newly_selected_index = Some(index);
+                                                        newly_selected_sheet_index = Some(0);
+                                                    }
+                                                }
+
+                                                if res.double_clicked() {
+                                                    self.renaming_item = Some((RenamingTarget::DataSource(index), display_name.clone()));
                                                 }
                                             }
                                         }
@@ -291,6 +383,7 @@ impl eframe::App for CorrelateApp {
                         for ds in &self.data_sources {
                             let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
                             let source_config = crate::data::SourceConfig {
+                                name: ds.name.clone(),
                                 sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
                                     name: s.name.clone(),
                                     column_configs: s.column_configs.clone(),
@@ -331,6 +424,7 @@ impl eframe::App for CorrelateApp {
                 // Save .correlate file when switching away from a source
                 let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
                 let source_config = crate::data::SourceConfig {
+                    name: old_ds.name.clone(),
                     sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
                         name: s.name.clone(),
                         column_configs: s.column_configs.clone(),
@@ -357,30 +451,34 @@ impl eframe::App for CorrelateApp {
             
             let loaded_sheets = if extension == "csv" {
                 match crate::data::load_csv(&path_str) {
-                    Ok(csv_sheet) => Ok(vec![DataSheet {
+                    Ok(csv_sheet) => Ok((csv_sheet.custom_name, vec![DataSheet {
                         name: csv_sheet.name,
                         column_configs: csv_sheet.column_configs,
                         table: csv_sheet.rows.into_iter().collect(),
-                    }]),
+                    }])),
                     Err(e) => Err(e),
                 }
             } else {
                 match crate::data::load_xlsx(&path_str) {
-                    Ok(excel_sheets) => Ok(excel_sheets.into_iter().map(|s| DataSheet {
-                        name: s.name,
-                        column_configs: s.column_configs,
-                        table: s.rows.into_iter().collect(),
-                    }).collect()),
+                    Ok(excel_sheets) => {
+                        let custom_name = excel_sheets.first().and_then(|s| s.custom_name.clone());
+                        Ok((custom_name, excel_sheets.into_iter().map(|s| DataSheet {
+                            name: s.name,
+                            column_configs: s.column_configs,
+                            table: s.rows.into_iter().collect(),
+                        }).collect()))
+                    },
                     Err(e) => Err(e),
                 }
             };
 
             match loaded_sheets {
-                Ok(sheets) => {
+                Ok((custom_name, sheets)) => {
                     let new_index = self.data_sources.len();
                     
                     self.data_sources.push(DataSource {
                         path: path_str.clone(),
+                        name: custom_name,
                         sheets,
                         selected_sheet_index: 0,
                     });
@@ -395,6 +493,7 @@ impl eframe::App for CorrelateApp {
                         // Save .correlate file when switching away from a source
                         let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
                         let source_config = crate::data::SourceConfig {
+                            name: old_ds.name.clone(),
                             sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
                                 name: s.name.clone(),
                                 column_configs: s.column_configs.clone(),
@@ -489,6 +588,7 @@ impl eframe::App for CorrelateApp {
                     // Save .correlate file
                     let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
                     let source_config = crate::data::SourceConfig {
+                        name: ds.name.clone(),
                         sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
                             name: s.name.clone(),
                             column_configs: s.column_configs.clone(),

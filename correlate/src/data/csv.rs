@@ -4,6 +4,7 @@ use crate::data::{CellValue, ColumnConfig, ColumnType, Row, SheetConfig, SourceC
 
 pub struct CsvSheet {
     pub name: String,
+    pub custom_name: Option<String>,
     pub column_configs: Vec<ColumnConfig>,
     pub rows: Vec<Row>,
 }
@@ -16,6 +17,8 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
 
     let companion_path = SourceConfig::get_companion_path(&path);
     let source_config = SourceConfig::load(&companion_path).ok();
+    
+    let custom_name = source_config.as_ref().and_then(|sc| sc.name.clone());
 
     let mut reader = ReaderBuilder::new()
         .has_headers(true)
@@ -78,6 +81,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
     // Save companion file if it didn't exist
     if source_config.is_none() {
         let new_config = SourceConfig {
+            name: None,
             sheets: vec![SheetConfig {
                 name: file_name.clone(),
                 column_configs: column_configs.clone(),
@@ -91,6 +95,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
 
     Ok(CsvSheet {
         name: file_name,
+        custom_name,
         column_configs,
         rows,
     })
