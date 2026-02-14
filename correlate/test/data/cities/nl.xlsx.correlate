@@ -3,30 +3,30 @@
   "sheets": [
     {
       "name": "Sheet1",
-      "displayName": null,
+      "displayName": "Netherlands",
       "column_configs": [
         {
           "name": "city",
           "column_type": "String",
           "is_sortable": true,
-          "is_key": false,
-          "is_name": false,
+          "is_key": true,
+          "is_name": true,
           "is_virtual": false,
           "order": 0,
           "width": 501.0
         },
         {
-          "name": "lat",
+          "name": "lng",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "order": 1,
-          "width": 46.34375
+          "width": 48.4375
         },
         {
-          "name": "lng",
+          "name": "lat",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,

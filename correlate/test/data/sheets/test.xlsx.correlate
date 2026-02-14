@@ -16,7 +16,7 @@
           "width": 348.0
         },
         {
-          "name": "Date",
+          "name": "Number",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -26,7 +26,7 @@
           "width": 89.125
         },
         {
-          "name": "Number",
+          "name": "Date",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
