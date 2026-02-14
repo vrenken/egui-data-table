@@ -3,6 +3,7 @@
 pub mod draw;
 pub mod viewer;
 
+pub use draw::state::ColumnIdx;
 pub use draw::{Renderer, Style};
 pub use viewer::{RowViewer, UiAction};
 
@@ -120,6 +121,21 @@ impl<R> DataTable<R> {
     /// Clears the user-driven(triggered by UI) modification flag.
     pub fn clear_user_modification_flag(&mut self) {
         self.dirty_flag = false;
+    }
+
+    /// Returns the current visual column order.
+    pub fn visual_column_order(&self) -> Option<Vec<usize>> {
+        self.ui.as_ref().map(|ui| ui.vis_cols().iter().map(|c| c.0).collect())
+    }
+
+    /// Resets the visual column order to match the data order.
+    pub fn reset_visual_column_order(&mut self) {
+        if let Some(ui) = self.ui.as_mut() {
+            let num_columns = ui.num_columns();
+            let new_vis_cols = (0..num_columns).map(ColumnIdx).collect::<Vec<_>>();
+            ui.p.vis_cols = new_vis_cols;
+            ui.force_mark_dirty();
+        }
     }
 }
 
