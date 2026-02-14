@@ -34,6 +34,13 @@ macro_rules! int_ty {
 () => {}
 }
 
+#[cfg_attr(feature = "persistency", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Hash)]
+pub struct IsAscending(pub bool);
+#[cfg_attr(feature = "persistency", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Hash)]
+pub struct ColumnIdx(pub usize);
+
 int_ty!(
     struct VisLinearIdx(usize);
     struct VisSelection(VisLinearIdx, VisLinearIdx);
@@ -43,11 +50,6 @@ int_ty!(
     struct VisRowPos(usize);
     struct VisRowOffset(usize);
     struct VisColumnPos(usize);
-
-    #[cfg_attr(feature = "persistency", derive(serde::Serialize, serde::Deserialize))]
-    struct IsAscending(bool);
-    #[cfg_attr(feature = "persistency", derive(serde::Serialize, serde::Deserialize))]
-    struct ColumnIdx(usize);
 );
 
 impl VisSelection {
@@ -157,7 +159,7 @@ pub(crate) struct UiState<R> {
     clipboard: Option<Clipboard<R>>,
 
     /// Persistent data
-    p: PersistData,
+    pub(crate) p: PersistData,
 
     #[cfg(feature = "persistency")]
     is_p_loaded: bool,
@@ -219,15 +221,15 @@ pub(crate) struct UiState<R> {
 
 #[cfg_attr(feature = "persistency", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Default)]
-struct PersistData {
+pub(crate) struct PersistData {
     /// Cached number of columns.
-    num_columns: usize,
+    pub num_columns: usize,
 
     /// Visible columns selected by user.
-    vis_cols: Vec<ColumnIdx>,
+    pub vis_cols: Vec<ColumnIdx>,
 
     /// Column sorting state.
-    sort: Vec<(ColumnIdx, IsAscending)>,
+    pub sort: Vec<(ColumnIdx, IsAscending)>,
 }
 
 struct Clipboard<R> {
