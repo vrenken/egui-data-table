@@ -3,6 +3,8 @@ use egui::Response;
 use egui_data_table::RowViewer;
 use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
 use crate::data::*;
+use crate::data::column_config::ColumnConfig;
+use crate::data::column_type::ColumnType;
 
 pub struct Viewer {
     pub name_filter: String,

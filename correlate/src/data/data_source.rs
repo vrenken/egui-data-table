@@ -1,5 +1,7 @@
 ﻿use std::iter::repeat_with;
-use crate::data::{Gender, Grade, Row, CellValue, ColumnConfig, ColumnType};
+use crate::data::{CellValue, Gender, Grade, Row};
+use crate::data::column_config::ColumnConfig;
+use crate::data::column_type::ColumnType;
 
 pub fn get_rows(count: usize, configs: &[ColumnConfig]) -> Vec<Row> {
     let mut rng = fastrand::Rng::new();

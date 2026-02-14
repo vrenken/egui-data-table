@@ -1,18 +1,5 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ColumnType {
-    String,
-    Int,
-    Gender,
-    Bool,
-    Grade,
-}
-
-#[derive(Debug, Clone)]
-pub struct ColumnConfig {
-    pub name: String,
-    pub column_type: ColumnType,
-    pub is_sortable: bool,
-}
+use crate::data::column_config::ColumnConfig;
+use crate::data::column_type::ColumnType;
 
 pub fn get_default_column_configs() -> Vec<ColumnConfig> {
     vec![

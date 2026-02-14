@@ -1,6 +1,7 @@
 ﻿use egui_data_table::viewer::{DecodeErrorBehavior, RowCodec};
-use crate::data::row::{Row, CellValue};
-use crate::data::{ColumnConfig, ColumnType};
+use crate::data::row::{CellValue, Row};
+use crate::data::column_config::ColumnConfig;
+use crate::data::column_type::ColumnType;
 
 pub struct Codec {
     pub column_configs: Vec<ColumnConfig>,
