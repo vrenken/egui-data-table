@@ -1,7 +1,6 @@
-﻿use std::iter::repeat_with;
-use egui::{Sense, Widget};
+﻿use egui::{Sense, Widget};
 use egui::scroll_area::ScrollBarVisibility;
-use crate::data::{Gender, Grade, Row, CellValue};
+use crate::data::{Row, generate_random_data};
 use crate::view::Viewer;
 
 pub struct CorrelateApp {
@@ -15,30 +14,7 @@ impl Default for CorrelateApp {
 
     fn default() -> Self {
         Self {
-            table: {
-                let mut rng = fastrand::Rng::new();
-                let mut name_gen = names::Generator::with_naming(names::Name::Numbered);
-
-                repeat_with(move || {
-                    Row {
-                        cells: vec![
-                            CellValue::String(name_gen.next().unwrap()),
-                            CellValue::Int(rng.i32(4..31)),
-                            CellValue::Gender(match rng.i32(0..=2) {
-                                0 => None,
-                                1 => Some(Gender::Male),
-                                2 => Some(Gender::Female),
-                                _ => unreachable!(),
-                            }),
-                            CellValue::Bool(rng.bool()),
-                            CellValue::Grade(rng.i32(0..=5).try_into().unwrap_or(Grade::F)),
-                            CellValue::Bool(false),
-                        ]
-                    }
-                })
-            }
-            .take(100000)
-            .collect(),
+            table: generate_random_data(100000).into_iter().collect(),
             viewer: Viewer {
                 name_filter: String::new(),
                 hotkeys: Vec::new(),
