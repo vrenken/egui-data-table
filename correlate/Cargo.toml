@@ -16,7 +16,7 @@ eframe =                { workspace = true, features = ["serde", "persistence"] 
 env_logger =            { workspace = true }
 getrandom =             { workspace = true, features = ["wasm_js"] }
 fastrand =              { workspace = true }
-names =                 { workspace = true }
+names =                 { workspace = true, optional = true }
 
 tap =                   { workspace = true }
 log =                   { workspace = true }
@@ -33,6 +33,7 @@ web-sys =               { version = "0.3" }
 [features]
 default = ["persistency"]
 persistency = ["dep:serde"]
+demo = ["dep:names"]
 
 [dev-dependencies]
 eframe =                    { workspace = true, features = ["serde", "persistence"] }
