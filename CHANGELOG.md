@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning].
 
 ### Changed
 - Removed default sample data sources ("Students" and "Random Data") and associated generator logic.
+- Treeview now avoids adding child nodes for data sources with only one sheet.
 ### Fixed
 - 
 ### Exposed
