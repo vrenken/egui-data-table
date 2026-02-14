@@ -7,97 +7,97 @@
           "name": "id",
           "column_type": "Int",
           "is_sortable": true,
-          "width": null
+          "width": 41.59375
         },
         {
           "name": "name",
           "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 99.3125
         },
         {
           "name": "nationality",
           "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 95.96875
         },
         {
           "name": "city",
           "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 89.5625
         },
         {
           "name": "latitude",
           "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 76.125
         },
         {
           "name": "longitude",
           "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 86.125
         },
         {
           "name": "gender",
-          "column_type": "Gender",
+          "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 71.875
         },
         {
           "name": "ethnic.group",
           "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 104.59375
         },
         {
           "name": "age",
           "column_type": "Int",
           "is_sortable": true,
-          "width": null
+          "width": 52.125
         },
         {
           "name": "english.grade",
-          "column_type": "Grade",
+          "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 109.125
         },
         {
           "name": "math.grade",
-          "column_type": "Grade",
+          "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 98.125
         },
         {
           "name": "sciences.grade",
-          "column_type": "Grade",
+          "column_type": "String",
           "is_sortable": true,
-          "width": null
+          "width": 115.125
         },
         {
           "name": "language.grade",
-          "column_type": "Grade",
+          "column_type": "Int",
           "is_sortable": true,
-          "width": null
+          "width": 121.125
         },
         {
           "name": "portfolio.rating",
           "column_type": "Int",
           "is_sortable": true,
-          "width": null
+          "width": 119.4375
         },
         {
           "name": "coverletter.rating",
           "column_type": "Int",
           "is_sortable": true,
-          "width": null
+          "width": 132.4375
         },
         {
           "name": "refletter.rating",
           "column_type": "Int",
           "is_sortable": true,
-          "width": null
+          "width": 462.25
         }
       ],
       "sort_config": null
