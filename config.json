@@ -3,7 +3,8 @@
     "correlate/test/data/cities/de.xlsx",
     "correlate/test/data/cities/nl.xlsx",
     "Students",
-    "correlate/test/data/sheets/test.xlsx"
+    "correlate/test/data/sheets/test.xlsx",
+    "correlate/test/data/sheets/test-multiple-sheets.xlsx"
   ],
-  "selected_index": 0
+  "selected_index": 4
 }
