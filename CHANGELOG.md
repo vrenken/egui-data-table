@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning].
 - [ ] Ability to work with multiple data sheets from Excel
 - [x] Ability to work with CSV files
 - [ ] Ability to add new data
+- [ ] Ability to mark columns as keys
 
 <!-- Links -->
 [keep a changelog]: https://keepachangelog.com/en/1.0.0/
