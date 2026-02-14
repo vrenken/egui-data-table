@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning].
 - Ability to reorder columns from the column header menu using "Move Left" and "Move Right". Column order is now persisted to the `.correlate` file.
 - Ability to rename a row by double-clicking its row header. The new name is persisted to the "name" column.
 - New cell type for float values, with support for automatic inference from CSV and Excel files.
+- New cell type for datetime values, with support for automatic inference from CSV and Excel files.
 
 ### Fixed
 - Fixed an issue where renamed data sources and sheets were not persisted to the `.correlate` file.

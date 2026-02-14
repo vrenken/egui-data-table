@@ -41,6 +41,7 @@ impl CorrelateApp {
                         CellValue::String(s) => s.clone(),
                         CellValue::Int(i) => i.to_string(),
                         CellValue::Float(f) => f.to_string(),
+                        CellValue::DateTime(dt) => dt.clone(),
                         CellValue::Bool(b) => b.to_string(),
                     };
                     self.renaming_item = Some((RenamingTarget::Row(row_idx), current_name));

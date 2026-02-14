@@ -3,6 +3,7 @@ pub enum CellValue {
     String(String),
     Int(i32),
     Float(f64),
+    DateTime(String),
     Bool(bool),
 }
 

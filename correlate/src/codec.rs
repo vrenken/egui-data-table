@@ -17,6 +17,7 @@ impl RowCodec<Row> for Codec {
                 ColumnType::String => CellValue::String("".to_string()),
                 ColumnType::Int => CellValue::Int(0),
                 ColumnType::Float => CellValue::Float(0.0),
+                ColumnType::DateTime => CellValue::DateTime("".to_string()),
                 ColumnType::Bool => CellValue::Bool(false),
             };
             cells.push(cell);
@@ -30,6 +31,7 @@ impl RowCodec<Row> for Codec {
                 CellValue::String(s) => dst.push_str(s),
                 CellValue::Int(i) => dst.push_str(&i.to_string()),
                 CellValue::Float(f) => dst.push_str(&f.to_string()),
+                CellValue::DateTime(dt) => dst.push_str(dt),
                 CellValue::Bool(b) => dst.push_str(&b.to_string()),
             }
         }
@@ -57,6 +59,11 @@ impl RowCodec<Row> for Codec {
             ColumnType::Float => {
                 if let CellValue::Float(ref mut f) = dst_row.cells[column] {
                     *f = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
+                }
+            }
+            ColumnType::DateTime => {
+                if let CellValue::DateTime(ref mut dt) = dst_row.cells[column] {
+                    dt.replace_range(.., src_data);
                 }
             }
             ColumnType::Bool => {
