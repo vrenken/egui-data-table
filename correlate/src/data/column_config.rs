@@ -6,4 +6,6 @@ pub struct ColumnConfig {
     pub name: String,
     pub column_type: ColumnType,
     pub is_sortable: bool,
+    #[serde(default)]
+    pub width: Option<f32>,
 }

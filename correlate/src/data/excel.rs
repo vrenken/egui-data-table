@@ -41,6 +41,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
                     name: col_name,
                     column_type,
                     is_sortable: true,
+                    width: None,
                 });
             }
         }

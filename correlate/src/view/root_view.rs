@@ -275,6 +275,23 @@ impl eframe::App for CorrelateApp {
                         if let Err(e) = self.config.save(config_path) {
                             log::error!("Failed to save config: {}", e);
                         }
+
+                        // Also save .correlate files for all data sources
+                        for ds in &self.data_sources {
+                            if ds.path == "Students" || ds.path == "Random Data" {
+                                continue;
+                            }
+                            let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
+                            let source_config = crate::data::SourceConfig {
+                                sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
+                                    name: s.name.clone(),
+                                    column_configs: s.column_configs.clone(),
+                                }).collect(),
+                            };
+                            if let Err(e) = source_config.save(companion_path) {
+                                log::error!("Failed to save companion config for {}: {}", ds.path, e);
+                            }
+                        }
                     }
 
                     ui.add_space(20.);
@@ -298,7 +315,23 @@ impl eframe::App for CorrelateApp {
             // Save current table state back to its source
             if let Some(old_idx) = self.selected_index {
                 let old_ds = &mut self.data_sources[old_idx];
-                old_ds.sheets[old_ds.selected_sheet_index].table = self.table.clone();
+                let old_sheet = &mut old_ds.sheets[old_ds.selected_sheet_index];
+                old_sheet.table = self.table.clone();
+                old_sheet.column_configs = self.viewer.column_configs.clone();
+
+                // Save .correlate file when switching away from a source
+                if old_ds.path != "Students" && old_ds.path != "Random Data" {
+                    let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
+                    let source_config = crate::data::SourceConfig {
+                        sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
+                            name: s.name.clone(),
+                            column_configs: s.column_configs.clone(),
+                        }).collect(),
+                    };
+                    if let Err(e) = source_config.save(companion_path) {
+                        log::error!("Failed to save companion config for {}: {}", old_ds.path, e);
+                    }
+                }
             }
 
             // Switch to new source
@@ -330,7 +363,23 @@ impl eframe::App for CorrelateApp {
                     // Save current table state
                     if let Some(old_idx) = self.selected_index {
                         let old_ds = &mut self.data_sources[old_idx];
-                        old_ds.sheets[old_ds.selected_sheet_index].table = self.table.clone();
+                        let old_sheet = &mut old_ds.sheets[old_ds.selected_sheet_index];
+                        old_sheet.table = self.table.clone();
+                        old_sheet.column_configs = self.viewer.column_configs.clone();
+
+                        // Save .correlate file when switching away from a source
+                        if old_ds.path != "Students" && old_ds.path != "Random Data" {
+                            let companion_path = crate::data::SourceConfig::get_companion_path(&old_ds.path);
+                            let source_config = crate::data::SourceConfig {
+                                sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
+                                    name: s.name.clone(),
+                                    column_configs: s.column_configs.clone(),
+                                }).collect(),
+                            };
+                            if let Err(e) = source_config.save(companion_path) {
+                                log::error!("Failed to save companion config for {}: {}", old_ds.path, e);
+                            }
+                        }
                     }
 
                     // Switch to new source

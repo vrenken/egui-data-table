@@ -28,6 +28,28 @@ impl RowViewer<Row> for Viewer {
         Some(crate::codec::Codec { column_configs: self.column_configs.clone() })
     }
 
+    fn column_render_config(
+        &mut self,
+        column: usize,
+        is_last_visible_column: bool,
+    ) -> egui_data_table::viewer::TableColumnConfig {
+        let mut config = if is_last_visible_column {
+            egui_data_table::viewer::TableColumnConfig::remainder().at_least(24.0)
+        } else {
+            egui_data_table::viewer::TableColumnConfig::auto().resizable(true)
+        };
+
+        if let Some(col_config) = self.column_configs.get(column) {
+            if let Some(width) = col_config.width {
+                config = egui_data_table::viewer::TableColumnConfig::initial(width).resizable(true);
+                if is_last_visible_column {
+                    config = config.at_least(24.0);
+                }
+            }
+        }
+        config
+    }
+
     fn is_sortable_column(&mut self, column: usize) -> bool {
         self.column_configs.get(column).map(|c| c.is_sortable).unwrap_or(false)
     }
@@ -84,6 +106,10 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn show_cell_view(&mut self, ui: &mut egui::Ui, row: &Row, column: usize) {
+        if let Some(config) = self.column_configs.get_mut(column) {
+            config.width = Some(ui.available_width());
+        }
+
         match &row.cells[column] {
             CellValue::String(s) => { ui.label(s); }
             CellValue::Int(i) => { ui.label(i.to_string()); }
