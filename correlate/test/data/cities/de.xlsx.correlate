@@ -1,15 +1,17 @@
 {
+  "name": "Germany",
   "sheets": [
     {
       "name": "Sheet1",
+      "displayName": "Germany",
       "column_configs": [
         {
           "name": "city",
           "column_type": "String",
           "is_sortable": true,
-          "is_key": false,
+          "is_key": true,
           "is_virtual": false,
-          "width": 382.0
+          "width": 501.0
         },
         {
           "name": "lat",
@@ -73,7 +75,7 @@
           "is_sortable": true,
           "is_key": false,
           "is_virtual": false,
-          "width": 1339.8125
+          "width": 1346.8125
         }
       ],
       "sort_config": null

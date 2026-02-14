@@ -11,7 +11,7 @@
           "is_sortable": true,
           "is_key": false,
           "is_virtual": false,
-          "width": 91.96875
+          "width": 501.0
         },
         {
           "name": "lat",
