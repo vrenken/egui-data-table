@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
-### Fixed
+### Added
+- Ability to mark a column as the "name" column from the column header context menu. This column is marked with a 🏷️ icon.
 
--  
+### Fixed
+- Fixed an issue where renamed data sources and sheets were not persisted to the `.correlate` file.
 
 ## [0.1.0] - 2026-02-14
 

@@ -12,6 +12,7 @@ pub struct Viewer {
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
     pub captured_order: Vec<usize>,
     pub add_column_requested: Option<usize>,
+    pub save_requested: bool,
     pub column_configs: Vec<ColumnConfig>,
 }
 
@@ -26,6 +27,9 @@ impl RowViewer<Row> for Viewer {
                 let mut name = c.name.clone();
                 if c.is_key {
                     name = format!("🔑 {}", name);
+                }
+                if c.is_name {
+                    name = format!("🏷️ {}", name);
                 }
                 if c.is_virtual {
                     name = format!("🧪 {}", name);
@@ -303,18 +307,37 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) {
-        if let Some(config) = self.column_configs.get_mut(column) {
-            ui.separator();
-            let mut is_key = config.is_key;
-            if ui.checkbox(&mut is_key, "Use as key").clicked() {
-                config.is_key = is_key;
-                ui.close();
-            }
+        let is_name_active = self.column_configs[column].is_name;
+        let is_key_active = self.column_configs[column].is_key;
 
-            if ui.button("Add column").clicked() {
-                self.add_column_requested = Some(column);
-                ui.close();
+        (&mut*ui).separator(); // ========================================
+
+        let mut is_key = is_key_active;
+        if (&mut*ui).checkbox(&mut is_key, "Use as key").clicked() {
+            self.column_configs[column].is_key = is_key;
+            self.save_requested = true;
+            ui.close();
+        }
+
+        let mut is_name = is_name_active;
+        if (&mut*ui).checkbox(&mut is_name, "Use as name").clicked() {
+            if is_name {
+                // Turn off is_name for all other columns
+                for c in self.column_configs.iter_mut() {
+                    c.is_name = false;
+                }
+                self.column_configs[column].is_name = true;
+            } else {
+                self.column_configs[column].is_name = false;
             }
+            self.save_requested = true;
+            ui.close();
+        }
+        ui.separator();
+
+        if (&mut*ui).button("Insert column").clicked() {
+            self.add_column_requested = Some(column);
+            ui.close();
         }
     }
 

@@ -59,6 +59,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
                 column_type,
                 is_sortable: true,
                 is_key: false,
+                is_name: false,
                 is_virtual: false,
                 width: None,
             });

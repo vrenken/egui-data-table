@@ -77,6 +77,7 @@ impl Default for CorrelateApp {
                 hotkeys: Vec::new(),
                 captured_order: Vec::new(),
                 add_column_requested: None,
+                save_requested: false,
                 column_configs: Vec::new(),
             };
 
@@ -104,6 +105,7 @@ impl Default for CorrelateApp {
             hotkeys: Vec::new(),
             captured_order: Vec::new(),
             add_column_requested: None,
+            save_requested: false,
             column_configs: sheet.column_configs.clone(),
         };
 
@@ -561,8 +563,9 @@ impl eframe::App for CorrelateApp {
 
             let column_count_changed = self.table.is_empty() || self.viewer.num_columns() != self.table[0].cells.len();
 
-            if self.viewer.add_column_requested.is_some() || column_count_changed {
+            if self.viewer.add_column_requested.is_some() || self.viewer.save_requested || column_count_changed {
                 let add_column_at = self.viewer.add_column_requested.take();
+                self.viewer.save_requested = false;
                 
                 if let Some(at) = add_column_at {
                     let new_column = crate::data::ColumnConfig {
@@ -570,6 +573,7 @@ impl eframe::App for CorrelateApp {
                         column_type: crate::data::ColumnType::String,
                         is_sortable: true,
                         is_key: false,
+                        is_name: false,
                         is_virtual: true,
                         width: None,
                     };
