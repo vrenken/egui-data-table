@@ -7,7 +7,7 @@
           "name": "Text",
           "column_type": "String",
           "is_sortable": true,
-          "width": 89.125
+          "width": 480.0
         },
         {
           "name": "Date",
@@ -45,7 +45,8 @@
           "is_sortable": true,
           "width": 89.125
         }
-      ]
+      ],
+      "sort_config": null
     }
   ]
 }
