@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning].
 ## [0.1.0] - 2026-02-14
 
 ### Added
-- 
+- Ability to add CSV files from the context menu.
 
 ### Changed
 - 
@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning].
 ## [Wishlist]
 
 - [ ] Ability to work with multiple data sheets from Excel
-- [ ] Ability to work with CSV files
+- [x] Ability to work with CSV files
 - [ ] Ability to add new data
 
 <!-- Links -->

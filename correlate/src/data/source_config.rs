@@ -12,6 +12,13 @@ pub struct SourceConfig {
 pub struct SheetConfig {
     pub name: String,
     pub column_configs: Vec<ColumnConfig>,
+    pub sort_config: Option<SortConfig>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SortConfig {
+    pub column_name: String,
+    pub is_ascending: bool,
 }
 
 impl SourceConfig {

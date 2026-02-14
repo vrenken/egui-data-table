@@ -253,6 +253,7 @@ impl eframe::App for CorrelateApp {
                                 if ui.button("Add").clicked() {
                                     if let Some(path) = rfd::FileDialog::new()
                                         .add_filter("Excel Files", &["xlsx"])
+                                        .add_filter("CSV Files", &["csv"])
                                         .pick_file() 
                                     {
                                         self.pending_file_to_add = Some(path);
@@ -286,6 +287,7 @@ impl eframe::App for CorrelateApp {
                                 sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
                                     name: s.name.clone(),
                                     column_configs: s.column_configs.clone(),
+                                    sort_config: None, // This should probably be tracked in DataSheet if we want to save it
                                 }).collect(),
                             };
                             if let Err(e) = source_config.save(companion_path) {
@@ -326,6 +328,7 @@ impl eframe::App for CorrelateApp {
                         sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
                             name: s.name.clone(),
                             column_configs: s.column_configs.clone(),
+                            sort_config: None,
                         }).collect(),
                     };
                     if let Err(e) = source_config.save(companion_path) {
@@ -345,15 +348,32 @@ impl eframe::App for CorrelateApp {
 
         if let Some(path) = self.pending_file_to_add.take() {
             let path_str = path.to_string_lossy().to_string();
-            match crate::data::load_xlsx(&path_str) {
-                Ok(excel_sheets) => {
-                    let new_index = self.data_sources.len();
-                    let sheets: Vec<DataSheet> = excel_sheets.into_iter().map(|s| DataSheet {
+            let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
+            
+            let loaded_sheets = if extension == "csv" {
+                match crate::data::load_csv(&path_str) {
+                    Ok(csv_sheet) => Ok(vec![DataSheet {
+                        name: csv_sheet.name,
+                        column_configs: csv_sheet.column_configs,
+                        table: csv_sheet.rows.into_iter().collect(),
+                    }]),
+                    Err(e) => Err(e),
+                }
+            } else {
+                match crate::data::load_xlsx(&path_str) {
+                    Ok(excel_sheets) => Ok(excel_sheets.into_iter().map(|s| DataSheet {
                         name: s.name,
                         column_configs: s.column_configs,
                         table: s.rows.into_iter().collect(),
-                    }).collect();
+                    }).collect()),
+                    Err(e) => Err(e),
+                }
+            };
 
+            match loaded_sheets {
+                Ok(sheets) => {
+                    let new_index = self.data_sources.len();
+                    
                     self.data_sources.push(DataSource {
                         path: path_str.clone(),
                         sheets,
@@ -374,6 +394,7 @@ impl eframe::App for CorrelateApp {
                                 sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
                                     name: s.name.clone(),
                                     column_configs: s.column_configs.clone(),
+                                    sort_config: None,
                                 }).collect(),
                             };
                             if let Err(e) = source_config.save(companion_path) {

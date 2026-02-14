@@ -49,6 +49,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
         config_sheets.push(SheetConfig {
             name: sheet_name.clone(),
             column_configs: column_configs.clone(),
+            sort_config: None,
         });
 
         // 2. Load data rows
