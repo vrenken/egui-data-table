@@ -96,7 +96,7 @@ fn infer_column_type(name: &str, sample_value: &str) -> ColumnType {
     if name_lower.contains("grade") {
         return ColumnType::Grade;
     }
-    if name_lower.contains("is student") || name_lower.contains("locked") {
+    if name_lower.contains("locked") {
         return ColumnType::Bool;
     }
 

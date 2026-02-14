@@ -11,12 +11,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            data_sources: vec![
-                "correlate/test/data/cities/de.xlsx".to_string(),
-                "correlate/test/data/cities/nl.xlsx".to_string(),
-                "Students".to_string(),
-                "correlate/test/data/sheets/test.xlsx".to_string()
-            ],
+            data_sources: vec![],
             selected_index: Some(0),
         }
     }
