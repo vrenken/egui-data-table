@@ -31,13 +31,13 @@ impl RowViewer<Row> for Viewer {
             .map(|c| {
                 let mut name = c.display_name.as_ref().unwrap_or(&c.name).clone();
                 if c.is_key {
-                    name = format!("🔑 {}", name);
+                    name = format!("{} {}", egui_material_icons::icons::ICON_KEY, name);
                 }
                 if c.is_name {
-                    name = format!("🏷️ {}", name);
+                    name = format!("{} {}", egui_material_icons::icons::ICON_VISIBILITY, name);
                 }
                 if c.is_virtual {
-                    name = format!("🧪 {}", name);
+                    name = format!("{} {}", egui_material_icons::icons::ICON_SYRINGE, name);
                 }
                 Cow::Owned(name)
             })
@@ -354,10 +354,15 @@ impl RowViewer<Row> for Viewer {
         }
         ui.separator();
 
-        if (&mut*ui).button("Insert column").clicked() {
+        if (&mut*ui).button(format!("{} Insert left", egui_material_icons::icons::ICON_ADD_COLUMN_LEFT)).clicked() {
             self.add_column_requested = Some(column);
             ui.close();
         }
+        if (&mut*ui).button(format!("{} Insert right", egui_material_icons::icons::ICON_ADD_COLUMN_RIGHT)).clicked() {
+            self.add_column_requested = Some(column);
+            ui.close();
+        }
+
 
         ui.separator();
 
