@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning].
 - Fixed an issue where the column order was not correctly updated in the `.correlate` file after reordering.
 - Fixed an issue where drag-and-drop column reordering did not synchronize with the underlying data and configuration.
 
+### Changed
+- Refactored `CorrelateApp` from `correlate/src/view/root_view.rs` into multiple modules in `correlate/src/view/app/` to improve code organization and maintainability.
+- Split UI components into `menu_bar.rs`, `bottom_panel.rs`, `central_panel.rs`, and `hierarchy_panel.rs`.
+- Moved data source management logic to `data_sources.rs` and shared types to `types.rs`.
+
 ## [0.1.0] - 2026-02-14
 
 ### Added
