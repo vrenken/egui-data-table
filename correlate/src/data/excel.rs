@@ -46,6 +46,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
 
                 column_configs.push(ColumnConfig {
                     name: col_name,
+                    display_name: None,
                     column_type,
                     is_sortable: true,
                     is_key: false,

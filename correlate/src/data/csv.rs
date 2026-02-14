@@ -56,6 +56,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
             let column_type = infer_column_type(header, sample_value);
             column_configs.push(ColumnConfig {
                 name: header.to_string(),
+                display_name: None,
                 column_type,
                 is_sortable: true,
                 is_key: false,
