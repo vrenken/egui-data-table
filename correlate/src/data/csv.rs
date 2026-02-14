@@ -5,6 +5,7 @@ use crate::data::{CellValue, ColumnConfig, ColumnType, Row, SheetConfig, SourceC
 pub struct CsvSheet {
     pub name: String,
     pub custom_name: Option<String>,
+    pub display_name: Option<String>,
     pub column_configs: Vec<ColumnConfig>,
     pub rows: Vec<Row>,
 }
@@ -27,10 +28,14 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
 
     let headers = reader.headers().map_err(|e| e.to_string())?.clone();
     
-    let mut column_configs = source_config.as_ref()
-        .and_then(|sc| sc.sheets.iter().find(|s| s.name == file_name))
+    let config_sheet = source_config.as_ref()
+        .and_then(|sc| sc.sheets.iter().find(|s| s.name == file_name));
+
+    let mut column_configs = config_sheet
         .map(|s| s.column_configs.clone())
         .unwrap_or_default();
+
+    let sheet_display_name = config_sheet.and_then(|s| s.display_name.clone());
 
     // If not loaded from config, infer them
     if column_configs.is_empty() {
@@ -84,6 +89,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
             name: None,
             sheets: vec![SheetConfig {
                 name: file_name.clone(),
+                display_name: sheet_display_name.clone(),
                 column_configs: column_configs.clone(),
                 sort_config: None, // Will be updated by UI
             }]
@@ -96,6 +102,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
     Ok(CsvSheet {
         name: file_name,
         custom_name,
+        display_name: sheet_display_name,
         column_configs,
         rows,
     })

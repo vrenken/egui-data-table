@@ -13,6 +13,8 @@ pub struct SourceConfig {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SheetConfig {
     pub name: String,
+    #[serde(default, rename = "displayName")]
+    pub display_name: Option<String>,
     pub column_configs: Vec<ColumnConfig>,
     pub sort_config: Option<SortConfig>,
 }

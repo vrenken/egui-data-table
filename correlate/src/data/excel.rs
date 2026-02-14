@@ -5,6 +5,7 @@ use crate::data::{CellValue, ColumnConfig, ColumnType, Row, SheetConfig, SourceC
 pub struct ExcelSheet {
     pub name: String,
     pub custom_name: Option<String>,
+    pub display_name: Option<String>,
     pub column_configs: Vec<ColumnConfig>,
     pub rows: Vec<Row>,
 }
@@ -25,10 +26,14 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
 
         let (max_col, max_row) = sheet.get_highest_column_and_row();
 
-        let mut column_configs = source_config.as_ref()
-            .and_then(|sc| sc.sheets.iter().find(|s| s.name == sheet_name))
+        let config_sheet = source_config.as_ref()
+            .and_then(|sc| sc.sheets.iter().find(|s| s.name == sheet_name));
+
+        let mut column_configs = config_sheet
             .map(|s| s.column_configs.clone())
             .unwrap_or_default();
+
+        let sheet_display_name = config_sheet.and_then(|s| s.display_name.clone());
 
         // If not loaded from config, infer them
         if column_configs.is_empty() {
@@ -52,6 +57,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
 
         config_sheets.push(SheetConfig {
             name: sheet_name.clone(),
+            display_name: sheet_display_name.clone(),
             column_configs: column_configs.clone(),
             sort_config: None,
         });
@@ -76,6 +82,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
         sheets.push(ExcelSheet {
             name: sheet_name,
             custom_name: custom_name.clone(),
+            display_name: sheet_display_name,
             column_configs,
             rows,
         });

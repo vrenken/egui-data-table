@@ -1,7 +1,9 @@
 {
+  "name": null,
   "sheets": [
     {
       "name": "Sheet1",
+      "displayName": "test.xlsx",
       "column_configs": [
         {
           "name": "Text",

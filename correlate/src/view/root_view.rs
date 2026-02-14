@@ -6,6 +6,7 @@ use crate::view::Viewer;
 
 pub struct DataSheet {
     pub name: String,
+    pub display_name: Option<String>,
     pub column_configs: Vec<crate::data::ColumnConfig>,
     pub table: egui_data_table::DataTable<Row>,
 }
@@ -33,6 +34,7 @@ pub struct CorrelateApp {
     scroll_bar_always_visible: bool,
     pending_file_to_add: Option<std::path::PathBuf>,
     renaming_item: Option<(RenamingTarget, String)>,
+    save_requested: Option<usize>,
 }
 
 impl Default for CorrelateApp {
@@ -48,6 +50,7 @@ impl Default for CorrelateApp {
                     let custom_name = excel_sheets.first().and_then(|s| s.custom_name.clone());
                     let sheets = excel_sheets.into_iter().map(|s| DataSheet {
                         name: s.name,
+                        display_name: s.display_name,
                         column_configs: s.column_configs,
                         table: s.rows.into_iter().collect(),
                     }).collect();
@@ -87,6 +90,7 @@ impl Default for CorrelateApp {
                 scroll_bar_always_visible: false,
                 pending_file_to_add: None,
                 renaming_item: None,
+                save_requested: None,
             };
         }
 
@@ -113,6 +117,7 @@ impl Default for CorrelateApp {
             scroll_bar_always_visible: false,
             pending_file_to_add: None,
             renaming_item: None,
+            save_requested: None,
         }
     }
 }
@@ -246,14 +251,17 @@ impl eframe::App for CorrelateApp {
                                                         let selected = self.selected_index == Some(index) && ds.selected_sheet_index == sheet_idx;
                                                         let renaming_this_sheet = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::Sheet(index, sheet_idx));
 
+                                                        let display_name = sheet.display_name.as_ref().unwrap_or(&sheet.name).clone();
+
                                                         if renaming_this_sheet {
                                                             ui.horizontal(|ui| {
                                                                 ui.label("  📄 ");
                                                                 let (_, current_name) = self.renaming_item.as_mut().unwrap();
                                                                 let res = ui.text_edit_singleline(current_name);
                                                                 if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
-                                                                    sheet.name = current_name.clone();
+                                                                    sheet.display_name = if current_name.is_empty() || current_name == &sheet.name { None } else { Some(current_name.clone()) };
                                                                     self.renaming_item = None;
+                                                                    self.save_requested = Some(index);
                                                                 }
                                                                 if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
                                                                     self.renaming_item = None;
@@ -261,9 +269,9 @@ impl eframe::App for CorrelateApp {
                                                                 res.request_focus();
                                                             });
                                                         } else {
-                                                            let res = ui.selectable_label(selected, format!("  📄 {}", sheet.name))
+                                                            let res = ui.selectable_label(selected, format!("  📄 {}", display_name))
                                                                 .on_hover_text(&ds.path);
-                                                            
+                                            
                                                             if res.clicked() {
                                                                 if self.selected_index != Some(index) || ds.selected_sheet_index != sheet_idx {
                                                                     newly_selected_index = Some(index);
@@ -272,7 +280,7 @@ impl eframe::App for CorrelateApp {
                                                             }
 
                                                             if res.double_clicked() {
-                                                                self.renaming_item = Some((RenamingTarget::Sheet(index, sheet_idx), sheet.name.clone()));
+                                                                self.renaming_item = Some((RenamingTarget::Sheet(index, sheet_idx), display_name.clone()));
                                                             }
                                                         }
                                                     }
@@ -287,6 +295,7 @@ impl eframe::App for CorrelateApp {
                                                     if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
                                                         ds.name = if current_name.is_empty() || current_name == &default_file_name { None } else { Some(current_name.clone()) };
                                                         self.renaming_item = None;
+                                                        self.save_requested = Some(index);
                                                     }
                                                     if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
                                                         self.renaming_item = None;
@@ -319,9 +328,10 @@ impl eframe::App for CorrelateApp {
                                                         // Actually, the user likely wants to rename the displayed name.
                                                         // If it's single sheet, we might want to rename the sheet itself too.
                                                         if let Some(sheet) = ds.sheets.get_mut(0) {
-                                                            sheet.name = current_name.clone();
+                                                            sheet.display_name = if current_name.is_empty() || current_name == &sheet.name { None } else { Some(current_name.clone()) };
                                                         }
                                                         self.renaming_item = None;
+                                                        self.save_requested = Some(index);
                                                     }
                                                     if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
                                                         self.renaming_item = None;
@@ -386,6 +396,7 @@ impl eframe::App for CorrelateApp {
                                 name: ds.name.clone(),
                                 sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
                                     name: s.name.clone(),
+                                    display_name: s.display_name.clone(),
                                     column_configs: s.column_configs.clone(),
                                     sort_config: None, // This should probably be tracked in DataSheet if we want to save it
                                 }).collect(),
@@ -427,6 +438,7 @@ impl eframe::App for CorrelateApp {
                     name: old_ds.name.clone(),
                     sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
                         name: s.name.clone(),
+                        display_name: s.display_name.clone(),
                         column_configs: s.column_configs.clone(),
                         sort_config: None,
                     }).collect(),
@@ -453,6 +465,7 @@ impl eframe::App for CorrelateApp {
                 match crate::data::load_csv(&path_str) {
                     Ok(csv_sheet) => Ok((csv_sheet.custom_name, vec![DataSheet {
                         name: csv_sheet.name,
+                        display_name: csv_sheet.display_name,
                         column_configs: csv_sheet.column_configs,
                         table: csv_sheet.rows.into_iter().collect(),
                     }])),
@@ -464,6 +477,7 @@ impl eframe::App for CorrelateApp {
                         let custom_name = excel_sheets.first().and_then(|s| s.custom_name.clone());
                         Ok((custom_name, excel_sheets.into_iter().map(|s| DataSheet {
                             name: s.name,
+                            display_name: s.display_name,
                             column_configs: s.column_configs,
                             table: s.rows.into_iter().collect(),
                         }).collect()))
@@ -496,6 +510,7 @@ impl eframe::App for CorrelateApp {
                             name: old_ds.name.clone(),
                             sheets: old_ds.sheets.iter().map(|s| crate::data::SheetConfig {
                                 name: s.name.clone(),
+                                display_name: s.display_name.clone(),
                                 column_configs: s.column_configs.clone(),
                                 sort_config: None,
                             }).collect(),
@@ -591,6 +606,7 @@ impl eframe::App for CorrelateApp {
                         name: ds.name.clone(),
                         sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
                             name: s.name.clone(),
+                            display_name: s.display_name.clone(),
                             column_configs: s.column_configs.clone(),
                             sort_config: None,
                         }).collect(),
@@ -601,5 +617,23 @@ impl eframe::App for CorrelateApp {
                 }
             }
         });
+
+        if let Some(index) = self.save_requested.take() {
+            if let Some(ds) = self.data_sources.get(index) {
+                let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
+                let source_config = crate::data::SourceConfig {
+                    name: ds.name.clone(),
+                    sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
+                        name: s.name.clone(),
+                        display_name: s.display_name.clone(),
+                        column_configs: s.column_configs.clone(),
+                        sort_config: None,
+                    }).collect(),
+                };
+                if let Err(e) = source_config.save(companion_path) {
+                    log::error!("Failed to save companion config for {}: {}", ds.path, e);
+                }
+            }
+        }
     }
 }

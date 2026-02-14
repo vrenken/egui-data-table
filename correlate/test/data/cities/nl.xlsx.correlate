@@ -2,7 +2,8 @@
   "name": "Netherlands",
   "sheets": [
     {
-      "name": "Netherlands",
+      "name": "Sheet1",
+      "displayName": null,
       "column_configs": [
         {
           "name": "city",
@@ -10,7 +11,7 @@
           "is_sortable": true,
           "is_key": false,
           "is_virtual": false,
-          "width": 382.0
+          "width": 91.96875
         },
         {
           "name": "lat",
@@ -74,7 +75,7 @@
           "is_sortable": true,
           "is_key": false,
           "is_virtual": false,
-          "width": 1339.8125
+          "width": 1346.8125
         }
       ],
       "sort_config": null

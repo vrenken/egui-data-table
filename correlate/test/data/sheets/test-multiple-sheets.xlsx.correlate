@@ -3,6 +3,7 @@
   "sheets": [
     {
       "name": "Sheet1",
+      "displayName": null,
       "column_configs": [
         {
           "name": "Text",
@@ -113,6 +114,7 @@
     },
     {
       "name": "Additional Sheet",
+      "displayName": "Additional Sheet 222",
       "column_configs": [
         {
           "name": "Text",
