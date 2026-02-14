@@ -6,37 +6,44 @@
         {
           "name": "Text",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 115.0
         },
         {
           "name": "Date",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 53.34375
         },
         {
           "name": "Number",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 69.875
         },
         {
           "name": "Currency",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 74.15625
         },
         {
           "name": "Time",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 51.125
         },
         {
           "name": "Percentage",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 89.125
         },
         {
           "name": "Forumula",
           "column_type": "Int",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 1561.25
         }
       ]
     },
@@ -46,7 +53,8 @@
         {
           "name": "Text",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 1994.9062
         }
       ]
     }
