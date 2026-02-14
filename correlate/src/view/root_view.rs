@@ -1,6 +1,6 @@
 ﻿use egui::{Sense, Widget};
 use egui::scroll_area::ScrollBarVisibility;
-use crate::data::{Row, generate_random_data};
+use crate::data::Row;
 use crate::view::Viewer;
 
 pub struct CorrelateApp {
@@ -13,12 +13,14 @@ pub struct CorrelateApp {
 impl Default for CorrelateApp {
 
     fn default() -> Self {
+        let column_configs = crate::data::get_default_column_configs();
         Self {
-            table: generate_random_data(100000).into_iter().collect(),
+            table: crate::data::get_rows(100000, &column_configs).into_iter().collect(),
             viewer: Viewer {
                 name_filter: String::new(),
                 hotkeys: Vec::new(),
                 row_protection: false,
+                column_configs,
             },
             style_override: Default::default(),
             scroll_bar_always_visible: false,

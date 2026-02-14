@@ -1,25 +1,40 @@
 ﻿use egui_data_table::viewer::{DecodeErrorBehavior, RowCodec};
-use crate::data::{AGE, GRADE, IS_STUDENT, NAME, ROW_LOCKED};
 use crate::data::row::{Row, CellValue};
+use crate::data::{ColumnConfig, ColumnType};
 
-pub struct Codec;
+pub struct Codec {
+    pub column_configs: Vec<ColumnConfig>,
+}
 
 impl RowCodec<Row> for Codec {
     type DeserializeError = &'static str;
 
     fn create_empty_decoded_row(&mut self) -> Row {
-        Row::default()
+        let mut cells = Vec::with_capacity(self.column_configs.len());
+        for config in &self.column_configs {
+            let cell = match config.column_type {
+                ColumnType::String => CellValue::String("".to_string()),
+                ColumnType::Int => CellValue::Int(0),
+                ColumnType::Gender => CellValue::Gender(None),
+                ColumnType::Bool => CellValue::Bool(false),
+                ColumnType::Grade => CellValue::Grade(crate::data::Grade::F),
+            };
+            cells.push(cell);
+        }
+        Row { cells }
     }
 
     fn encode_column(&mut self, src_row: &Row, column: usize, dst: &mut String) {
-        match &src_row.cells[column] {
-            CellValue::String(s) => dst.push_str(s),
-            CellValue::Int(i) => dst.push_str(&i.to_string()),
-            CellValue::Bool(b) => dst.push_str(&b.to_string()),
-            CellValue::Grade(g) => dst.push_str(&g.to_string()),
-            CellValue::Gender(g) => {
-                if let Some(gender) = g {
-                    dst.push_str(&gender.to_string());
+        if let Some(cell) = src_row.cells.get(column) {
+            match cell {
+                CellValue::String(s) => dst.push_str(s),
+                CellValue::Int(i) => dst.push_str(&i.to_string()),
+                CellValue::Bool(b) => dst.push_str(&b.to_string()),
+                CellValue::Grade(g) => dst.push_str(&g.to_string()),
+                CellValue::Gender(g) => {
+                    if let Some(gender) = g {
+                        dst.push_str(&gender.to_string());
+                    }
                 }
             }
         }
@@ -31,33 +46,34 @@ impl RowCodec<Row> for Codec {
         column: usize,
         dst_row: &mut Row,
     ) -> Result<(), DecodeErrorBehavior> {
-        match column {
-            NAME => {
-                if let CellValue::String(ref mut s) = dst_row.cells[NAME] {
+        let config = self.column_configs.get(column).ok_or(DecodeErrorBehavior::SkipRow)?;
+        
+        match config.column_type {
+            ColumnType::String => {
+                if let CellValue::String(ref mut s) = dst_row.cells[column] {
                     s.replace_range(.., src_data);
                 }
             }
-            AGE => {
-                if let CellValue::Int(ref mut i) = dst_row.cells[AGE] {
+            ColumnType::Int => {
+                if let CellValue::Int(ref mut i) = dst_row.cells[column] {
                     *i = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
                 }
             }
-            IS_STUDENT => {
-                if let CellValue::Bool(ref mut b) = dst_row.cells[IS_STUDENT] {
+            ColumnType::Bool => {
+                if let CellValue::Bool(ref mut b) = dst_row.cells[column] {
                     *b = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
                 }
             }
-            GRADE => {
-                if let CellValue::Grade(ref mut g) = dst_row.cells[GRADE] {
+            ColumnType::Grade => {
+                if let CellValue::Grade(ref mut g) = dst_row.cells[column] {
                     *g = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
                 }
             }
-            ROW_LOCKED => {
-                if let CellValue::Bool(ref mut b) = dst_row.cells[ROW_LOCKED] {
-                    *b = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
-                }
+            ColumnType::Gender => {
+                // Gender decoding wasn't explicitly handled in original decode_column cases
+                // but it was in encode_column. Let's add it if needed.
+                // The original code only had NAME, AGE, IS_STUDENT, GRADE, ROW_LOCKED.
             }
-            _ => return Err(DecodeErrorBehavior::SkipRow),
         }
 
         Ok(())

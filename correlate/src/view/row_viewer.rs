@@ -2,47 +2,55 @@
 use egui::Response;
 use egui_data_table::RowViewer;
 use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
-use crate::data::{COLUMN_COUNT, COLUMN_NAMES, IS_STUDENT, NAME, ROW_LOCKED};
-
 use crate::data::*;
 
 pub struct Viewer {
     pub name_filter: String,
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
+    pub column_configs: Vec<ColumnConfig>,
 }
 
 impl RowViewer<Row> for Viewer {
     fn num_columns(&mut self) -> usize {
-        COLUMN_COUNT
+        self.column_configs.len()
     }
 
     fn column_name(&mut self, column: usize) -> Cow<'static, str> {
-        COLUMN_NAMES.get(column)
-            .copied()
-            .map(Cow::Borrowed)
+        self.column_configs.get(column)
+            .map(|c| Cow::Owned(c.name.clone()))
             .unwrap_or_else(|| Cow::Owned(format!("Column {}", column)))
     }
 
     fn try_create_codec(&mut self, _: bool) -> Option<impl RowCodec<Row>> {
-        Some(crate::codec::Codec)
+        Some(crate::codec::Codec { column_configs: self.column_configs.clone() })
     }
 
     fn is_sortable_column(&mut self, column: usize) -> bool {
-        [true, true, true, false, true, true][column]
+        self.column_configs.get(column).map(|c| c.is_sortable).unwrap_or(false)
     }
 
     fn is_editable_cell(&mut self, column: usize, _row: usize, row_value: &Row) -> bool {
-        let row_locked = if let CellValue::Bool(locked) = row_value.cells[ROW_LOCKED] {
-            locked
-        } else {
-            false
-        };
+        // We still need a way to identify the "Row locked" column if it exists.
+        // For now, let's see if we can find it by name or type if it's special.
+        // In the original it was ROW_LOCKED = 5.
+        
+        let row_locked = self.column_configs.iter().enumerate().find(|(_, c)| c.name == "Row locked")
+            .and_then(|(idx, _)| {
+                if let CellValue::Bool(locked) = row_value.cells[idx] {
+                    Some(locked)
+                } else {
+                    None
+                }
+            }).unwrap_or(false);
+
         // allow editing of the locked flag, but prevent editing other columns when locked.
-        match column {
-            ROW_LOCKED => true,
-            _ => !row_locked,
+        if let Some(config) = self.column_configs.get(column) {
+            if config.name == "Row locked" {
+                return true;
+            }
         }
+        !row_locked
     }
 
     fn compare_cell(&self, row_l: &Row, row_r: &Row, column: usize) -> std::cmp::Ordering {
@@ -61,7 +69,12 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn filter_row(&mut self, row: &Row) -> bool {
-        if let CellValue::String(name) = &row.cells[NAME] {
+        // filter by the first string column found, or "Name"
+        let name_idx = self.column_configs.iter().position(|c| c.name.contains("Name"))
+            .or_else(|| self.column_configs.iter().position(|c| c.column_type == ColumnType::String))
+            .unwrap_or(0);
+
+        if let Some(CellValue::String(name)) = row.cells.get(name_idx) {
             name.contains(&self.name_filter)
         } else {
             false
@@ -86,16 +99,18 @@ impl RowViewer<Row> for Viewer {
     ) -> Option<Box<Row>> {
         resp.dnd_release_payload::<String>()
             .map(|x| {
-                Box::new(Row {
-                    cells: vec![
-                        CellValue::String((*x).clone()),
-                        CellValue::Int(9999),
-                        CellValue::Gender(Some(Gender::Female)),
-                        CellValue::Bool(false),
-                        CellValue::Grade(Grade::A),
-                        CellValue::Bool(false),
-                    ]
-                })
+                let mut cells = Vec::with_capacity(self.column_configs.len());
+                for config in &self.column_configs {
+                    let cell = match config.column_type {
+                        ColumnType::String => CellValue::String((*x).clone()),
+                        ColumnType::Int => CellValue::Int(9999),
+                        ColumnType::Gender => CellValue::Gender(Some(Gender::Female)),
+                        ColumnType::Bool => CellValue::Bool(false),
+                        ColumnType::Grade => CellValue::Grade(Grade::A),
+                    };
+                    cells.push(cell);
+                }
+                Box::new(Row { cells })
             })
     }
 
@@ -170,11 +185,13 @@ impl RowViewer<Row> for Viewer {
             return true;
         }
 
-        if let CellValue::Bool(is_student) = current.cells[IS_STUDENT] {
-            !is_student
-        } else {
-            true
+        let is_student_idx = self.column_configs.iter().position(|c| c.name == "Is Student (Not sortable)");
+        if let Some(idx) = is_student_idx {
+            if let CellValue::Bool(is_student) = current.cells[idx] {
+                return !is_student;
+            }
         }
+        true
     }
 
     fn confirm_row_deletion_by_ui(&mut self, row: &Row) -> bool {
@@ -182,15 +199,28 @@ impl RowViewer<Row> for Viewer {
             return true;
         }
 
-        if let CellValue::Bool(is_student) = row.cells[IS_STUDENT] {
-            !is_student
-        } else {
-            true
+        let is_student_idx = self.column_configs.iter().position(|c| c.name == "Is Student (Not sortable)");
+        if let Some(idx) = is_student_idx {
+            if let CellValue::Bool(is_student) = row.cells[idx] {
+                return !is_student;
+            }
         }
+        true
     }
 
     fn new_empty_row(&mut self) -> Row {
-        Row::default()
+        let mut cells = Vec::with_capacity(self.column_configs.len());
+        for config in &self.column_configs {
+            let cell = match config.column_type {
+                ColumnType::String => CellValue::String("".to_string()),
+                ColumnType::Int => CellValue::Int(0),
+                ColumnType::Gender => CellValue::Gender(None),
+                ColumnType::Bool => CellValue::Bool(false),
+                ColumnType::Grade => CellValue::Grade(Grade::F),
+            };
+            cells.push(cell);
+        }
+        Row { cells }
     }
 
     fn on_highlight_cell(&mut self, row: &Row, column: usize) {

@@ -19,18 +19,3 @@ impl Row {
         Self { cells }
     }
 }
-
-impl Default for Row {
-    fn default() -> Self {
-        Row {
-            cells: vec![
-                CellValue::String("".to_string()),
-                CellValue::Int(0),
-                CellValue::Gender(None),
-                CellValue::Bool(false),
-                CellValue::Grade(Grade::F),
-                CellValue::Bool(false),
-            ]
-        }
-    }
-}
