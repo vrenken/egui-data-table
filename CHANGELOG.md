@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning].
 - Refactored `CorrelateApp` from `correlate/src/view/root_view.rs` into multiple modules in `correlate/src/view/app/` to improve code organization and maintainability.
 - Split UI components into `menu_bar.rs`, `bottom_panel.rs`, `central_panel.rs`, and `hierarchy_panel.rs`.
 - Moved data source management logic to `data_sources.rs` and shared types to `types.rs`.
+- Extracted value inference and mapping logic from `csv.rs` and `excel.rs` into a new `value_mapping.rs` module.
 
 ## [0.1.0] - 2026-02-14
 

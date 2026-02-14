@@ -1,6 +1,6 @@
 ﻿use std::path::Path;
 use csv::ReaderBuilder;
-use crate::data::{CellValue, ColumnConfig, ColumnType, Row, SheetConfig, SourceConfig};
+use crate::data::{CellValue, ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type, map_cell_value};
 
 pub struct CsvSheet {
     pub name: String,
@@ -111,39 +111,4 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
         column_configs,
         rows,
     })
-}
-
-fn infer_column_type(name: &str, sample_value: &str) -> ColumnType {
-    let name_lower = name.to_lowercase();
-    if name_lower.contains("locked") {
-        return ColumnType::Bool;
-    }
-
-    // Try to parse sample value
-    if sample_value.parse::<i32>().is_ok() {
-        return ColumnType::Int;
-    }
-    if sample_value.parse::<f64>().is_ok() {
-        return ColumnType::Float;
-    }
-    if sample_value.parse::<bool>().is_ok() {
-        return ColumnType::Bool;
-    }
-    
-    ColumnType::String
-}
-
-fn map_cell_value(value: &str, column_type: ColumnType) -> CellValue {
-    match column_type {
-        ColumnType::String => CellValue::String(value.to_string()),
-        ColumnType::Int => CellValue::Int(value.parse().unwrap_or(0)),
-        ColumnType::Float => CellValue::Float(value.parse().unwrap_or(0.0)),
-        ColumnType::Bool => {
-            let b = match value.to_lowercase().as_str() {
-                "true" | "1" | "yes" | "y" => true,
-                _ => false,
-            };
-            CellValue::Bool(b)
-        }
-    }
 }
