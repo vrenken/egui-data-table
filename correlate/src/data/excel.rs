@@ -51,9 +51,12 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
                     is_key: false,
                     is_name: false,
                     is_virtual: false,
+                    order: col_idx as usize - 1,
                     width: None,
                 });
             }
+        } else {
+            column_configs.sort_by_key(|c| c.order);
         }
 
         config_sheets.push(SheetConfig {

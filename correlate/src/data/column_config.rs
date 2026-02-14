@@ -13,5 +13,7 @@ pub struct ColumnConfig {
     #[serde(default)]
     pub is_virtual: bool,
     #[serde(default)]
+    pub order: usize,
+    #[serde(default)]
     pub width: Option<f32>,
 }

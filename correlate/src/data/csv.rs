@@ -61,9 +61,12 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
                 is_key: false,
                 is_name: false,
                 is_virtual: false,
+                order: i,
                 width: None,
             });
         }
+    } else {
+        column_configs.sort_by_key(|c| c.order);
     }
 
     let mut rows = Vec::new();
