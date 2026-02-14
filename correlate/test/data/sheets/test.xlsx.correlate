@@ -1,0 +1,44 @@
+{
+  "sheets": [
+    {
+      "name": "Sheet1",
+      "column_configs": [
+        {
+          "name": "Text",
+          "column_type": "String",
+          "is_sortable": true
+        },
+        {
+          "name": "Date",
+          "column_type": "String",
+          "is_sortable": true
+        },
+        {
+          "name": "Number",
+          "column_type": "String",
+          "is_sortable": true
+        },
+        {
+          "name": "Currency",
+          "column_type": "String",
+          "is_sortable": true
+        },
+        {
+          "name": "Time",
+          "column_type": "String",
+          "is_sortable": true
+        },
+        {
+          "name": "Percentage",
+          "column_type": "String",
+          "is_sortable": true
+        },
+        {
+          "name": "Forumula",
+          "column_type": "Int",
+          "is_sortable": true
+        }
+      ]
+    }
+  ]
+}

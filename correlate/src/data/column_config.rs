@@ -1,6 +1,7 @@
-﻿use crate::data::ColumnType;
+﻿use serde::{Deserialize, Serialize};
+use crate::data::ColumnType;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ColumnConfig {
     pub name: String,
     pub column_type: ColumnType,

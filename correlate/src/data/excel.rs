@@ -1,6 +1,6 @@
 ﻿use std::path::Path;
 use umya_spreadsheet::*;
-use crate::data::{CellValue, ColumnConfig, ColumnType, Gender, Grade, Row};
+use crate::data::{CellValue, ColumnConfig, ColumnType, Gender, Grade, Row, SheetConfig, SourceConfig};
 
 pub struct ExcelSheet {
     pub name: String,
@@ -9,8 +9,13 @@ pub struct ExcelSheet {
 }
 
 pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
-    let book = reader::xlsx::read(path).map_err(|e| e.to_string())?;
+    let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
+    
+    let companion_path = SourceConfig::get_companion_path(&path);
+    let source_config = SourceConfig::load(&companion_path).ok();
+    
     let mut sheets = Vec::new();
+    let mut config_sheets = Vec::new();
 
     for sheet_idx in 0..book.get_sheet_count() {
         let sheet = book.get_sheet(&sheet_idx).ok_or(format!("Sheet {} not found", sheet_idx))?;
@@ -18,22 +23,32 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
 
         let (max_col, max_row) = sheet.get_highest_column_and_row();
 
-        let mut column_configs = Vec::new();
+        let mut column_configs = source_config.as_ref()
+            .and_then(|sc| sc.sheets.iter().find(|s| s.name == sheet_name))
+            .map(|s| s.column_configs.clone())
+            .unwrap_or_default();
 
-        // 1. Infer ColumnConfig from the first row (headers)
-        for col_idx in 1..=max_col {
-            let col_name = sheet.get_formatted_value((col_idx, 1));
-            
-            // Infer type from the second row (first data row)
-            let first_data_value = sheet.get_formatted_value((col_idx, 2));
-            let column_type = infer_column_type(&col_name, &first_data_value);
+        // If not loaded from config, infer them
+        if column_configs.is_empty() {
+            for col_idx in 1..=max_col {
+                let col_name = sheet.get_formatted_value((col_idx, 1));
+                
+                // Infer type from the second row (first data row)
+                let first_data_value = sheet.get_formatted_value((col_idx, 2));
+                let column_type = infer_column_type(&col_name, &first_data_value);
 
-            column_configs.push(ColumnConfig {
-                name: col_name,
-                column_type,
-                is_sortable: true,
-            });
+                column_configs.push(ColumnConfig {
+                    name: col_name,
+                    column_type,
+                    is_sortable: true,
+                });
+            }
         }
+
+        config_sheets.push(SheetConfig {
+            name: sheet_name.clone(),
+            column_configs: column_configs.clone(),
+        });
 
         // 2. Load data rows
         let mut rows = Vec::new();
@@ -41,8 +56,10 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
             let mut cells = Vec::new();
             for col_idx in 1..=max_col {
                 let value = sheet.get_formatted_value((col_idx, row_idx));
-                let config = &column_configs[(col_idx - 1) as usize];
-                cells.push(map_cell_value(&value, config.column_type));
+                let config = &column_configs.get((col_idx - 1) as usize);
+                if let Some(config) = config {
+                    cells.push(map_cell_value(&value, config.column_type));
+                }
             }
             rows.push(Row { cells });
         }
@@ -52,6 +69,14 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
             column_configs,
             rows,
         });
+    }
+
+    // Save companion file if it didn't exist
+    if source_config.is_none() {
+        let new_config = SourceConfig { sheets: config_sheets };
+        if let Err(e) = new_config.save(&companion_path) {
+            log::error!("Failed to save companion config to {:?}: {}", companion_path, e);
+        }
     }
 
     Ok(sheets)
