@@ -7,7 +7,7 @@
           "name": "city",
           "column_type": "String",
           "is_sortable": true,
-          "width": 774.0
+          "width": 98.96875
         },
         {
           "name": "lat",
@@ -55,7 +55,7 @@
           "name": "population_proper",
           "column_type": "Int",
           "is_sortable": true,
-          "width": 1346.8125
+          "width": 1339.8125
         }
       ]
     }

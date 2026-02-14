@@ -6,47 +6,56 @@
         {
           "name": "city",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 98.96875
         },
         {
           "name": "lat",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 46.34375
         },
         {
           "name": "lng",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 48.4375
         },
         {
           "name": "country",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 75.15625
         },
         {
           "name": "iso2",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 54.34375
         },
         {
           "name": "admin_name",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 105.125
         },
         {
           "name": "capital",
           "column_type": "String",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 69.3125
         },
         {
           "name": "population",
           "column_type": "Int",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 93.40625
         },
         {
           "name": "population_proper",
           "column_type": "Int",
-          "is_sortable": true
+          "is_sortable": true,
+          "width": 1339.8125
         }
       ]
     }
