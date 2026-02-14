@@ -8,6 +8,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 348.0
         },
         {
@@ -15,6 +16,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 89.125
         },
         {
@@ -22,6 +24,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 170.0
         },
         {
@@ -29,6 +32,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 115.0
         },
         {
@@ -36,6 +40,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 74.15625
         },
         {
@@ -43,6 +48,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 89.125
         },
         {
@@ -50,6 +56,7 @@
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 89.125
         }
       ],

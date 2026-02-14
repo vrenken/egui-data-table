@@ -8,6 +8,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": true,
+          "is_virtual": false,
           "width": 348.0
         },
         {
@@ -15,6 +16,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 89.125
         },
         {
@@ -22,6 +24,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 170.0
         },
         {
@@ -29,6 +32,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 115.0
         },
         {
@@ -36,6 +40,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 74.15625
         },
         {
@@ -43,14 +48,56 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
-          "width": 89.125
+          "is_virtual": false,
+          "width": 97.125
         },
         {
           "name": "Forumula",
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 89.125
+        },
+        {
+          "name": "New Column 8",
+          "column_type": "String",
+          "is_sortable": true,
+          "is_key": false,
+          "is_virtual": true,
+          "width": 164.46875
+        },
+        {
+          "name": "New Column 9",
+          "column_type": "String",
+          "is_sortable": true,
+          "is_key": false,
+          "is_virtual": true,
+          "width": 131.34375
+        },
+        {
+          "name": "New Column 10",
+          "column_type": "String",
+          "is_sortable": true,
+          "is_key": false,
+          "is_virtual": true,
+          "width": 138.34375
+        },
+        {
+          "name": "New Column 11",
+          "column_type": "String",
+          "is_sortable": true,
+          "is_key": false,
+          "is_virtual": true,
+          "width": 498.21875
+        },
+        {
+          "name": "New Column 12",
+          "column_type": "String",
+          "is_sortable": true,
+          "is_key": false,
+          "is_virtual": true,
+          "width": null
         }
       ],
       "sort_config": null
@@ -63,6 +110,7 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
+          "is_virtual": false,
           "width": 1994.9062
         }
       ],
