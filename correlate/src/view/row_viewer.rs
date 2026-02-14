@@ -2,7 +2,7 @@
 use egui::Response;
 use egui_data_table::RowViewer;
 use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
-use crate::data::{AGE, COLUMN_COUNT, COLUMN_NAMES, GENDER, GRADE, IS_STUDENT, NAME, ROW_LOCKED};
+use crate::data::{COLUMN_COUNT, COLUMN_NAMES, IS_STUDENT, NAME, ROW_LOCKED};
 
 use crate::data::*;
 
@@ -33,7 +33,11 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn is_editable_cell(&mut self, column: usize, _row: usize, row_value: &Row) -> bool {
-        let row_locked = row_value.row_locked;
+        let row_locked = if let CellValue::Bool(locked) = row_value.cells[ROW_LOCKED] {
+            locked
+        } else {
+            false
+        };
         // allow editing of the locked flag, but prevent editing other columns when locked.
         match column {
             ROW_LOCKED => true,
@@ -42,14 +46,13 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn compare_cell(&self, row_l: &Row, row_r: &Row, column: usize) -> std::cmp::Ordering {
-        match column {
-            NAME => row_l.name.cmp(&row_r.name),
-            AGE => row_l.age.cmp(&row_r.age),
-            GENDER => row_l.gender.cmp(&row_r.gender),
-            IS_STUDENT => unreachable!(),
-            GRADE => row_l.grade.cmp(&row_r.grade),
-            ROW_LOCKED => row_l.row_locked.cmp(&row_r.row_locked),
-            _ => unreachable!(),
+        match (&row_l.cells[column], &row_r.cells[column]) {
+            (CellValue::String(l), CellValue::String(r)) => l.cmp(r),
+            (CellValue::Int(l), CellValue::Int(r)) => l.cmp(r),
+            (CellValue::Gender(l), CellValue::Gender(r)) => l.cmp(r),
+            (CellValue::Bool(l), CellValue::Bool(r)) => l.cmp(r),
+            (CellValue::Grade(l), CellValue::Grade(r)) => l.cmp(r),
+            _ => std::cmp::Ordering::Equal,
         }
     }
 
@@ -58,19 +61,20 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn filter_row(&mut self, row: &Row) -> bool {
-        row.name.contains(&self.name_filter)
+        if let CellValue::String(name) = &row.cells[NAME] {
+            name.contains(&self.name_filter)
+        } else {
+            false
+        }
     }
 
     fn show_cell_view(&mut self, ui: &mut egui::Ui, row: &Row, column: usize) {
-        let _ = match column {
-            NAME => ui.label(&row.name),
-            AGE => ui.label(row.age.to_string()),
-            GENDER => ui.label(row.gender.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string())),
-            IS_STUDENT => ui.checkbox(&mut { row.is_student }, ""),
-            GRADE => ui.label(row.grade.to_string()),
-            ROW_LOCKED => ui.checkbox(&mut { row.row_locked }, ""),
-
-            _ => unreachable!(),
+        match &row.cells[column] {
+            CellValue::String(s) => { ui.label(s); }
+            CellValue::Int(i) => { ui.label(i.to_string()); }
+            CellValue::Gender(g) => { ui.label(g.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string())); }
+            CellValue::Bool(b) => { ui.checkbox(&mut { *b }, ""); }
+            CellValue::Grade(g) => { ui.label(g.to_string()); }
         };
     }
 
@@ -82,13 +86,15 @@ impl RowViewer<Row> for Viewer {
     ) -> Option<Box<Row>> {
         resp.dnd_release_payload::<String>()
             .map(|x| {
-                Box::new(Row{
-                    name: (*x).clone(),
-                    age: 9999,
-                    gender: Some(Gender::Female),
-                    is_student: false,
-                    grade: Grade::A,
-                    row_locked: false
+                Box::new(Row {
+                    cells: vec![
+                        CellValue::String((*x).clone()),
+                        CellValue::Int(9999),
+                        CellValue::Gender(Some(Gender::Female)),
+                        CellValue::Bool(false),
+                        CellValue::Grade(Grade::A),
+                        CellValue::Bool(false),
+                    ]
                 })
             })
     }
@@ -99,24 +105,22 @@ impl RowViewer<Row> for Viewer {
         row: &mut Row,
         column: usize,
     ) -> Option<Response> {
-        match column {
-            NAME => {
-                egui::TextEdit::multiline(&mut row.name)
+        match &mut row.cells[column] {
+            CellValue::String(s) => {
+                egui::TextEdit::multiline(s)
                     .desired_rows(1)
                     .code_editor()
                     .show(ui)
                     .response
             }
-            AGE => ui.add(egui::DragValue::new(&mut row.age).speed(1.0)),
-            GENDER => {
-                let gender = &mut row.gender;
-
+            CellValue::Int(i) => ui.add(egui::DragValue::new(i).speed(1.0)),
+            CellValue::Gender(gender) => {
                 egui::ComboBox::new(ui.id().with("gender"), "".to_string())
                     .selected_text(gender.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string()))
                     .show_ui(ui, |ui|{
                         if ui
                             .add(egui::Button::selectable(
-                                matches!(gender, Some(gender) if *gender == Gender::Male),
+                                matches!(gender, Some(g) if *g == Gender::Male),
                                 "Male"
                             ))
                             .clicked()
@@ -125,7 +129,7 @@ impl RowViewer<Row> for Viewer {
                         }
                         if ui
                             .add(egui::Button::selectable(
-                                matches!(gender, Some(gender) if *gender == Gender::Female),
+                                matches!(gender, Some(g) if *g == Gender::Female),
                                 "Female"
                             ))
                             .clicked()
@@ -135,9 +139,8 @@ impl RowViewer<Row> for Viewer {
 
                     }).response
             }
-            IS_STUDENT => ui.checkbox(&mut row.is_student, ""),
-            GRADE => {
-                let grade = &mut row.grade;
+            CellValue::Bool(b) => ui.checkbox(b, ""),
+            CellValue::Grade(grade) => {
                 ui.horizontal_wrapped(|ui| {
                     ui.radio_value(grade, Grade::A, "A")
                         | ui.radio_value(grade, Grade::B, "B")
@@ -148,22 +151,12 @@ impl RowViewer<Row> for Viewer {
                 })
                     .inner
             }
-            ROW_LOCKED => ui.checkbox(&mut row.row_locked, ""),
-            _ => unreachable!(),
         }
             .into()
     }
 
     fn set_cell_value(&mut self, src: &Row, dst: &mut Row, column: usize) {
-        match column {
-            NAME => dst.name.clone_from(&src.name),
-            AGE => dst.age = src.age,
-            GENDER => dst.gender = src.gender,
-            IS_STUDENT => dst.is_student = src.is_student,
-            GRADE => dst.grade = src.grade,
-            ROW_LOCKED => dst.row_locked = src.row_locked,
-            _ => unreachable!(),
-        }
+        dst.cells[column] = src.cells[column].clone();
     }
 
     fn confirm_cell_write_by_ui(
@@ -177,7 +170,11 @@ impl RowViewer<Row> for Viewer {
             return true;
         }
 
-        !current.is_student
+        if let CellValue::Bool(is_student) = current.cells[IS_STUDENT] {
+            !is_student
+        } else {
+            true
+        }
     }
 
     fn confirm_row_deletion_by_ui(&mut self, row: &Row) -> bool {
@@ -185,7 +182,11 @@ impl RowViewer<Row> for Viewer {
             return true;
         }
 
-        !row.is_student
+        if let CellValue::Bool(is_student) = row.cells[IS_STUDENT] {
+            !is_student
+        } else {
+            true
+        }
     }
 
     fn new_empty_row(&mut self) -> Row {

@@ -1,7 +1,7 @@
 ﻿use std::iter::repeat_with;
 use egui::{Sense, Widget};
 use egui::scroll_area::ScrollBarVisibility;
-use crate::data::{Gender, Grade, Row};
+use crate::data::{Gender, Grade, Row, CellValue};
 use crate::view::Viewer;
 
 pub struct CorrelateApp {
@@ -21,17 +21,19 @@ impl Default for CorrelateApp {
 
                 repeat_with(move || {
                     Row {
-                        name: name_gen.next().unwrap(),
-                        age: rng.i32(4..31),
-                        gender: match rng.i32(0..=2) {
-                            0 => None,
-                            1 => Some(Gender::Male),
-                            2 => Some(Gender::Female),
-                            _ => unreachable!(),
-                        },
-                        is_student: rng.bool(),
-                        grade: rng.i32(0..=5).try_into().unwrap_or(Grade::F),
-                        row_locked: false,
+                        cells: vec![
+                            CellValue::String(name_gen.next().unwrap()),
+                            CellValue::Int(rng.i32(4..31)),
+                            CellValue::Gender(match rng.i32(0..=2) {
+                                0 => None,
+                                1 => Some(Gender::Male),
+                                2 => Some(Gender::Female),
+                                _ => unreachable!(),
+                            }),
+                            CellValue::Bool(rng.bool()),
+                            CellValue::Grade(rng.i32(0..=5).try_into().unwrap_or(Grade::F)),
+                            CellValue::Bool(false),
+                        ]
                     }
                 })
             }

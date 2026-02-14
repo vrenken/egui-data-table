@@ -1,24 +1,36 @@
 ﻿use crate::data::{Gender, Grade};
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum CellValue {
+    String(String),
+    Int(i32),
+    Gender(Option<Gender>),
+    Bool(bool),
+    Grade(Grade),
+}
+
 #[derive(Debug, Clone)]
 pub struct Row {
-    pub name: String,
-    pub age: i32,
-    pub gender: Option<Gender>,
-    pub is_student: bool,
-    pub grade: Grade,
-    pub row_locked: bool
+    pub cells: Vec<CellValue>,
+}
+
+impl Row {
+    pub fn new(cells: Vec<CellValue>) -> Self {
+        Self { cells }
+    }
 }
 
 impl Default for Row {
     fn default() -> Self {
         Row {
-            name: "".to_string(),
-            age: 0,
-            gender: None,
-            is_student: false,
-            grade: Grade::F,
-            row_locked: false
+            cells: vec![
+                CellValue::String("".to_string()),
+                CellValue::Int(0),
+                CellValue::Gender(None),
+                CellValue::Bool(false),
+                CellValue::Grade(Grade::F),
+                CellValue::Bool(false),
+            ]
         }
     }
 }
