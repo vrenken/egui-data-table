@@ -7,6 +7,7 @@
       "column_configs": [
         {
           "name": "city",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": true,
@@ -17,26 +18,29 @@
         },
         {
           "name": "lng",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "order": 1,
-          "width": 48.4375
+          "width": 311.0
         },
         {
           "name": "lat",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "order": 2,
-          "width": 48.4375
+          "width": 311.0
         },
         {
           "name": "country",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -47,6 +51,7 @@
         },
         {
           "name": "iso2",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -57,6 +62,7 @@
         },
         {
           "name": "admin_name",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -67,6 +73,7 @@
         },
         {
           "name": "capital",
+          "displayName": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -77,6 +84,7 @@
         },
         {
           "name": "population",
+          "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
@@ -87,6 +95,7 @@
         },
         {
           "name": "population_proper",
+          "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
