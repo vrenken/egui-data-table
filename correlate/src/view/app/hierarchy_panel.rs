@@ -11,15 +11,12 @@ impl CorrelateApp {
             .default_width(250.)
             .show(ctx, |ui| {
                 ui.vertical_centered_justified(|ui| {
-                    ui.heading("Hierarchy");
-                    ui.separator();
-
                     egui::ScrollArea::vertical()
                         .id_salt("hierarchy_scroll")
                         .show(ui, |ui| {
                             ui.set_min_width(ui.available_width());
                             let header_response = egui::collapsing_header::CollapsingHeader::new(egui::RichText::new(format!("{} Data Sources", egui_material_icons::icons::ICON_HOME_STORAGE)).strong())
-                                .default_open(true)
+                                .open(Some(true))
                                 .show(ui, |ui| {
                                     for (index, ds) in self.data_sources.iter_mut().enumerate() {
                                         let default_file_name = std::path::Path::new(&ds.path)

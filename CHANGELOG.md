@@ -48,7 +48,7 @@ and this project adheres to [Semantic Versioning].
 - 
 
 ### Prevented
-- 
+- The root node ("Data Sources") in the hierarchy panel can no longer be collapsed.
 
 ## [Wishlist]
 
