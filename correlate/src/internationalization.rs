@@ -5,11 +5,13 @@
 
 use std::borrow::Cow;
 use std::collections::HashMap;
-use egui::{ComboBox, Response, Ui};
-use egui_data_table::RowViewer;
+use egui::{ComboBox, Response, Ui, Context};
+use egui_data_table::{RowViewer, DataTable};
+use egui_data_table::viewer::RenameTarget;
 use std::iter::repeat_with;
 use std::sync::Arc;
 use egui_data_table::draw::{EnglishTranslator, Translator};
+use eframe::App;
 
 #[derive(Default)]
 struct CustomSpanishTranslator {}
@@ -138,6 +140,18 @@ impl Viewer {
 impl RowViewer<Row> for Viewer {
     fn num_columns(&mut self) -> usize {
         3
+    }
+
+    fn on_rename_committed(&mut self, table: &mut DataTable<Row>, target: RenameTarget, new_name: String) {
+        let _ = (table, target, new_name);
+    }
+
+    fn row_header_double_clicked(&mut self, ctx: &egui::Context, _row_idx: usize, _row: &Row) {
+        let _ = ctx;
+    }
+
+    fn column_header_double_clicked(&mut self, ctx: &egui::Context, _column: usize) {
+        let _ = ctx;
     }
 
     fn column_name(&mut self, column: usize) -> Cow<'static, str> {
