@@ -392,6 +392,9 @@ impl RowViewer<Row> for RowView {
             if ui.button(format!("{} Number", egui_material_icons::icons::ICON_TAG)).clicked() {
                 ui.close();
             }
+            if ui.button(format!("{} Date / time", egui_material_icons::icons::ICON_CALENDAR_CLOCK)).clicked() {
+                ui.close();
+            }
             if ui.button(format!("{} Select", egui_material_icons::icons::ICON_ARROW_DROP_DOWN_CIRCLE)).clicked() {
                 ui.close();
             }
