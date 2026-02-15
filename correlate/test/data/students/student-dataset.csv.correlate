@@ -8,7 +8,7 @@
         {
           "name": "id",
           "display_name": null,
-          "column_type": "Int",
+          "column_type": "Number",
           "is_key": true,
           "is_name": false,
           "is_virtual": false,
@@ -18,7 +18,7 @@
         {
           "name": "name",
           "display_name": "Name",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": true,
           "is_virtual": false,
@@ -28,7 +28,7 @@
         {
           "name": "nationality",
           "display_name": "Nationality",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -38,7 +38,7 @@
         {
           "name": "city",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -48,7 +48,7 @@
         {
           "name": "latitude",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -58,7 +58,7 @@
         {
           "name": "longitude",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -68,7 +68,7 @@
         {
           "name": "gender",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -78,7 +78,7 @@
         {
           "name": "ethnic.group",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -88,7 +88,7 @@
         {
           "name": "age",
           "display_name": null,
-          "column_type": "Int",
+          "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -98,7 +98,7 @@
         {
           "name": "english.grade",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -108,7 +108,7 @@
         {
           "name": "math.grade",
           "display_name": "Math",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -118,7 +118,7 @@
         {
           "name": "sciences.grade",
           "display_name": "Sciences",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -128,7 +128,7 @@
         {
           "name": "language.grade",
           "display_name": "Language",
-          "column_type": "Int",
+          "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -138,7 +138,7 @@
         {
           "name": "portfolio.rating",
           "display_name": null,
-          "column_type": "Int",
+          "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -148,7 +148,7 @@
         {
           "name": "coverletter.rating",
           "display_name": null,
-          "column_type": "Int",
+          "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -158,7 +158,7 @@
         {
           "name": "refletter.rating",
           "display_name": null,
-          "column_type": "Int",
+          "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,

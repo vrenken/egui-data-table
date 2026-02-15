@@ -8,7 +8,7 @@
         {
           "name": "city",
           "display_name": "City",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": true,
           "is_name": true,
           "is_virtual": false,
@@ -18,7 +18,7 @@
         {
           "name": "lat",
           "display_name": "Latitude",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -28,7 +28,7 @@
         {
           "name": "lng",
           "display_name": "Longitude",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -38,7 +38,7 @@
         {
           "name": "country",
           "display_name": "Country",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -48,7 +48,7 @@
         {
           "name": "iso2",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -58,7 +58,7 @@
         {
           "name": "admin_name",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -68,7 +68,7 @@
         {
           "name": "capital",
           "display_name": null,
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -78,7 +78,7 @@
         {
           "name": "Population Type",
           "display_name": "Population Type",
-          "column_type": "String",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
@@ -88,7 +88,7 @@
         {
           "name": "population",
           "display_name": null,
-          "column_type": "Int",
+          "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -98,7 +98,7 @@
         {
           "name": "population_proper",
           "display_name": null,
-          "column_type": "Int",
+          "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
