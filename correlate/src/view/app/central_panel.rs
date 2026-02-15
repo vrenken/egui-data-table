@@ -1,4 +1,6 @@
-﻿use egui::scroll_area::ScrollBarVisibility;
+﻿use eframe::emath::Align;
+use egui::Layout;
+use egui::scroll_area::ScrollBarVisibility;
 use egui_data_table::RowViewer;
 use crate::view::CorrelateApp;
 use crate::view::app::types::RenamingTarget;
@@ -10,26 +12,38 @@ impl CorrelateApp {
         self.viewer.renaming_item = self.renaming_item.clone();
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            match self.scroll_bar_always_visible {
-                true => {
-                    ui.style_mut().spacing.scroll = egui::style::ScrollStyle::solid();
-                    self.style_override.scroll_bar_visibility = ScrollBarVisibility::AlwaysVisible;
-                },
-                false => {
-                    ui.style_mut().spacing.scroll = egui::style::ScrollStyle::floating();
-                    self.style_override.scroll_bar_visibility = ScrollBarVisibility::VisibleWhenNeeded;
-                }
-            };
 
-            ui.add(
-                egui_data_table::Renderer::new(&mut self.table, &mut self.viewer)
-                    .with_style(self.style_override),
-            );
+            ui.vertical(|ui| {
 
-            // Sync renaming state back from viewer
-            self.renaming_item = self.viewer.renaming_item.clone();
+                ui.with_layout(Layout::right_to_left(Align::TOP), |ui| {
+                    if ui.button(egui_material_icons::icons::ICON_PAGE_INFO).clicked() {}
+                    if ui.button(egui_material_icons::icons::ICON_SWAP_VERT).clicked() {}
+                    if ui.button(egui_material_icons::icons::ICON_FILTER_LIST).clicked() {}
+                });
 
-            self.handle_viewer_requests();
+                match self.scroll_bar_always_visible {
+                    true => {
+                        ui.style_mut().spacing.scroll = egui::style::ScrollStyle::solid();
+                        self.style_override.scroll_bar_visibility = ScrollBarVisibility::AlwaysVisible;
+                    },
+                    false => {
+                        ui.style_mut().spacing.scroll = egui::style::ScrollStyle::floating();
+                        self.style_override.scroll_bar_visibility = ScrollBarVisibility::VisibleWhenNeeded;
+                    }
+                };
+
+                //let available = ui.available_size();
+
+                ui.add(
+                    //available,
+                    egui_data_table::Renderer::new(&mut self.table, &mut self.viewer).with_style(self.style_override),
+                );
+
+                // Sync renaming state back from viewer
+                self.renaming_item = self.viewer.renaming_item.clone();
+
+                self.handle_viewer_requests();
+            });
         });
     }
 

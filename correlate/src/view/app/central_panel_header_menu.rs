@@ -45,7 +45,7 @@ impl Viewer {
         if (&mut*ui).button(format!("{} Filter", egui_material_icons::icons::ICON_FILTER_LIST)).clicked() {
             ui.close();
         }
-        (&mut*ui).menu_button(format!("{} Sort", egui_material_icons::icons::ICON_SORT), |ui| {
+        (&mut*ui).menu_button(format!("{} Sort", egui_material_icons::icons::ICON_SWAP_VERT), |ui| {
             if (&mut*ui).button(format!("{} Sort ascending", egui_material_icons::icons::ICON_NORTH)).clicked() {
                 ui.close();
             }
