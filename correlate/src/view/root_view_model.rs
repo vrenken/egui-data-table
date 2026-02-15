@@ -1,4 +1,4 @@
-﻿use crate::data::Row;
+﻿use crate::data::{Config, Row};
 use crate::data::{DataSheet, DataSource, RenamingTarget};
 use crate::view::RowView;
 
@@ -39,13 +39,7 @@ impl RootViewModel {
         }
     }
 
-}
-
-impl Default for RootViewModel {
-
-    fn default() -> Self {
-        let config_path = "config.json";
-        let config = crate::data::Config::load(config_path).unwrap_or_default();
+    pub fn default(config: Config) -> Self {
 
         let mut data_sources = Vec::new();
         for source in &config.data_sources {

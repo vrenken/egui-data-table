@@ -1,7 +1,10 @@
 ﻿use crate::view::*;
 
 pub struct RootView {
-    pub(crate) view_model: RootViewModel,
+    pub(crate) root_view_model: RootViewModel,
+    pub(crate) hierarchy_view_model: HierarchyViewModel,
+    pub(crate) central_panel_view_model: CentralPanelViewModel,
+    
     pub(crate) central_panel: CentralPanel,
     pub(crate) bottom_panel: BottomPanel,
     pub(crate) menu_bar: MenuBar,
@@ -10,8 +13,14 @@ pub struct RootView {
 impl Default for RootView {
 
     fn default() -> Self {
+
+        let config_path = "config.json";
+        let config = crate::data::Config::load(config_path).unwrap_or_default();
+
         Self {
-            view_model: RootViewModel::default(),
+            hierarchy_view_model: HierarchyViewModel::default(&config),
+            central_panel_view_model: CentralPanelViewModel::default(&config),
+            root_view_model: RootViewModel::default(config),
             central_panel: CentralPanel::default(),
             bottom_panel: BottomPanel::default(),
             menu_bar: MenuBar::default(),
@@ -24,13 +33,13 @@ impl eframe::App for RootView {
         // Assert Send/Sync for DataTable as a compile-time check
         fn is_send<T: Send>(_: &T) {}
         fn is_sync<T: Sync>(_: &T) {}
-        is_send(&self.view_model.table);
-        is_sync(&self.view_model.table);
+        is_send(&self.root_view_model.table);
+        is_sync(&self.root_view_model.table);
 
-        self.menu_bar.ui(&mut self.view_model, ctx);
-        self.bottom_panel.ui(&mut self.view_model, ctx);
+        self.menu_bar.ui(&mut self.root_view_model, ctx);
+        self.bottom_panel.ui(&mut self.root_view_model, ctx);
 
-        let (newly_selected_index, newly_selected_sheet_index): (Option<usize>, Option<usize>) = HierarchyPanel::default().ui(&mut self.view_model, ctx);
+        let (newly_selected_index, newly_selected_sheet_index): (Option<usize>, Option<usize>) = HierarchyPanel::default().ui(&mut self.root_view_model, ctx);
 
         if let Some(index) = newly_selected_index {
             let sheet_idx = newly_selected_sheet_index.unwrap_or(0);
@@ -38,10 +47,10 @@ impl eframe::App for RootView {
         }
 
         self.handle_pending_file_add();
-        self.central_panel.ui(&mut self.view_model, ctx);
+        self.central_panel.ui(&mut self.root_view_model, ctx);
 
-        if let Some(index) = self.view_model.save_requested.take() {
-            self.view_model.save_source_config(index);
+        if let Some(index) = self.root_view_model.save_requested.take() {
+            self.root_view_model.save_source_config(index);
         }
     }
 }
