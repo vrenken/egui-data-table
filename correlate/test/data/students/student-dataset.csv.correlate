@@ -14,7 +14,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 57.59375
+          "width": 58.25
         },
         {
           "name": "name",
@@ -47,7 +47,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 3,
-          "width": 89.5625
+          "width": 130.0
         },
         {
           "name": "latitude",
