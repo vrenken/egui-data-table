@@ -7,7 +7,6 @@ pub struct ColumnConfig {
     #[serde(default)]
     pub display_name: Option<String>,
     pub column_type: ColumnType,
-    pub is_sortable: bool,
     #[serde(default)]
     pub is_key: bool,
     #[serde(default)]

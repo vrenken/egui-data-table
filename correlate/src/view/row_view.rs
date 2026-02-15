@@ -69,8 +69,8 @@ impl RowViewer<Row> for RowView {
         config
     }
 
-    fn is_sortable_column(&mut self, column: usize) -> bool {
-        self.column_configs.get(column).map(|c| c.is_sortable).unwrap_or(false)
+    fn is_sortable_column(&mut self, _: usize) -> bool {
+        true
     }
 
     fn is_editable_cell(&mut self, column: usize, _row: usize, row_value: &Row) -> bool {

@@ -276,7 +276,6 @@ impl CentralPanel {
                     name: format!("New Column {}", view_model.viewer.column_configs.len() + 1),
                     display_name: None,
                     column_type: crate::data::ColumnType::String,
-                    is_sortable: true,
                     is_key: false,
                     is_name: false,
                     is_virtual: true,
