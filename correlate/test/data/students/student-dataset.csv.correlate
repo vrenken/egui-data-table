@@ -13,7 +13,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 74.25
+          "width": 74.25,
+          "allowed_values": null
         },
         {
           "name": "name",
@@ -23,7 +24,8 @@
           "is_name": true,
           "is_virtual": false,
           "order": 1,
-          "width": 161.75
+          "width": 161.75,
+          "allowed_values": null
         },
         {
           "name": "nationality",
@@ -33,7 +35,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 2,
-          "width": 180.0
+          "width": 180.0,
+          "allowed_values": null
         },
         {
           "name": "city",
@@ -43,17 +46,19 @@
           "is_name": false,
           "is_virtual": false,
           "order": 3,
-          "width": 130.0
+          "width": 130.0,
+          "allowed_values": null
         },
         {
           "name": "New Column 17",
           "display_name": null,
-          "column_type": "Text",
+          "column_type": "Select",
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
           "order": 4,
-          "width": 154.6875
+          "width": 155.34375,
+          "allowed_values": null
         },
         {
           "name": "latitude",
@@ -63,7 +68,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 5,
-          "width": 92.46875
+          "width": 92.46875,
+          "allowed_values": null
         },
         {
           "name": "longitude",
@@ -73,7 +79,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 6,
-          "width": 103.125
+          "width": 103.125,
+          "allowed_values": null
         },
         {
           "name": "gender",
@@ -83,7 +90,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 7,
-          "width": 88.875
+          "width": 88.875,
+          "allowed_values": null
         },
         {
           "name": "ethnic.group",
@@ -93,7 +101,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 8,
-          "width": 121.59375
+          "width": 121.59375,
+          "allowed_values": null
         },
         {
           "name": "age",
@@ -103,7 +112,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 9,
-          "width": 68.46875
+          "width": 68.46875,
+          "allowed_values": null
         },
         {
           "name": "english.grade",
@@ -113,7 +123,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 10,
-          "width": 125.8125
+          "width": 125.8125,
+          "allowed_values": null
         },
         {
           "name": "math.grade",
@@ -123,7 +134,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 11,
-          "width": 77.40625
+          "width": 77.40625,
+          "allowed_values": null
         },
         {
           "name": "sciences.grade",
@@ -133,7 +145,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 12,
-          "width": 96.25
+          "width": 96.25,
+          "allowed_values": null
         },
         {
           "name": "language.grade",
@@ -143,7 +156,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 13,
-          "width": 103.8125
+          "width": 103.8125,
+          "allowed_values": null
         },
         {
           "name": "portfolio.rating",
@@ -153,7 +167,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 14,
-          "width": 136.78125
+          "width": 136.78125,
+          "allowed_values": null
         },
         {
           "name": "coverletter.rating",
@@ -163,7 +178,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 15,
-          "width": 149.46875
+          "width": 149.46875,
+          "allowed_values": null
         },
         {
           "name": "refletter.rating",
@@ -173,7 +189,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 16,
-          "width": 462.25
+          "width": 462.25,
+          "allowed_values": null
         }
       ],
       "sort_config": null
