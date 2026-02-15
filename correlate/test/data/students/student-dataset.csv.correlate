@@ -18,7 +18,7 @@
         },
         {
           "name": "name",
-          "display_name": null,
+          "display_name": "Name",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -29,7 +29,7 @@
         },
         {
           "name": "nationality",
-          "display_name": null,
+          "display_name": "Nationality",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,

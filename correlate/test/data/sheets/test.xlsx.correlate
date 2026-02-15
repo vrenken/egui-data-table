@@ -18,7 +18,7 @@
         },
         {
           "name": "Number",
-          "display_name": null,
+          "display_name": "Latitude",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
