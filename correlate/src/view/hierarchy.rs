@@ -10,177 +10,191 @@ impl HierarchyPanel {
         let mut newly_selected_index = None;
         let mut newly_selected_sheet_index = None;
 
-        egui::SidePanel::left("left_panel")
-            .default_width(250.)
+        egui::SidePanel::left("hierarchy_panel")
+            .resizable(true)
             .show(ctx, |ui| {
-                ui.vertical_centered_justified(|ui| {
-                    egui::ScrollArea::vertical()
-                        .id_salt("hierarchy_scroll")
+                ui.vertical(|ui| {
+                    ui.heading("Project");
+                    ui.separator();
+
+                    egui::collapsing_header::CollapsingHeader::new(format!("{} Datasources", egui_material_icons::icons::ICON_FOLDER))
+                        .default_open(true)
                         .show(ui, |ui| {
-                            ui.set_min_width(ui.available_width());
-                            let header_response = egui::collapsing_header::CollapsingHeader::new(egui::RichText::new(format!("{} Data Sources", egui_material_icons::icons::ICON_HOME_STORAGE)).strong())
-                                .open(Some(true))
-                                .show(ui, |ui| {
-                                    for (index, ds) in view_model.data_sources.iter_mut().enumerate() {
-                                        let default_file_name = std::path::Path::new(&ds.path)
-                                            .file_name()
-                                            .and_then(|n| n.to_str())
-                                            .unwrap_or(&ds.path)
-                                            .to_string();
-                                        
-                                        let display_name = ds.name.as_ref().unwrap_or(&default_file_name).clone();
-                                        
-                                        let extension = std::path::Path::new(&ds.path)
-                                            .extension()
-                                            .and_then(|e| e.to_str())
-                                            .unwrap_or("");
-                                        
-                                        let icon = if extension == "csv" {
-                                            egui_material_icons::icons::ICON_CSV
-                                        } else {
-                                            egui_material_icons::icons::ICON_TABLE_CHART
-                                        };
+                            
+                            let renaming_target_id = egui::Id::new("renaming_target");
+                            let renaming_target_opt = ui.data(|d| d.get_temp::<RenamingTarget>(renaming_target_id));
 
-                                        if ds.sheets.len() > 1 {
-                                            let mut header = egui::collapsing_header::CollapsingHeader::new(format!("{} {}", icon, display_name))
-                                                .default_open(true);
-                                            
-                                            let renaming_this_ds = view_model.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::DataSource(index));
+                            for index in 0..view_model.data_sources.len() {
+                                let ds = &view_model.data_sources[index];
+                                let default_file_name = std::path::Path::new(&ds.path)
+                                    .file_name()
+                                    .and_then(|n| n.to_str())
+                                    .unwrap_or("Unknown")
+                                    .to_string();
+                                
+                                let ds_display_name = ds.name.as_ref().unwrap_or(&default_file_name).clone();
+                                
+                                let extension = std::path::Path::new(&ds.path)
+                                    .extension()
+                                    .and_then(|e| e.to_str())
+                                    .unwrap_or("");
+                                
+                                let icon = if extension == "csv" {
+                                    egui_material_icons::icons::ICON_CSV
+                                } else {
+                                    egui_material_icons::icons::ICON_TABLE_CHART
+                                };
 
-                                            if renaming_this_ds {
-                                                header = egui::collapsing_header::CollapsingHeader::new(format!("{} ", icon));
-                                            }
+                                if ds.sheets.len() > 1 {
+                                    let mut header = egui::collapsing_header::CollapsingHeader::new(format!("{} {}", icon, ds_display_name))
+                                        .default_open(true);
+                                    
+                                    let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == RenamingTarget::DataSource(index));
 
-                                            let header_res = header.show(ui, |ui| {
-                                                    for (sheet_idx, sheet) in ds.sheets.iter_mut().enumerate() {
-                                                        let selected = view_model.selected_index == Some(index) && ds.selected_sheet_index == sheet_idx;
-                                                        let renaming_this_sheet = view_model.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::Sheet(index, sheet_idx));
+                                    if renaming_this_ds {
+                                        header = egui::collapsing_header::CollapsingHeader::new(format!("{} ", icon));
+                                    }
 
-                                                        let display_name = sheet.display_name.as_ref().unwrap_or(&sheet.name).clone();
+                                    let header_res = header.show(ui, |ui| {
+                                            for sheet_idx in 0..view_model.data_sources[index].sheets.len() {
+                                                let selected = view_model.selected_index == Some(index) && view_model.data_sources[index].selected_sheet_index == sheet_idx;
+                                                let renaming_target_id = egui::Id::new("renaming_target");
+                                                let renaming_target_opt = ui.data(|d| d.get_temp::<RenamingTarget>(renaming_target_id));
+                                                let renaming_this_sheet = renaming_target_opt.map_or(false, |t| t == RenamingTarget::Sheet(index, sheet_idx));
 
-                                                        if renaming_this_sheet {
-                                                            ui.horizontal(|ui| {
-                                                                ui.label("  📄 ");
-                                                                let (_, current_name) = view_model.renaming_item.as_mut().unwrap();
-                                                                let res = ui.text_edit_singleline(current_name);
-                                                                if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
-                                                                    sheet.display_name = if current_name.is_empty() || current_name == &sheet.name { None } else { Some(current_name.clone()) };
-                                                                    view_model.renaming_item = None;
-                                                                    view_model.save_requested = Some(index);
-                                                                }
-                                                                if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
-                                                                    view_model.renaming_item = None;
-                                                                }
-                                                                res.request_focus();
+                                                let sheet_display_name = view_model.data_sources[index].sheets[sheet_idx].display_name.as_ref().unwrap_or(&view_model.data_sources[index].sheets[sheet_idx].name).clone();
+
+                                                if renaming_this_sheet {
+                                                    ui.horizontal(|ui| {
+                                                        ui.label("  📄 ");
+                                                        
+                                                        let rename_id = ui.id().with("rename_sheet");
+                                                        let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(sheet_display_name.clone()));
+
+                                                        let res = ui.text_edit_singleline(&mut current_name);
+                                                        if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                                            view_model.apply_rename(RenamingTarget::Sheet(index, sheet_idx), current_name.clone());
+                                                            ui.data_mut(|d| {
+                                                                d.remove::<RenamingTarget>(renaming_target_id);
+                                                                d.remove::<String>(rename_id);
+                                                            });
+                                                        } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                                            ui.data_mut(|d| {
+                                                                d.remove::<RenamingTarget>(renaming_target_id);
+                                                                d.remove::<String>(rename_id);
                                                             });
                                                         } else {
-                                                            let res = ui.selectable_label(selected, format!("  📄 {}", display_name))
-                                                                .on_hover_text(&ds.path);
-                                            
-                                                            if res.clicked() {
-                                                                if view_model.selected_index != Some(index) || ds.selected_sheet_index != sheet_idx {
-                                                                    newly_selected_index = Some(index);
-                                                                    newly_selected_sheet_index = Some(sheet_idx);
-                                                                }
-                                                            }
-
-                                                            if res.double_clicked() {
-                                                                view_model.renaming_item = Some((RenamingTarget::Sheet(index, sheet_idx), display_name.clone()));
-                                                            }
+                                                            ui.data_mut(|d| d.insert_temp(rename_id, current_name));
+                                                        }
+                                                        res.request_focus();
+                                                    });
+                                                } else {
+                                                    let res = ui.selectable_label(selected, format!("  📄 {}", sheet_display_name))
+                                                        .on_hover_text(&view_model.data_sources[index].path);
+                                    
+                                                    if res.clicked() {
+                                                        if view_model.selected_index != Some(index) || view_model.data_sources[index].selected_sheet_index != sheet_idx {
+                                                            newly_selected_index = Some(index);
+                                                            newly_selected_sheet_index = Some(sheet_idx);
                                                         }
                                                     }
-                                                });
 
-                                            if renaming_this_ds {
-                                                let mut rect = header_res.header_response.rect;
-                                                rect.min.x += 20.0; // Offset for icon
-                                                ui.allocate_ui_at_rect(rect, |ui| {
-                                                    let (_, current_name) = view_model.renaming_item.as_mut().unwrap();
-                                                    let res = ui.text_edit_singleline(current_name);
-                                                    if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
-                                                        ds.name = if current_name.is_empty() || current_name == &default_file_name { None } else { Some(current_name.clone()) };
-                                                        view_model.renaming_item = None;
-                                                        view_model.save_requested = Some(index);
+                                                    if res.double_clicked() {
+                                                        ui.data_mut(|d| d.insert_temp(renaming_target_id, RenamingTarget::Sheet(index, sheet_idx)));
                                                     }
-                                                    if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
-                                                        view_model.renaming_item = None;
-                                                    }
-                                                    res.request_focus();
-                                                });
-                                            } else {
-                                                if header_res.header_response.clicked() {
-                                                    if view_model.selected_index != Some(index) {
-                                                        newly_selected_index = Some(index);
-                                                        newly_selected_sheet_index = Some(ds.selected_sheet_index);
-                                                    }
-                                                }
-                                                if header_res.header_response.double_clicked() {
-                                                    view_model.renaming_item = Some((RenamingTarget::DataSource(index), display_name.clone()));
                                                 }
                                             }
-                                        } else {
-                                            let selected = view_model.selected_index == Some(index);
-                                            let renaming_this_ds = view_model.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::DataSource(index));
+                                        });
 
-                                            if renaming_this_ds {
-                                                ui.horizontal(|ui| {
-                                                    ui.label(format!("{} ", icon));
-                                                    let (_, current_name) = view_model.renaming_item.as_mut().unwrap();
-                                                    let res = ui.text_edit_singleline(current_name);
-                                                    if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
-                                                        ds.name = if current_name.is_empty() || current_name == &default_file_name { None } else { Some(current_name.clone()) };
-                                                        // Also sync the single sheet name if they match? 
-                                                        // Actually, the user likely wants to rename the displayed name.
-                                                        // If it's single sheet, we might want to rename the sheet itself too.
-                                                        if let Some(sheet) = ds.sheets.get_mut(0) {
-                                                            sheet.display_name = if current_name.is_empty() || current_name == &sheet.name { None } else { Some(current_name.clone()) };
-                                                        }
-                                                        view_model.renaming_item = None;
-                                                        view_model.save_requested = Some(index);
-                                                    }
-                                                    if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
-                                                        view_model.renaming_item = None;
-                                                    }
-                                                    res.request_focus();
+                                    if renaming_this_ds {
+                                        let mut rect = header_res.header_response.rect;
+                                        rect.min.x += 20.0; // Offset for icon
+                                        ui.scope_builder(egui::UiBuilder::new().max_rect(rect), |ui| {
+                                            let rename_id = ui.id().with("rename_ds");
+                                            let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
+                                            let res = ui.text_edit_singleline(&mut current_name);
+                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                                view_model.apply_rename(RenamingTarget::DataSource(index), current_name.clone());
+                                                ui.data_mut(|d| {
+                                                    d.remove::<RenamingTarget>(renaming_target_id);
+                                                    d.remove::<String>(rename_id);
+                                                });
+                                            } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                                ui.data_mut(|d| {
+                                                    d.remove::<RenamingTarget>(renaming_target_id);
+                                                    d.remove::<String>(rename_id);
                                                 });
                                             } else {
-                                                let res = ui.selectable_label(selected, format!("{} {}", icon, display_name))
-                                                    .on_hover_text(&ds.path);
-                                                
-                                                if res.clicked() {
-                                                    if view_model.selected_index != Some(index) {
-                                                        newly_selected_index = Some(index);
-                                                        newly_selected_sheet_index = Some(0);
-                                                    }
-                                                }
-
-                                                if res.double_clicked() {
-                                                    view_model.renaming_item = Some((RenamingTarget::DataSource(index), display_name.clone()));
-                                                }
+                                                ui.data_mut(|d| d.insert_temp(rename_id, current_name));
+                                            }
+                                            res.request_focus();
+                                        });
+                                    } else {
+                                        if header_res.header_response.clicked() {
+                                            if view_model.selected_index != Some(index) {
+                                                newly_selected_index = Some(index);
+                                                newly_selected_sheet_index = Some(view_model.data_sources[index].selected_sheet_index);
                                             }
                                         }
+                                        if header_res.header_response.double_clicked() {
+                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, RenamingTarget::DataSource(index)));
+                                        }
                                     }
+                                } else {
+                                    let selected = view_model.selected_index == Some(index);
+                                    let renaming_target_id = egui::Id::new("renaming_target");
+                                    let renaming_target_opt = ui.data(|d| d.get_temp::<RenamingTarget>(renaming_target_id));
+                                    let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == RenamingTarget::DataSource(index));
 
-                                    if view_model.data_sources.is_empty() {
-                                        ui.label("No files loaded");
+                                    if renaming_this_ds {
+                                        ui.horizontal(|ui| {
+                                            ui.label(format!("{} ", icon));
+                                            let rename_id = ui.id().with("rename_ds");
+                                            let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
+                                            let res = ui.text_edit_singleline(&mut current_name);
+                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                                view_model.apply_rename(RenamingTarget::DataSource(index), current_name.clone());
+                                                ui.data_mut(|d| {
+                                                    d.remove::<RenamingTarget>(renaming_target_id);
+                                                    d.remove::<String>(rename_id);
+                                                });
+                                            } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                                ui.data_mut(|d| {
+                                                    d.remove::<RenamingTarget>(renaming_target_id);
+                                                    d.remove::<String>(rename_id);
+                                                });
+                                            } else {
+                                                ui.data_mut(|d| d.insert_temp(rename_id, current_name));
+                                            }
+                                            res.request_focus();
+                                        });
+                                    } else {
+                                        let res = ui.selectable_label(selected, format!("{} {}", icon, ds_display_name))
+                                            .on_hover_text(&ds.path);
+                                        
+                                        if res.clicked() {
+                                            if view_model.selected_index != Some(index) {
+                                                newly_selected_index = Some(index);
+                                                newly_selected_sheet_index = Some(0);
+                                            }
+                                        }
+
+                                        if res.double_clicked() {
+                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, RenamingTarget::DataSource(index)));
+                                        }
                                     }
-                                });
-                            
-                            header_response.header_response.context_menu(|ui| {
-                                view_model.pending_file_to_add = HierarchyPanel::ui_hierarchy_panel_context_menu(ui);
-                            });
+                                }
+                            }
+
+                            if view_model.data_sources.is_empty() {
+                                ui.label("No files loaded");
+                            }
                         });
 
                     ui.add_space(20.);
 
                     ui.heading("Configuration");
                     ui.separator();
-
-                    if ui.button(" Reload config.json").clicked() {
-                        // TODO: This is tricky with ViewModel. For now, maybe just a signal?
-                        // For now I'll leave it as it was, but it won't work because it resets the whole app.
-                        // *app = CorrelateApp::default();
-                    }
 
                     if ui.button("💾 Save as default").clicked() {
                         let config_path = "config.json";

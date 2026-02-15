@@ -123,6 +123,10 @@ impl<R> DataTable<R> {
         self.dirty_flag = false;
     }
 
+    pub fn mark_as_modified(&mut self) {
+        self.dirty_flag = true;
+    }
+
     /// Returns the current visual column order.
     pub fn visual_column_order(&self) -> Option<Vec<usize>> {
         self.ui.as_ref().map(|ui| ui.vis_cols().iter().map(|c| c.0).collect())

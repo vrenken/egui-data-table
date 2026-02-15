@@ -11,12 +11,6 @@ pub struct RowView {
     pub name_filter: String,
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
-    pub add_column_requested: Option<usize>,
-    pub rename_row_requested: Option<usize>,
-    pub rename_column_requested: Option<usize>,
-    pub renaming_item: Option<(RenamingTarget, String)>,
-    pub rename_committed: bool,
-    pub save_requested: bool,
     pub column_configs: Vec<ColumnConfig>,
 }
 
@@ -311,44 +305,227 @@ impl RowViewer<Row> for RowView {
         println!("row removed. row_id: {}, values: {:?}", row_index, row);
     }
 
-    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) {
-        crate::view::central_panel::CentralPanel::ui_column_header_context_menu(self, ui, column);
+    fn on_rename_committed(&mut self, table: &mut egui_data_table::DataTable<Row>, target: egui_data_table::viewer::RenameTarget, new_name: String) {
+        let renaming_target = match target {
+            egui_data_table::viewer::RenameTarget::Row(idx) => Some(RenamingTarget::Row(idx)),
+            egui_data_table::viewer::RenameTarget::Column(idx) => Some(RenamingTarget::Column(idx)),
+            _ => None,
+        };
+
+        if let Some(renaming_target) = renaming_target {
+            match renaming_target {
+                RenamingTarget::Row(row_idx) => {
+                    let name_col_idx = self.column_configs.iter().position(|c| c.is_name)
+                        .or_else(|| self.column_configs.iter().position(|c| c.name.contains("Name")))
+                        .or_else(|| self.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+                        .unwrap_or(0);
+
+                    if let Some(row) = table.get_mut(row_idx) {
+                        row.cells[name_col_idx] = crate::data::CellValue::String(new_name);
+                        table.mark_as_modified();
+                    }
+                }
+                RenamingTarget::Column(col_idx) => {
+                    if let Some(config) = self.column_configs.get_mut(col_idx) {
+                        config.display_name = if new_name.is_empty() || new_name == config.name { None } else { Some(new_name) };
+                        if config.is_virtual {
+                            config.name = config.display_name.clone().unwrap_or_else(|| config.name.clone());
+                        }
+                        table.mark_as_modified();
+                    }
+                }
+                _ => {}
+            }
+        }
     }
 
-    fn row_header_double_clicked(&mut self, row: usize) {
-        self.rename_row_requested = Some(row);
+    fn on_column_inserted(&mut self, table: &mut egui_data_table::DataTable<Row>, at: usize) {
+        let new_column = crate::data::ColumnConfig {
+            name: format!("New Column {}", self.column_configs.len() + 1),
+            display_name: None,
+            column_type: crate::data::ColumnType::String,
+            is_key: false,
+            is_name: false,
+            is_virtual: true,
+            order: self.column_configs.len(),
+            width: None,
+        };
+        self.column_configs.insert(at, new_column);
+        // Update all rows in the table
+        let mut rows = table.take();
+        for row in &mut rows {
+            row.cells.insert(at, crate::data::CellValue::String("".to_string()));
+        }
+        table.replace(rows);
+        table.mark_as_modified();
     }
 
-    fn column_header_double_clicked(&mut self, _column: usize) {
-        // self.rename_column_requested = Some(column);
+    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) -> egui_data_table::viewer::HeaderResult {
+        let mut action = None;
+        ui.horizontal(|ui| {
+            ui.label(egui_material_icons::icons::ICON_NOTES);
+
+            let config = &self.column_configs[column];
+            let initial_name = config.display_name.as_ref().unwrap_or(&config.name).clone();
+
+            let mut current_name = ui.data_mut(|d| d.get_temp::<String>(ui.id().with("rename")).unwrap_or(initial_name));
+
+            let res = ui.text_edit_singleline(&mut current_name);
+            if res.lost_focus() || ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+                action = Some(egui_data_table::viewer::HeaderAction::RenameCommitted(current_name.clone()));
+                ui.data_mut(|d| d.remove::<String>(ui.id().with("rename")));
+                ui.close();
+            } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                ui.data_mut(|d| d.remove::<String>(ui.id().with("rename")));
+                ui.close();
+            } else {
+                ui.data_mut(|d| d.insert_temp(ui.id().with("rename"), current_name));
+            }
+            res.request_focus();
+
+        });
+
+        let is_name_active = self.column_configs[column].is_name;
+        let is_key_active = self.column_configs[column].is_key;
+
+        ui.separator(); // ========================================
+
+        let mut is_key = is_key_active;
+        if ui.checkbox(&mut is_key, "Use as key").clicked() {
+            self.column_configs[column].is_key = is_key;
+            action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
+            ui.close();
+        }
+
+        if ui.button(format!("{} Filter", egui_material_icons::icons::ICON_FILTER_LIST)).clicked() {
+            ui.close();
+        }
+        ui.menu_button(format!("{} Sort", egui_material_icons::icons::ICON_SWAP_VERT), |ui| {
+            if ui.button(format!("{} Sort ascending", egui_material_icons::icons::ICON_NORTH)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Sort descending", egui_material_icons::icons::ICON_SOUTH)).clicked() {
+                ui.close();
+            }
+
+        });
+        if ui.button(format!("{} Hide", egui_material_icons::icons::ICON_VISIBILITY_OFF)).clicked() {
+            ui.close();
+        }
+
+        let mut is_name = is_name_active;
+        if ui.checkbox(&mut is_name, "Use as name").clicked() {
+            if is_name {
+                // Turn off is_name for all other columns
+                for c in self.column_configs.iter_mut() {
+                    c.is_name = false;
+                }
+                self.column_configs[column].is_name = true;
+            } else {
+                self.column_configs[column].is_name = false;
+            }
+            action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
+            ui.close();
+        }
+        ui.separator();
+
+        if ui.button(format!("{} Insert left", egui_material_icons::icons::ICON_ADD_COLUMN_LEFT)).clicked() {
+            action = Some(egui_data_table::viewer::HeaderAction::AddColumn(column));
+            ui.close();
+        }
+        if ui.button(format!("{} Insert right", egui_material_icons::icons::ICON_ADD_COLUMN_RIGHT)).clicked() {
+            action = Some(egui_data_table::viewer::HeaderAction::AddColumn(column + 1));
+            ui.close();
+        }
+
+
+        ui.separator();
+
+        if column > 0 {
+            if ui.button("Move Left").clicked() {
+                self.column_configs.swap(column, column - 1);
+                action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
+                ui.close();
+            }
+        }
+        if column < self.column_configs.len() - 1 {
+            if ui.button("Move Right").clicked() {
+                self.column_configs.swap(column, column + 1);
+                action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
+                ui.close();
+            }
+        }
+
+        ui.separator();
+
+        if ui.button(format!("{} Duplicate", egui_material_icons::icons::ICON_STACK)).clicked() {
+            ui.close();
+        }
+        if ui.button(format!("{} Trash", egui_material_icons::icons::ICON_DELETE)).clicked() {
+            ui.close();
+        }
+
+        action
+    }
+
+    fn row_header_double_clicked(&mut self, ctx: &egui::Context, row_idx: usize, _row: &Row) {
+        ctx.data_mut(|d| d.insert_temp(egui::Id::new("renaming_target"), RenamingTarget::Row(row_idx)));
+    }
+
+    fn column_header_double_clicked(&mut self, ctx: &egui::Context, column: usize) {
+        ctx.data_mut(|d| d.insert_temp(egui::Id::new("renaming_target"), RenamingTarget::Column(column)));
     }
 
     fn show_column_header(&mut self, ui: &mut egui::Ui, column: usize) {
         ui.add(egui::Label::new(self.column_name(column)).selectable(false));
     }
 
-    fn show_row_header(&mut self, ui: &mut egui::Ui, row: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize) {
-        let renaming_this_row = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::Row(row));
-        
+    fn show_row_header(&mut self, ui: &mut egui::Ui, row_idx: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize, row: &Row) -> Option<(egui_data_table::viewer::RenameTarget, String)> {
+        let renaming_target = ui.data(|d| d.get_temp::<RenamingTarget>(egui::Id::new("renaming_target")));
+        let renaming_this_row = renaming_target.map_or(false, |t| t == RenamingTarget::Row(row_idx));
+        let mut committed = None;
+
         if renaming_this_row {
-            let (_, current_name) = self.renaming_item.as_mut().unwrap();
-            let res = ui.text_edit_singleline(current_name);
+            let name_col_idx = self.column_configs.iter().position(|c| c.is_name)
+                .or_else(|| self.column_configs.iter().position(|c| c.name.contains("Name")))
+                .or_else(|| self.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+                .unwrap_or(0);
+
+            let initial_name = match &row.cells[name_col_idx] {
+                CellValue::String(s) => s.clone(),
+                CellValue::Int(i) => i.to_string(),
+                CellValue::Float(f) => f.to_string(),
+                CellValue::DateTime(dt) => dt.clone(),
+                CellValue::Bool(b) => b.to_string(),
+            };
+
+            let mut current_name = ui.data_mut(|d| d.get_temp::<String>(ui.id().with("rename")).unwrap_or(initial_name));
+
+            let res = ui.text_edit_singleline(&mut current_name);
             if res.lost_focus() || ui.input(|i| i.key_pressed(Key::Enter)) {
-                self.rename_committed = true;
-            }
-            if ui.input(|i| i.key_pressed(Key::Escape)) {
-                self.renaming_item = None;
+                committed = Some((egui_data_table::viewer::RenameTarget::Row(row_idx), current_name.clone()));
+                ui.data_mut(|d| {
+                    d.remove::<RenamingTarget>(egui::Id::new("renaming_target"));
+                    d.remove::<String>(ui.id().with("rename"));
+                });
+            } else if ui.input(|i| i.key_pressed(Key::Escape)) {
+                ui.data_mut(|d| {
+                    d.remove::<RenamingTarget>(egui::Id::new("renaming_target"));
+                    d.remove::<String>(ui.id().with("rename"));
+                });
+            } else {
+                ui.data_mut(|d| d.insert_temp(ui.id().with("rename"), current_name));
             }
             res.request_focus();
         } else {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 ui.separator();
-    
+
                 if has_any_sort {
                     ui.monospace(
                         egui::RichText::from(format!(
                             "{:·>width$}",
-                            row,
+                            row_idx,
                             width = row_id_digits
                         ))
                         .strong(),
@@ -359,7 +536,7 @@ impl RowViewer<Row> for RowView {
                             .strong(),
                     );
                 }
-    
+
                 ui.monospace(
                     egui::RichText::from(format!(
                         "{:·>width$}",
@@ -370,6 +547,7 @@ impl RowViewer<Row> for RowView {
                 );
             });
         }
+        committed
     }
 
     fn hotkeys(

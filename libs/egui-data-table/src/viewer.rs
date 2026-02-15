@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use crate::DataTable;
 
 use egui::{Key, KeyboardShortcut, Modifiers};
 pub use egui_extras::Column as TableColumnConfig;
@@ -259,14 +260,29 @@ pub trait RowViewer<R>: 'static {
         let (_, _) = (row_index, row);
     }
 
+    /// Called when a rename has been committed
+    fn on_rename_committed(&mut self, table: &mut DataTable<R>, target: RenameTarget, new_name: String) {
+        let _ = (table, target, new_name);
+    }
+
+    fn on_rename_row(&mut self, _row_index: usize, _new_name: String) {}
+    fn on_rename_column(&mut self, _column_index: usize, _new_name: String) {}
+
+    /// Called when a column has been inserted
+    fn on_column_inserted(&mut self, _table: &mut DataTable<R>, _column_index: usize) {}
+
     /// Add custom items to the column header context menu.
-    fn column_header_context_menu(&mut self, _ui: &mut egui::Ui, _column: usize) {}
+    fn column_header_context_menu(&mut self, _ui: &mut egui::Ui, _column: usize) -> HeaderResult { None }
 
     /// Called when a row header has been double-clicked.
-    fn row_header_double_clicked(&mut self, _row: usize) {}
+    fn row_header_double_clicked(&mut self, ctx: &egui::Context, _row_idx: usize, _row: &R) {
+        let _ = ctx;
+    }
 
     /// Called when a column header has been double-clicked.
-    fn column_header_double_clicked(&mut self, _column: usize) {}
+    fn column_header_double_clicked(&mut self, ctx: &egui::Context, _column: usize) {
+        let _ = ctx;
+    }
 
     /// Show the column header UI.
     fn show_column_header(&mut self, ui: &mut egui::Ui, column: usize) {
@@ -274,7 +290,7 @@ pub trait RowViewer<R>: 'static {
     }
 
     /// Show the row header UI.
-    fn show_row_header(&mut self, ui: &mut egui::Ui, row: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize) {
+    fn show_row_header(&mut self, ui: &mut egui::Ui, row: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize, _row_data: &R) -> Option<(RenameTarget, String)> {
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
             ui.separator();
 
@@ -303,6 +319,7 @@ pub trait RowViewer<R>: 'static {
                 .weak(),
             );
         });
+        None
     }
 
     /// Return hotkeys for the current context.
@@ -316,6 +333,25 @@ pub trait RowViewer<R>: 'static {
     fn persist_ui_state(&self) -> bool {
         false
     }
+}
+
+/* ------------------------------------------- Results ------------------------------------------ */
+
+pub type HeaderResult = Option<HeaderAction>;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum HeaderAction {
+    AddColumn(usize),
+    RenameCommitted(String),
+    RequestSave,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum RenameTarget {
+    Row(usize),
+    Column(usize),
 }
 
 /* ------------------------------------------- Context ------------------------------------------ */

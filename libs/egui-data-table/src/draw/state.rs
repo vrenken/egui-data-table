@@ -1049,6 +1049,19 @@ impl<R> UiState<R> {
                     })
                     .collect()
             }
+            Command::AddColumn(_at) => {
+                // For now, we don't support undoing column addition easily.
+                // We'd need to store the added data for every row.
+                vec![]
+            }
+            Command::RequestSave => {
+                vec![]
+            }
+            Command::RenameCommitted(_target, ref _new_name) => {
+                // Rename committed doesn't easily support undoing here
+                // as we don't store the old name in the command.
+                vec![]
+            }
             Command::CcUpdateSystemClipboard(..) => {
                 // This command MUST've be consumed before calling this.
                 unreachable!()
@@ -1147,6 +1160,17 @@ impl<R> UiState<R> {
                 });
 
                 self.queue_select_rows([]);
+            }
+            Command::AddColumn(at) => {
+                table.dirty_flag = true;
+                vwr.on_column_inserted(table, *at);
+                self.cc_dirty = true;
+            }
+            Command::RequestSave => {
+                table.dirty_flag = true;
+            }
+            Command::RenameCommitted(target, new_name) => {
+                vwr.on_rename_committed(table, *target, new_name.clone());
             }
             Command::CcHideColumn(..)
             | Command::CcShowColumn { .. }
@@ -1664,6 +1688,9 @@ pub(crate) enum Command<R> {
     },
 
     InsertRows(RowIdx, Box<[R]>),
+    AddColumn(usize),
+    RenameCommitted(crate::viewer::RenameTarget, String),
+    RequestSave,
     RemoveRow(Vec<RowIdx>),
 
     CcEditStart(RowIdx, VisColumnPos, Box<R>),

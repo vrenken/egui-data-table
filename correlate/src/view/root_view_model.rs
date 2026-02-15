@@ -11,8 +11,6 @@ pub struct RootViewModel {
     pub(crate) style_override: egui_data_table::Style,
     pub(crate) scroll_bar_always_visible: bool,
     pub(crate) pending_file_to_add: Option<std::path::PathBuf>,
-    pub(crate) renaming_item: Option<(RenamingTarget, String)>,
-    pub(crate) save_requested: Option<usize>,
 }
 
 impl RootViewModel {
@@ -99,12 +97,6 @@ impl RootViewModel {
                 name_filter: String::new(),
                 row_protection: false,
                 hotkeys: Vec::new(),
-                add_column_requested: None,
-                rename_row_requested: None,
-                rename_column_requested: None,
-                renaming_item: None,
-                rename_committed: false,
-                save_requested: false,
                 column_configs: Vec::new(),
             };
 
@@ -117,8 +109,6 @@ impl RootViewModel {
                 style_override: Default::default(),
                 scroll_bar_always_visible: false,
                 pending_file_to_add: None,
-                renaming_item: None,
-                save_requested: None,
             };
         }
 
@@ -130,12 +120,6 @@ impl RootViewModel {
             name_filter: String::new(),
             row_protection: false,
             hotkeys: Vec::new(),
-            add_column_requested: None,
-            rename_row_requested: None,
-            rename_column_requested: None,
-            renaming_item: None,
-            rename_committed: false,
-            save_requested: false,
             column_configs: sheet.column_configs.clone(),
         };
 
@@ -148,8 +132,6 @@ impl RootViewModel {
             style_override: Default::default(),
             scroll_bar_always_visible: false,
             pending_file_to_add: None,
-            renaming_item: None,
-            save_requested: None,
         }
     }
 
@@ -231,4 +213,53 @@ impl RootViewModel {
         self.viewer.column_configs = sheet.column_configs.clone();
     }
 
+    pub fn save_datasource_configuration(&mut self) {
+        if let Some(idx) = self.selected_index {
+            let ds = &mut self.data_sources[idx];
+            let sheet = &mut ds.sheets[ds.selected_sheet_index];
+            sheet.column_configs = self.viewer.column_configs.clone();
+            for (i, config) in sheet.column_configs.iter_mut().enumerate() {
+                config.order = i;
+            }
+            sheet.table = self.table.clone();
+
+            self.save_source_config(idx);
+        }
+    }
+
+    pub fn apply_rename(&mut self, target: RenamingTarget, new_name: String) {
+        match target {
+            RenamingTarget::DataSource(ds_idx) => {
+                if let Some(ds) = self.data_sources.get_mut(ds_idx) {
+                    ds.name = if new_name.is_empty() { None } else { Some(new_name) };
+                }
+            }
+            RenamingTarget::Sheet(ds_idx, sheet_idx) => {
+                if let Some(ds) = self.data_sources.get_mut(ds_idx) {
+                    if let Some(sheet) = ds.sheets.get_mut(sheet_idx) {
+                        sheet.display_name = if new_name.is_empty() || new_name == sheet.name { None } else { Some(new_name) };
+                    }
+                }
+            }
+            RenamingTarget::Row(row_idx) => {
+                let name_col_idx = self.viewer.column_configs.iter().position(|c| c.is_name)
+                    .or_else(|| self.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
+                    .or_else(|| self.viewer.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+                    .unwrap_or(0);
+
+                if let Some(row) = self.table.get_mut(row_idx) {
+                    row.cells[name_col_idx] = crate::data::CellValue::String(new_name);
+                }
+            }
+            RenamingTarget::Column(col_idx) => {
+                if let Some(config) = self.viewer.column_configs.get_mut(col_idx) {
+                    config.display_name = if new_name.is_empty() || new_name == config.name { None } else { Some(new_name) };
+                    if config.is_virtual {
+                        config.name = config.display_name.clone().unwrap_or_else(|| config.name.clone());
+                    }
+                }
+            }
+        }
+        self.save_datasource_configuration();
+    }
 }

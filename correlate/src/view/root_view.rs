@@ -48,9 +48,5 @@ impl eframe::App for RootView {
 
         self.root_view_model.handle_pending_file_add();
         self.central_panel.ui(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
-
-        if let Some(index) = self.root_view_model.save_requested.take() {
-            self.root_view_model.save_source_config(index);
-        }
     }
 }

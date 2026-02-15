@@ -267,7 +267,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                     }
 
                     if resp.double_clicked() {
-                        viewer.column_header_double_clicked(col.0);
+                        viewer.column_header_double_clicked(ctx, col.0);
                     }
 
                     if resp.dnd_hover_payload::<VisColumnPos>().is_some() {
@@ -315,7 +315,15 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                             }
                         }
 
-                        viewer.column_header_context_menu(ui, col.0);
+                        if let Some(action) = viewer.column_header_context_menu(ui, col.0) {
+                            match action {
+                                crate::viewer::HeaderAction::AddColumn(at) => commands.push(Command::AddColumn(at)),
+                                crate::viewer::HeaderAction::RequestSave => commands.push(Command::RequestSave),
+                                crate::viewer::HeaderAction::RenameCommitted(new_name) => {
+                                    commands.push(Command::RenameCommitted(crate::viewer::RenameTarget::Column(col.0), new_name));
+                                }
+                            }
+                        }
                     });
                 }
 
@@ -474,26 +482,33 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
             row.set_selected(edit_state.is_some());
 
             // Render row header button
-            let (head_rect, head_resp) = row.col(|ui| {
+            let mut rename_committed = None;
+            row.col(|ui| {
                 // Calculate the position where values start.
                 row_elem_start = ui.max_rect().right_top();
 
-                viewer.show_row_header(
+                rename_committed = viewer.show_row_header(
                     ui,
                     row_id.0,
                     vis_row.0,
                     has_any_sort,
                     row_id_digits as usize,
                     vis_row_digits as usize,
-                )
+                    &table.rows[row_id.0],
+                );
+
+                let head_resp = ui.interact(ui.max_rect(), ui.id(), egui::Sense::click());
+                if head_resp.double_clicked() {
+                    viewer.row_header_double_clicked(ui.ctx(), row_id.0, &table.rows[row_id.0]);
+                }
+
+                if check_mouse_dragging_selection(&ui.max_rect(), &head_resp) {
+                    s.cci_sel_update_row(vis_row);
+                }
             });
 
-            if check_mouse_dragging_selection(&head_rect, &head_resp) {
-                s.cci_sel_update_row(vis_row);
-            }
-
-            if head_resp.double_clicked() {
-                viewer.row_header_double_clicked(row_id.0);
+            if let Some((target, new_name)) = rename_committed {
+                commands.push(Command::RenameCommitted(target, new_name));
             }
 
             /* -------------------------------- Columns Rendering ------------------------------- */
@@ -631,7 +646,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
 
                 /* --------------------------- Context Menu Rendering --------------------------- */
 
-                (resp.clone() | head_resp.clone()).context_menu(|ui| {
+                resp.context_menu(|ui| {
                     response_consumed = true;
                     ui.set_min_size(egui::vec2(250., 10.));
 
