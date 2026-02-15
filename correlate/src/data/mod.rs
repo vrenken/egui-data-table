@@ -22,4 +22,7 @@ pub use source_config::*;
 pub mod value_mapping;
 pub use value_mapping::*;
 
+pub mod types;
+pub use types::*;
+
 

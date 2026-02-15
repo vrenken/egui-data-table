@@ -2,17 +2,17 @@
 use egui::Layout;
 use egui::scroll_area::ScrollBarVisibility;
 use egui_data_table::RowViewer;
-use crate::view::CorrelateApp;
-use crate::view::app::types::RenamingTarget;
+use crate::view::root_view_model::RootViewModel;
+use crate::data::RenamingTarget;
 use crate::data::CellValue;
 
 #[derive(Default)]
 pub struct CentralPanel {}
 
 impl CentralPanel {
-    pub fn ui(&mut self, app: &mut CorrelateApp, ctx: &egui::Context) {
+    pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &egui::Context) {
         // Sync renaming state to viewer
-        app.viewer.renaming_item = app.renaming_item.clone();
+        view_model.viewer.renaming_item = view_model.renaming_item.clone();
 
         egui::CentralPanel::default().show(ctx, |ui| {
 
@@ -24,14 +24,14 @@ impl CentralPanel {
                     if ui.button(egui_material_icons::icons::ICON_FILTER_LIST).clicked() {}
                 });
 
-                match app.scroll_bar_always_visible {
+                match view_model.scroll_bar_always_visible {
                     true => {
                         ui.style_mut().spacing.scroll = egui::style::ScrollStyle::solid();
-                        app.style_override.scroll_bar_visibility = ScrollBarVisibility::AlwaysVisible;
+                        view_model.style_override.scroll_bar_visibility = ScrollBarVisibility::AlwaysVisible;
                     },
                     false => {
                         ui.style_mut().spacing.scroll = egui::style::ScrollStyle::floating();
-                        app.style_override.scroll_bar_visibility = ScrollBarVisibility::VisibleWhenNeeded;
+                        view_model.style_override.scroll_bar_visibility = ScrollBarVisibility::VisibleWhenNeeded;
                     }
                 };
 
@@ -39,18 +39,18 @@ impl CentralPanel {
 
                 ui.add(
                     //available,
-                    egui_data_table::Renderer::new(&mut app.table, &mut app.viewer).with_style(app.style_override),
+                    egui_data_table::Renderer::new(&mut view_model.table, &mut view_model.viewer).with_style(view_model.style_override),
                 );
 
                 // Sync renaming state back from viewer
-                app.renaming_item = app.viewer.renaming_item.clone();
+                view_model.renaming_item = view_model.viewer.renaming_item.clone();
 
-                self.handle_viewer_requests(app);
+                self.handle_viewer_requests(view_model);
             });
         });
     }
 
-    pub fn ui_row_context_menu(viewer: &mut crate::view::Viewer, ui: &mut egui::Ui, column: usize) {
+    pub fn ui_row_context_menu(viewer: &mut crate::view::RowView, ui: &mut egui::Ui, column: usize) {
         if let Some(config) = viewer.column_configs.get_mut(column) {
             let mut is_key = config.is_key;
             if ui.checkbox(&mut is_key, "Is key").clicked() {
@@ -68,7 +68,7 @@ impl CentralPanel {
     }
 
     pub fn ui_column_header_context_menu(
-        viewer: &mut crate::view::Viewer,
+        viewer: &mut crate::view::RowView,
         ui: &mut egui::Ui,
         column: usize) {
 
@@ -177,15 +177,15 @@ impl CentralPanel {
 
     }
 
-    fn handle_viewer_requests(&mut self, app: &mut CorrelateApp) {
+    fn handle_viewer_requests(&mut self, view_model: &mut RootViewModel) {
         // Handle row renaming request
-        if let Some(row_idx) = app.viewer.rename_row_requested.take() {
-            let name_col_idx = app.viewer.column_configs.iter().position(|c| c.is_name)
-                .or_else(|| app.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
-                .or_else(|| app.viewer.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+        if let Some(row_idx) = view_model.viewer.rename_row_requested.take() {
+            let name_col_idx = view_model.viewer.column_configs.iter().position(|c| c.is_name)
+                .or_else(|| view_model.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
+                .or_else(|| view_model.viewer.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
                 .unwrap_or(0);
             
-            if let Some(row) = app.table.get(row_idx) {
+            if let Some(row) = view_model.table.get(row_idx) {
                 let current_name = match &row.cells[name_col_idx] {
                     CellValue::String(s) => s.clone(),
                     CellValue::Int(i) => i.to_string(),
@@ -193,64 +193,64 @@ impl CentralPanel {
                     CellValue::DateTime(dt) => dt.clone(),
                     CellValue::Bool(b) => b.to_string(),
                 };
-                app.renaming_item = Some((RenamingTarget::Row(row_idx), current_name));
-                app.viewer.renaming_item = app.renaming_item.clone();
+                view_model.renaming_item = Some((RenamingTarget::Row(row_idx), current_name));
+                view_model.viewer.renaming_item = view_model.renaming_item.clone();
             }
         }
 
         // Handle column renaming request
-        if let Some(col_idx) = app.viewer.rename_column_requested.take() {
-            if let Some(config) = app.viewer.column_configs.get(col_idx) {
+        if let Some(col_idx) = view_model.viewer.rename_column_requested.take() {
+            if let Some(config) = view_model.viewer.column_configs.get(col_idx) {
                 let display_name = config.display_name.as_ref().unwrap_or(&config.name).clone();
-                app.renaming_item = Some((RenamingTarget::Column(col_idx), display_name));
-                app.viewer.renaming_item = app.renaming_item.clone();
+                view_model.renaming_item = Some((RenamingTarget::Column(col_idx), display_name));
+                view_model.viewer.renaming_item = view_model.renaming_item.clone();
             }
         }
 
         // Handle row renaming completion
-        if app.viewer.rename_committed {
-            app.viewer.rename_committed = false;
-            if let Some((target, new_name)) = app.renaming_item.take() {
+        if view_model.viewer.rename_committed {
+            view_model.viewer.rename_committed = false;
+            if let Some((target, new_name)) = view_model.renaming_item.take() {
                 match target {
                     RenamingTarget::Row(row_idx) => {
-                        let name_col_idx = app.viewer.column_configs.iter().position(|c| c.is_name)
-                            .or_else(|| app.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
-                            .or_else(|| app.viewer.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+                        let name_col_idx = view_model.viewer.column_configs.iter().position(|c| c.is_name)
+                            .or_else(|| view_model.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
+                            .or_else(|| view_model.viewer.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
                             .unwrap_or(0);
 
-                        if let Some(row) = app.table.get_mut(row_idx) {
+                        if let Some(row) = view_model.table.get_mut(row_idx) {
                             row.cells[name_col_idx] = CellValue::String(new_name);
-                            app.viewer.save_requested = true;
+                            view_model.viewer.save_requested = true;
                         }
                     }
                     RenamingTarget::Column(col_idx) => {
-                        if let Some(config) = app.viewer.column_configs.get_mut(col_idx) {
+                        if let Some(config) = view_model.viewer.column_configs.get_mut(col_idx) {
                             config.display_name = if new_name.is_empty() || new_name == config.name { None } else { Some(new_name) };
                             if config.is_virtual {
                                 config.name = config.display_name.clone().unwrap();
                             }
-                            app.viewer.save_requested = true;
+                            view_model.viewer.save_requested = true;
                         }
                     }
                     _ => {}
                 }
-                app.viewer.renaming_item = None;
+                view_model.viewer.renaming_item = None;
             }
         }
 
         // Handle column reordering from the data table
-        if let Some(visual_order) = app.table.visual_column_order() {
+        if let Some(visual_order) = view_model.table.visual_column_order() {
             let is_identity = visual_order.iter().enumerate().all(|(i, &c)| i == c);
             if !is_identity {
                 // Reorder column_configs in the viewer
-                let mut new_configs = Vec::with_capacity(app.viewer.column_configs.len());
+                let mut new_configs = Vec::with_capacity(view_model.viewer.column_configs.len());
                 for &idx in &visual_order {
-                    new_configs.push(app.viewer.column_configs[idx].clone());
+                    new_configs.push(view_model.viewer.column_configs[idx].clone());
                 }
-                app.viewer.column_configs = new_configs;
+                view_model.viewer.column_configs = new_configs;
 
                 // Reorder cells in all rows
-                let mut rows = app.table.take();
+                let mut rows = view_model.table.take();
                 for row in &mut rows {
                     let mut new_cells = Vec::with_capacity(row.cells.len());
                     for &idx in &visual_order {
@@ -258,60 +258,60 @@ impl CentralPanel {
                     }
                     row.cells = new_cells;
                 }
-                app.table.replace(rows);
+                view_model.table.replace(rows);
                 // Reset visual order in the library to identity
-                app.table.reset_visual_column_order();
+                view_model.table.reset_visual_column_order();
                 // Mark as needing save
-                app.viewer.save_requested = true;
+                view_model.viewer.save_requested = true;
             }
         }
 
-        let column_count_changed = app.table.is_empty() || RowViewer::num_columns(&mut app.viewer) != app.table[0].cells.len();
-        if app.viewer.add_column_requested.is_some() || app.viewer.save_requested || column_count_changed {
-            let add_column_at = app.viewer.add_column_requested.take();
-            app.viewer.save_requested = false;
+        let column_count_changed = view_model.table.is_empty() || RowViewer::num_columns(&mut view_model.viewer) != view_model.table[0].cells.len();
+        if view_model.viewer.add_column_requested.is_some() || view_model.viewer.save_requested || column_count_changed {
+            let add_column_at = view_model.viewer.add_column_requested.take();
+            view_model.viewer.save_requested = false;
             
             if let Some(at) = add_column_at {
                 let new_column = crate::data::ColumnConfig {
-                    name: format!("New Column {}", app.viewer.column_configs.len() + 1),
+                    name: format!("New Column {}", view_model.viewer.column_configs.len() + 1),
                     display_name: None,
                     column_type: crate::data::ColumnType::String,
                     is_sortable: true,
                     is_key: false,
                     is_name: false,
                     is_virtual: true,
-                    order: app.viewer.column_configs.len(),
+                    order: view_model.viewer.column_configs.len(),
                     width: None,
                 };
-                app.viewer.column_configs.insert(at + 1, new_column);
+                view_model.viewer.column_configs.insert(at + 1, new_column);
                 // Update all rows in the table
-                let mut rows = app.table.take();
+                let mut rows = view_model.table.take();
                 for row in &mut rows {
                     row.cells.insert(at + 1, crate::data::CellValue::String("".to_string()));
                 }
-                app.table.replace(rows);
+                view_model.table.replace(rows);
             } else if column_count_changed {
                 // Update all rows in the table if needed (e.g. loading from file with virtual columns)
-                let mut rows = app.table.take();
+                let mut rows = view_model.table.take();
                 for row in &mut rows {
-                    while row.cells.len() < app.viewer.column_configs.len() {
+                    while row.cells.len() < view_model.viewer.column_configs.len() {
                         row.cells.push(crate::data::CellValue::String("".to_string()));
                     }
                 }
-                app.table.replace(rows);
+                view_model.table.replace(rows);
             }
 
             // Save state back to DataSource
-            if let Some(idx) = app.selected_index {
-                let ds = &mut app.data_sources[idx];
+            if let Some(idx) = view_model.selected_index {
+                let ds = &mut view_model.data_sources[idx];
                 let sheet = &mut ds.sheets[ds.selected_sheet_index];
-                sheet.column_configs = app.viewer.column_configs.clone();
+                sheet.column_configs = view_model.viewer.column_configs.clone();
                 for (i, config) in sheet.column_configs.iter_mut().enumerate() {
                     config.order = i;
                 }
-                sheet.table = app.table.clone();
+                sheet.table = view_model.table.clone();
 
-                app.save_source_config(idx);
+                view_model.save_source_config(idx);
             }
         }
     }

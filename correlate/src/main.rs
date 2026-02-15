@@ -1,4 +1,4 @@
-use view::CorrelateApp;
+use view::RootView;
 
 mod data;
 mod view;
@@ -17,7 +17,7 @@ fn main() {
         "Correlate",
         options,
         {
-            let mut app = CorrelateApp::default();
+            let mut app = RootView::default();
             move |ctx, frame| {
 
                 // register the fonts.
@@ -60,7 +60,7 @@ fn main() {
                     // register the fonts.
                     egui_material_icons::initialize(&_cc);
 
-                    Ok(Box::new(CorrelateApp::default()))
+                    Ok(Box::new(RootView::default()))
                 }),
             )
             .await;

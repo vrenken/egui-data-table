@@ -5,13 +5,12 @@ use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiAct
 use crate::data::*;
 use crate::data::column_config::ColumnConfig;
 use crate::data::column_type::ColumnType;
-use crate::view::app::types::RenamingTarget;
+use crate::data::RenamingTarget;
 
-pub struct Viewer {
+pub struct RowView {
     pub name_filter: String,
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
-    pub captured_order: Vec<usize>,
     pub add_column_requested: Option<usize>,
     pub rename_row_requested: Option<usize>,
     pub rename_column_requested: Option<usize>,
@@ -21,7 +20,7 @@ pub struct Viewer {
     pub column_configs: Vec<ColumnConfig>,
 }
 
-impl RowViewer<Row> for Viewer {
+impl RowViewer<Row> for RowView {
     fn num_columns(&mut self) -> usize {
         self.column_configs.len()
     }
@@ -149,7 +148,7 @@ impl RowViewer<Row> for Viewer {
         }
 
         resp.context_menu(|ui| {
-            crate::view::app::central_panel::CentralPanel::ui_row_context_menu(self, ui, column);
+            crate::view::central_panel::CentralPanel::ui_row_context_menu(self, ui, column);
         });
     }
 
@@ -313,7 +312,7 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) {
-        crate::view::app::central_panel::CentralPanel::ui_column_header_context_menu(self, ui, column);
+        crate::view::central_panel::CentralPanel::ui_column_header_context_menu(self, ui, column);
     }
 
     fn row_header_double_clicked(&mut self, row: usize) {

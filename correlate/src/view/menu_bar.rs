@@ -1,8 +1,11 @@
 ﻿use egui::Sense;
-use crate::view::CorrelateApp;
+use crate::view::RootViewModel;
 
-impl CorrelateApp {
-    pub fn ui_menu_bar(&mut self, ctx: &egui::Context) {
+#[derive(Default)]
+pub struct MenuBar {}
+
+impl MenuBar {
+    pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &egui::Context) {
         egui::TopBottomPanel::top("MenuBar").show(ctx, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.hyperlink_to(
@@ -22,7 +25,7 @@ impl CorrelateApp {
                 ui.separator();
 
                 ui.label("Name Filter");
-                ui.text_edit_singleline(&mut self.viewer.name_filter);
+                ui.text_edit_singleline(&mut view_model.viewer.name_filter);
 
                 ui.add(egui::Button::new("Drag me and drop on any cell").sense(Sense::drag()))
                     .on_hover_text(
@@ -32,33 +35,33 @@ impl CorrelateApp {
                     .dnd_set_drag_payload(String::from("Hallo~"));
 
                 ui.menu_button("🎌 Flags", |ui| {
-                    ui.checkbox(&mut self.viewer.row_protection, "Row Protection")
+                    ui.checkbox(&mut view_model.viewer.row_protection, "Row Protection")
                         .on_hover_text(
                             "If checked, any rows marked won't be deleted or overwritten by UI actions.",
                         );
 
                     ui.checkbox(
-                        &mut self.style_override.single_click_edit_mode,
+                        &mut view_model.style_override.single_click_edit_mode,
                         "Single Click Edit",
                     )
                     .on_hover_text("If checked, cells will be edited with a single click.");
 
                     ui.checkbox(
-                        &mut self.style_override.auto_shrink.x,
+                        &mut view_model.style_override.auto_shrink.x,
                         "Auto-shrink X",
                     );
                     ui.checkbox(
-                        &mut self.style_override.auto_shrink.y,
+                        &mut view_model.style_override.auto_shrink.y,
                         "Auto-shrink Y",
                     );
 
                     ui.checkbox(
-                        &mut self.scroll_bar_always_visible,
+                        &mut view_model.scroll_bar_always_visible,
                         "Scrollbar always visible",
                     );
 
                     if ui.button("Shuffle Rows").clicked() {
-                        fastrand::shuffle(&mut self.table);
+                        fastrand::shuffle(&mut view_model.table);
                     }
                 })
             })
