@@ -33,12 +33,7 @@ impl RowViewer<Row> for RowView {
                     name = format!("{} {}", egui_material_icons::icons::ICON_SYRINGE, name);
                 }
 
-                let type_icon = match c.column_type {
-                    ColumnType::Text => egui_material_icons::icons::ICON_SUBJECT,
-                    ColumnType::Number => egui_material_icons::icons::ICON_TAG,
-                    ColumnType::DateTime => egui_material_icons::icons::ICON_CALENDAR_CLOCK,
-                    ColumnType::Bool => egui_material_icons::icons::ICON_CHECK_BOX,
-                };
+                let type_icon = c.column_type.icon();
                 name = format!("{} {}", type_icon, name);
 
                 Cow::Owned(name)
@@ -393,19 +388,19 @@ impl RowViewer<Row> for RowView {
             let current_type = self.column_configs[column].column_type;
 
             let mut is_text = current_type == ColumnType::Text;
-            if ui.checkbox(&mut is_text, format!("{} Text", egui_material_icons::icons::ICON_SUBJECT)).clicked() {
+            if ui.checkbox(&mut is_text, format!("{} Text", ColumnType::Text.icon())).clicked() {
                 self.column_configs[column].column_type = ColumnType::Text;
                 action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
                 ui.close();
             }
             let mut is_number = current_type == ColumnType::Number;
-            if ui.checkbox(&mut is_number, format!("{} Number", egui_material_icons::icons::ICON_TAG)).clicked() {
+            if ui.checkbox(&mut is_number, format!("{} Number", ColumnType::Number.icon())).clicked() {
                 self.column_configs[column].column_type = ColumnType::Number;
                 action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
                 ui.close();
             }
             let mut is_date_time = current_type == ColumnType::DateTime;
-            if ui.checkbox(&mut is_date_time, format!("{} Date / time", egui_material_icons::icons::ICON_CALENDAR_CLOCK)).clicked() {
+            if ui.checkbox(&mut is_date_time, format!("{} Date / time", ColumnType::DateTime.icon())).clicked() {
                 self.column_configs[column].column_type = ColumnType::DateTime;
                 action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
                 ui.close();
