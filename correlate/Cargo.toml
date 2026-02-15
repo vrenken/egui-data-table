@@ -20,7 +20,7 @@ names =                 { workspace = true, optional = true }
 
 tap =                   { workspace = true }
 log =                   { workspace = true }
-serde =                 { workspace = true, optional = true, features = ["derive"] }
+serde =                 { workspace = true, features = ["derive"] }
 serde_json =            { workspace = true }
 umya-spreadsheet =      { workspace = true }
 csv =                   { workspace = true }
@@ -31,8 +31,6 @@ wasm-bindgen-futures =  { version = "0.4" }
 web-sys =               { version = "0.3" }
 
 [features]
-default = ["persistency"]
-persistency = ["dep:serde"]
 demo = ["dep:names"]
 
 [dev-dependencies]
