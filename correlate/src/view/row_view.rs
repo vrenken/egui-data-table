@@ -196,31 +196,6 @@ impl RowViewer<Row> for RowView {
                     .show(ui)
                     .response
             }
-            // CellValue::Gender(gender) => {
-            //     egui::ComboBox::new(ui.id().with("gender"), "".to_string())
-            //         .selected_text(gender.map(|gender: Gender|gender.to_string()).unwrap_or("Unspecified".to_string()))
-            //         .show_ui(ui, |ui|{
-            //             if ui
-            //                 .add(egui::Button::selectable(
-            //                     matches!(gender, Some(g) if *g == Gender::Male),
-            //                     "Male"
-            //                 ))
-            //                 .clicked()
-            //             {
-            //                 *gender = Some(Gender::Male);
-            //             }
-            //             if ui
-            //                 .add(egui::Button::selectable(
-            //                     matches!(gender, Some(g) if *g == Gender::Female),
-            //                     "Female"
-            //                 ))
-            //                 .clicked()
-            //             {
-            //                 *gender = Some(Gender::Female);
-            //             }
-            //
-            //         }).response
-            // }
             CellValue::Bool(b) => ui.checkbox(b, ""),
             CellValue::Select(s) => {
                 let mut text = s.clone().unwrap_or_default();
@@ -238,19 +213,7 @@ impl RowViewer<Row> for RowView {
                 }
                 res
             }
-            // CellValue::Grade(grade) => {
-            //     ui.horizontal_wrapped(|ui| {
-            //         ui.radio_value(grade, Grade::A, "A")
-            //             | ui.radio_value(grade, Grade::B, "B")
-            //             | ui.radio_value(grade, Grade::C, "C")
-            //             | ui.radio_value(grade, Grade::D, "D")
-            //             | ui.radio_value(grade, Grade::E, "E")
-            //             | ui.radio_value(grade, Grade::F, "F")
-            //     })
-            //         .inner
-            // }
         }
-            .into()
     }
 
     fn set_cell_value(&mut self, src: &Row, dst: &mut Row, column: usize) {
