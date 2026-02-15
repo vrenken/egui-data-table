@@ -14,7 +14,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 348.0
+          "width": 145.34375
         },
         {
           "name": "Number",
@@ -36,7 +36,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 2,
-          "width": 170.0
+          "width": 96.19794
         },
         {
           "name": "Currency",
@@ -69,7 +69,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 5,
-          "width": 89.125
+          "width": 89.8125
         },
         {
           "name": "Forumula",
@@ -80,7 +80,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 6,
-          "width": 89.125
+          "width": 89.12506
         }
       ],
       "sort_config": null

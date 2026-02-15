@@ -10,11 +10,11 @@
           "displayName": null,
           "column_type": "Int",
           "is_sortable": true,
-          "is_key": false,
+          "is_key": true,
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 41.59375
+          "width": 57.59375
         },
         {
           "name": "name",
@@ -22,10 +22,10 @@
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
-          "is_name": false,
+          "is_name": true,
           "is_virtual": false,
           "order": 1,
-          "width": 99.3125
+          "width": 161.75
         },
         {
           "name": "nationality",
@@ -36,7 +36,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 2,
-          "width": 95.96875
+          "width": 180.0
         },
         {
           "name": "city",
@@ -58,7 +58,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 4,
-          "width": 76.125
+          "width": 76.46875
         },
         {
           "name": "longitude",
@@ -69,7 +69,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 5,
-          "width": 86.125
+          "width": 87.125
         },
         {
           "name": "gender",
@@ -80,7 +80,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 6,
-          "width": 71.875
+          "width": 72.875
         },
         {
           "name": "ethnic.group",
@@ -91,7 +91,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 7,
-          "width": 104.59375
+          "width": 104.9375
         },
         {
           "name": "age",
@@ -102,7 +102,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 8,
-          "width": 52.125
+          "width": 52.46875
         },
         {
           "name": "english.grade",
@@ -117,36 +117,36 @@
         },
         {
           "name": "math.grade",
-          "displayName": null,
+          "displayName": "Math",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "order": 10,
-          "width": 98.125
+          "width": 61.40625
         },
         {
           "name": "sciences.grade",
-          "displayName": null,
+          "displayName": "Sciences",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "order": 11,
-          "width": 115.125
+          "width": 80.25
         },
         {
           "name": "language.grade",
-          "displayName": null,
+          "displayName": "Language",
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "order": 12,
-          "width": 121.125
+          "width": 87.8125
         },
         {
           "name": "portfolio.rating",
@@ -157,7 +157,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 13,
-          "width": 119.4375
+          "width": 120.125
         },
         {
           "name": "coverletter.rating",
@@ -168,7 +168,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 14,
-          "width": 132.4375
+          "width": 132.78125
         },
         {
           "name": "refletter.rating",

@@ -14,7 +14,7 @@
           "is_name": true,
           "is_virtual": false,
           "order": 0,
-          "width": 163.0
+          "width": 130.66663
         },
         {
           "name": "lat",
@@ -25,7 +25,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 1,
-          "width": 311.0
+          "width": 143.0
         },
         {
           "name": "lng",
@@ -36,7 +36,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 2,
-          "width": 311.0
+          "width": 191.0
         },
         {
           "name": "country",
@@ -47,7 +47,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 3,
-          "width": 311.0
+          "width": 111.0
         },
         {
           "name": "iso2",
@@ -58,7 +58,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 4,
-          "width": 54.34375
+          "width": 54.6875
         },
         {
           "name": "admin_name",
@@ -69,7 +69,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 5,
-          "width": 105.125
+          "width": 219.0
         },
         {
           "name": "capital",
@@ -91,7 +91,7 @@
           "is_name": false,
           "is_virtual": true,
           "order": 7,
-          "width": 311.0
+          "width": 141.125
         },
         {
           "name": "population",
@@ -113,7 +113,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 9,
-          "width": 1346.8125
+          "width": 1346.8124
         }
       ],
       "sort_config": null

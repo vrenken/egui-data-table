@@ -14,7 +14,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 348.0
+          "width": 128.0
         },
         {
           "name": "Currency",
@@ -25,7 +25,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 1,
-          "width": 138.34375
+          "width": 98.66669
         },
         {
           "name": "Test Text",
@@ -36,7 +36,7 @@
           "is_name": false,
           "is_virtual": true,
           "order": 2,
-          "width": 116.03125
+          "width": 100.375
         },
         {
           "name": "Text",
@@ -47,7 +47,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 3,
-          "width": 172.0
+          "width": 127.625
         },
         {
           "name": "Date",
@@ -58,7 +58,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 4,
-          "width": 138.34375
+          "width": 102.6875
         },
         {
           "name": "New Column 14",
@@ -69,7 +69,7 @@
           "is_name": false,
           "is_virtual": true,
           "order": 5,
-          "width": 139.34375
+          "width": 139.34381
         },
         {
           "name": "Time",
