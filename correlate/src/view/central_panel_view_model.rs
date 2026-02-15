@@ -60,11 +60,11 @@ impl CentralPanelViewModel {
             }
 
             // Save state back to DataSource
-            Self::save_datasource_configuration(&view_model);
+            Self::save_datasource_configuration(view_model);
         }
     }
 
-    fn save_datasource_configuration(view_model: &&mut RootViewModel) {
+    fn save_datasource_configuration(view_model: &mut RootViewModel) {
         if let Some(idx) = view_model.selected_index {
             let ds = &mut view_model.data_sources[idx];
             let sheet = &mut ds.sheets[ds.selected_sheet_index];
