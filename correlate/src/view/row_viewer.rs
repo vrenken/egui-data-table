@@ -149,7 +149,7 @@ impl RowViewer<Row> for Viewer {
         }
 
         resp.context_menu(|ui| {
-            self.ui_row_context_menu(ui, column);
+            crate::view::app::central_panel::CentralPanel::ui_row_context_menu(self, ui, column);
         });
     }
 
@@ -313,7 +313,7 @@ impl RowViewer<Row> for Viewer {
     }
 
     fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) {
-        self.ui_column_header_context_menu(ui, column);
+        crate::view::app::central_panel::CentralPanel::ui_column_header_context_menu(self, ui, column);
     }
 
     fn row_header_double_clicked(&mut self, row: usize) {

@@ -1,4 +1,5 @@
 ﻿use crate::data::Row;
+use crate::view::app::central_panel::CentralPanel;
 use crate::view::Viewer;
 use crate::view::app::types::{DataSource, RenamingTarget, DataSheet};
 
@@ -155,7 +156,7 @@ impl eframe::App for CorrelateApp {
         }
 
         self.handle_pending_file_add();
-        self.ui_central_panel(ctx);
+        CentralPanel::default().ui(self, ctx);
 
         if let Some(index) = self.save_requested.take() {
             self.save_source_config(index);
