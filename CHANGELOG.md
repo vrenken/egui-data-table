@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning].
 - Ability to add CSV files from the context menu.
 - Ability to mark columns as keys from the cell and column header context menus.
 - Ability to add virtual columns from the column header context menu, which are stored in the `.correlate` file and marked with a 🧪 icon.
-- Ability to rename data sources and sheets in the treeview by double-clicking. Sheet names are stored as `displayName` in the `.correlate` file.
+- Ability to rename data sources and sheets in the treeview by double-clicking. Sheet names are stored as `display_name` in the `.correlate` file.
 
 ### Changed
 - Removed default sample data sources ("Students" and "Random Data") and associated generator logic.
