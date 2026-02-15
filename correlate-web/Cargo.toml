@@ -22,7 +22,7 @@ log =                   { workspace = true }
 getrandom =             { workspace = true, features = ["wasm_js"] }
 umya-spreadsheet =      { workspace = true, features = ["js"] }
 
-serde =                 { workspace = true, optional = true, features = ["derive"] }
+serde =                 { workspace = true, features = ["derive"] }
 serde_json =            { workspace = true }
 csv =                   { workspace = true }
 rfd =                   { workspace = true }
