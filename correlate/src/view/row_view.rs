@@ -32,6 +32,15 @@ impl RowViewer<Row> for RowView {
                 if c.is_virtual {
                     name = format!("{} {}", egui_material_icons::icons::ICON_SYRINGE, name);
                 }
+
+                let type_icon = match c.column_type {
+                    ColumnType::Text => egui_material_icons::icons::ICON_SUBJECT,
+                    ColumnType::Number => egui_material_icons::icons::ICON_TAG,
+                    ColumnType::DateTime => egui_material_icons::icons::ICON_CALENDAR_CLOCK,
+                    ColumnType::Bool => egui_material_icons::icons::ICON_CHECK_BOX,
+                };
+                name = format!("{} {}", type_icon, name);
+
                 Cow::Owned(name)
             })
             .unwrap_or_else(|| Cow::Owned(format!("Column {}", column)))
