@@ -755,7 +755,7 @@ impl<R> UiState<R> {
     }
 
     pub fn cci_sel_update_row(&mut self, row: VisRowPos) {
-        [0, self.p.vis_cols.len() - 1].map(|col| {
+        let _ = [0, self.p.vis_cols.len() - 1].map(|col| {
             self.cci_sel_update(row.linear_index(self.p.vis_cols.len(), VisColumnPos(col)))
         });
     }

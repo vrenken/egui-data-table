@@ -1,6 +1,6 @@
 use std::mem::{replace, take};
 
-use egui::{Align, Color32, CornerRadius, Event, Label, Layout, PointerButton, PopupAnchor, Rect, Response, RichText, Sense, Stroke, StrokeKind, Tooltip, Vec2b};
+use egui::{Align, Color32, Event, Label, Layout, PointerButton, PopupAnchor, Rect, Response, RichText, Sense, Stroke, StrokeKind, Tooltip, Vec2b};
 use egui_extras::Column;
 use tap::prelude::{Pipe, Tap};
 
@@ -11,7 +11,6 @@ use crate::{
 
 use self::state::*;
 
-use format as f;
 use std::sync::Arc;
 use egui::scroll_area::ScrollBarVisibility;
 
@@ -703,7 +702,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                         Some((b_redo, "⎘", "context-menu-redo", UiAction::Redo)),
                     ];
 
-                    context_menu_items.map(|opt| {
+                    let _ = context_menu_items.map(|opt| {
                         if let Some((icon, key, action)) =
                             opt.filter(|x| x.0).map(|x| (x.1, x.2, x.3))
                         {
