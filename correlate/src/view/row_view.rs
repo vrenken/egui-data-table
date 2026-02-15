@@ -381,57 +381,71 @@ impl RowViewer<Row> for RowView {
         });
 
         ui.menu_button(format!("{} Change type", egui_material_icons::icons::ICON_EDIT_SQUARE), |ui| {
-            if ui.button(format!("{} Text", egui_material_icons::icons::ICON_SUBJECT)).clicked() {
+            let current_type = self.column_configs[column].column_type;
+
+            let mut is_text = current_type == ColumnType::Text;
+            if ui.checkbox(&mut is_text, format!("{} Text", egui_material_icons::icons::ICON_SUBJECT)).clicked() {
+                self.column_configs[column].column_type = ColumnType::Text;
+                action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
                 ui.close();
             }
-            if ui.button(format!("{} Number", egui_material_icons::icons::ICON_TAG)).clicked() {
+            let mut is_number = current_type == ColumnType::Number;
+            if ui.checkbox(&mut is_number, format!("{} Number", egui_material_icons::icons::ICON_TAG)).clicked() {
+                self.column_configs[column].column_type = ColumnType::Number;
+                action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
                 ui.close();
             }
-            if ui.button(format!("{} Date / time", egui_material_icons::icons::ICON_CALENDAR_CLOCK)).clicked() {
+            let mut is_date_time = current_type == ColumnType::DateTime;
+            if ui.checkbox(&mut is_date_time, format!("{} Date / time", egui_material_icons::icons::ICON_CALENDAR_CLOCK)).clicked() {
+                self.column_configs[column].column_type = ColumnType::DateTime;
+                action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
                 ui.close();
             }
-            if ui.button(format!("{} Select", egui_material_icons::icons::ICON_ARROW_DROP_DOWN_CIRCLE)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Multi-select", egui_material_icons::icons::ICON_LIST)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Status", egui_material_icons::icons::ICON_TARGET)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Person", egui_material_icons::icons::ICON_GROUP)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} URL", egui_material_icons::icons::ICON_LINK)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Email", egui_material_icons::icons::ICON_ALTERNATE_EMAIL)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Phone", egui_material_icons::icons::ICON_CALL)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Relation", egui_material_icons::icons::ICON_NORTH_EAST)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Rollup", egui_material_icons::icons::ICON_SEARCH)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Created time", egui_material_icons::icons::ICON_NEST_CLOCK_FARSIGHT_ANALOG)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Created by", egui_material_icons::icons::ICON_ACCOUNT_CIRCLE)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Last edited time", egui_material_icons::icons::ICON_NEST_CLOCK_FARSIGHT_ANALOG)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Last edited by", egui_material_icons::icons::ICON_ACCOUNT_CIRCLE)).clicked() {
-                ui.close();
-            }
-            if ui.button(format!("{} Location", egui_material_icons::icons::ICON_LOCATION_ON)).clicked() {
-                ui.close();
-            }
+
+            ui.add_enabled_ui(false, |ui| {
+                if ui.button(format!("{} Select", egui_material_icons::icons::ICON_ARROW_DROP_DOWN_CIRCLE)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Multi-select", egui_material_icons::icons::ICON_LIST)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Status", egui_material_icons::icons::ICON_TARGET)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Person", egui_material_icons::icons::ICON_GROUP)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} URL", egui_material_icons::icons::ICON_LINK)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Email", egui_material_icons::icons::ICON_ALTERNATE_EMAIL)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Phone", egui_material_icons::icons::ICON_CALL)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Relation", egui_material_icons::icons::ICON_NORTH_EAST)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Rollup", egui_material_icons::icons::ICON_SEARCH)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Created time", egui_material_icons::icons::ICON_NEST_CLOCK_FARSIGHT_ANALOG)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Created by", egui_material_icons::icons::ICON_ACCOUNT_CIRCLE)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Last edited time", egui_material_icons::icons::ICON_NEST_CLOCK_FARSIGHT_ANALOG)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Last edited by", egui_material_icons::icons::ICON_ACCOUNT_CIRCLE)).clicked() {
+                    ui.close();
+                }
+                if ui.button(format!("{} Location", egui_material_icons::icons::ICON_LOCATION_ON)).clicked() {
+                    ui.close();
+                }
+            });
 
         });
 
