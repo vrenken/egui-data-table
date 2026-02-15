@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning].
 - New popup panel that is shown when a column header is clicked with the left mouse button.
 
 ### Fixed
+- After the configuration is loaded, CSV data sources are now correctly loaded. Previously, only XLSX files were supported during initial load.
 - Fixed an issue where renamed data sources and sheets were not persisted to the `.correlate` file.
 - Fixed an issue where the column order was not correctly updated in the `.correlate` file after reordering.
 - Fixed an issue where drag-and-drop column reordering did not synchronize with the underlying data and configuration.

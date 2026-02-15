@@ -23,16 +23,42 @@ impl Default for CorrelateApp {
 
         let mut data_sources = Vec::new();
         for source in &config.data_sources {
-            match crate::data::load_xlsx(source) {
-                Ok(excel_sheets) => {
-                    let custom_name = excel_sheets.first().and_then(|s| s.custom_name.clone());
-                    let sheets = excel_sheets.into_iter().map(|s| DataSheet {
-                        name: s.name,
-                        display_name: s.display_name,
-                        column_configs: s.column_configs,
-                        table: s.rows.into_iter().collect(),
-                    }).collect();
+            let extension = std::path::Path::new(source)
+                .extension()
+                .and_then(|e| e.to_str())
+                .unwrap_or("");
 
+            let loaded = if extension == "csv" {
+                match crate::data::load_csv(source) {
+                    Ok(csv_sheet) => {
+                        let sheets = vec![DataSheet {
+                            name: csv_sheet.name,
+                            display_name: csv_sheet.display_name,
+                            column_configs: csv_sheet.column_configs,
+                            table: csv_sheet.rows.into_iter().collect(),
+                        }];
+                        Ok((csv_sheet.custom_name, sheets))
+                    }
+                    Err(e) => Err(e),
+                }
+            } else {
+                match crate::data::load_xlsx(source) {
+                    Ok(excel_sheets) => {
+                        let custom_name = excel_sheets.first().and_then(|s| s.custom_name.clone());
+                        let sheets = excel_sheets.into_iter().map(|s| DataSheet {
+                            name: s.name,
+                            display_name: s.display_name,
+                            column_configs: s.column_configs,
+                            table: s.rows.into_iter().collect(),
+                        }).collect();
+                        Ok((custom_name, sheets))
+                    }
+                    Err(e) => Err(e),
+                }
+            };
+
+            match loaded {
+                Ok((custom_name, sheets)) => {
                     data_sources.push(DataSource {
                         path: source.to_string(),
                         name: custom_name,
