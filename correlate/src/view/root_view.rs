@@ -4,7 +4,7 @@ pub struct RootView {
     pub(crate) root_view_model: RootViewModel,
     pub(crate) hierarchy_view_model: HierarchyViewModel,
     pub(crate) central_panel_view_model: CentralPanelViewModel,
-    
+
     pub(crate) central_panel: CentralPanel,
     pub(crate) bottom_panel: BottomPanel,
     pub(crate) menu_bar: MenuBar,
@@ -43,11 +43,11 @@ impl eframe::App for RootView {
 
         if let Some(index) = newly_selected_index {
             let sheet_idx = newly_selected_sheet_index.unwrap_or(0);
-            self.switch_to_source(index, sheet_idx);
+            self.root_view_model.switch_to_source(index, sheet_idx);
         }
 
-        self.handle_pending_file_add();
-        self.central_panel.ui(&mut self.root_view_model, ctx);
+        self.root_view_model.handle_pending_file_add();
+        self.central_panel.ui(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
 
         if let Some(index) = self.root_view_model.save_requested.take() {
             self.root_view_model.save_source_config(index);

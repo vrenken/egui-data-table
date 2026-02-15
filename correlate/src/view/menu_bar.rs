@@ -12,12 +12,7 @@ impl MenuBar {
                     " vrenken/etalii-correlate",
                     "https://github.com/vrenken/etalii-correlate",
                 );
-
-                // later in some ui:
-                ui
-                    .button(egui_material_icons::icons::ICON_STRATEGY)
-                    .clicked();
-
+                
                 ui.separator();
 
                 egui::widgets::global_theme_preference_buttons(ui);
