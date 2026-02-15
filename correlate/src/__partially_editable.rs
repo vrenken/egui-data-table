@@ -15,12 +15,12 @@
 //     Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize,
 // )]
 // pub struct Part {
-//     pub manufacturer: String,
-//     pub mpn: String,
+//     pub manufacturer: Text,
+//     pub mpn: Text,
 // }
 //
 // impl Part {
-//     pub fn new(manufacturer: String, mpn: String) -> Self {
+//     pub fn new(manufacturer: Text, mpn: Text) -> Self {
 //         Self { manufacturer, mpn }
 //     }
 // }
@@ -28,13 +28,13 @@
 // #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug, Clone)]
 // pub struct PartWithState {
 //     pub part: Part,
-//     pub processes: Vec<String>,
+//     pub processes: Vec<Text>,
 // }
 //
 // #[derive(Debug)]
 // struct PartStatesRow {
 //     part: Part,
-//     enabled_processes: HashMap<String, bool>,
+//     enabled_processes: HashMap<Text, bool>,
 // }
 //
 // struct CorrelateApp {
@@ -68,7 +68,7 @@
 //             },
 //         ];
 //
-//         let processes: Vec<String> = vec!["manual".to_string(), "pnp".to_string()];
+//         let processes: Vec<Text> = vec!["manual".to_string(), "pnp".to_string()];
 //
 //         let table = parts_states
 //             .iter()
@@ -76,7 +76,7 @@
 //                 let enabled_processes = processes
 //                     .iter()
 //                     .map(|process| (process.clone(), part_state.processes.contains(process)))
-//                     .collect::<HashMap<String, bool>>();
+//                     .collect::<HashMap<Text, bool>>();
 //
 //                 PartStatesRow {
 //                     part: part_state.part.clone(),
@@ -148,7 +148,7 @@
 //                             None
 //                         }
 //                     })
-//                     .collect::<Vec<String>>()
+//                     .collect::<Vec<Text>>()
 //                     .tap_mut(|processes|processes.sort());
 //                 let label = processes.join(", ");
 //                 ui.label(label);

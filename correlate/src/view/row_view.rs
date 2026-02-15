@@ -93,8 +93,7 @@ impl RowViewer<Row> for RowView {
     fn compare_cell(&self, row_l: &Row, row_r: &Row, column: usize) -> std::cmp::Ordering {
         match (&row_l.cells[column], &row_r.cells[column]) {
             (CellValue::String(l), CellValue::String(r)) => l.cmp(r),
-            (CellValue::Int(l), CellValue::Int(r)) => l.cmp(r),
-            (CellValue::Float(l), CellValue::Float(r)) => l.partial_cmp(r).unwrap_or(std::cmp::Ordering::Equal),
+            (CellValue::Number(l), CellValue::Number(r)) => l.partial_cmp(r).unwrap_or(std::cmp::Ordering::Equal),
             (CellValue::DateTime(l), CellValue::DateTime(r)) => l.cmp(r),
             (CellValue::Bool(l), CellValue::Bool(r)) => l.cmp(r),
             _ => std::cmp::Ordering::Equal,
@@ -108,7 +107,7 @@ impl RowViewer<Row> for RowView {
     fn filter_row(&mut self, row: &Row) -> bool {
         // filter by the first string column found, or "Name"
         let name_idx = self.column_configs.iter().position(|c| c.name.contains("Name"))
-            .or_else(|| self.column_configs.iter().position(|c| c.column_type == ColumnType::String))
+            .or_else(|| self.column_configs.iter().position(|c| c.column_type == ColumnType::Text))
             .unwrap_or(0);
 
         if let Some(CellValue::String(name)) = row.cells.get(name_idx) {
@@ -125,8 +124,7 @@ impl RowViewer<Row> for RowView {
 
         let resp = match &row.cells[column] {
             CellValue::String(s) => { ui.label(s) }
-            CellValue::Int(i) => { ui.label(i.to_string()) }
-            CellValue::Float(f) => { ui.label(f.to_string()) }
+            CellValue::Number(n) => { ui.label(n.to_string()) }
             CellValue::DateTime(dt) => { ui.label(dt) }
             CellValue::Bool(b) => { ui.checkbox(&mut { *b }, "") }
         };
@@ -157,9 +155,8 @@ impl RowViewer<Row> for RowView {
                 let mut cells = Vec::with_capacity(self.column_configs.len());
                 for config in &self.column_configs {
                     let cell = match config.column_type {
-                        ColumnType::String => CellValue::String((*x).clone()),
-                        ColumnType::Int => CellValue::Int(9999),
-                        ColumnType::Float => CellValue::Float(99.99),
+                        ColumnType::Text => CellValue::String((*x).clone()),
+                        ColumnType::Number => CellValue::Number(99.99),
                         ColumnType::DateTime => CellValue::DateTime("2024-02-14 12:00:00".to_string()),
                         ColumnType::Bool => CellValue::Bool(false),
                     };
@@ -183,8 +180,7 @@ impl RowViewer<Row> for RowView {
                     .show(ui)
                     .response
             }
-            CellValue::Int(i) => ui.add(egui::DragValue::new(i).speed(1.0)),
-            CellValue::Float(f) => ui.add(egui::DragValue::new(f).speed(0.1)),
+            CellValue::Number(n) => ui.add(egui::DragValue::new(n).speed(0.1)),
             CellValue::DateTime(dt) => {
                 egui::TextEdit::singleline(dt)
                     .show(ui)
@@ -273,9 +269,8 @@ impl RowViewer<Row> for RowView {
         let mut cells = Vec::with_capacity(self.column_configs.len());
         for config in &self.column_configs {
             let cell = match config.column_type {
-                ColumnType::String => CellValue::String("".to_string()),
-                ColumnType::Int => CellValue::Int(0),
-                ColumnType::Float => CellValue::Float(0.0),
+                ColumnType::Text => CellValue::String("".to_string()),
+                ColumnType::Number => CellValue::Number(0.0),
                 ColumnType::DateTime => CellValue::DateTime("".to_string()),
                 ColumnType::Bool => CellValue::Bool(false),
             };
@@ -317,7 +312,7 @@ impl RowViewer<Row> for RowView {
                 RenamingTarget::Row(row_idx) => {
                     let name_col_idx = self.column_configs.iter().position(|c| c.is_name)
                         .or_else(|| self.column_configs.iter().position(|c| c.name.contains("Name")))
-                        .or_else(|| self.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+                        .or_else(|| self.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::Text))
                         .unwrap_or(0);
 
                     if let Some(row) = table.get_mut(row_idx) {
@@ -343,7 +338,7 @@ impl RowViewer<Row> for RowView {
         let new_column = crate::data::ColumnConfig {
             name: format!("New Column {}", self.column_configs.len() + 1),
             display_name: None,
-            column_type: crate::data::ColumnType::String,
+            column_type: crate::data::ColumnType::Text,
             is_key: false,
             is_name: false,
             is_virtual: true,
@@ -543,13 +538,12 @@ impl RowViewer<Row> for RowView {
         if renaming_this_row {
             let name_col_idx = self.column_configs.iter().position(|c| c.is_name)
                 .or_else(|| self.column_configs.iter().position(|c| c.name.contains("Name")))
-                .or_else(|| self.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::String))
+                .or_else(|| self.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::Text))
                 .unwrap_or(0);
 
             let initial_name = match &row.cells[name_col_idx] {
                 CellValue::String(s) => s.clone(),
-                CellValue::Int(i) => i.to_string(),
-                CellValue::Float(f) => f.to_string(),
+                CellValue::Number(n) => n.to_string(),
                 CellValue::DateTime(dt) => dt.clone(),
                 CellValue::Bool(b) => b.to_string(),
             };

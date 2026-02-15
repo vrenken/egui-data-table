@@ -7,11 +7,8 @@ pub fn infer_column_type(name: &str, sample_value: &str) -> ColumnType {
     }
 
     // Try to parse sample value
-    if sample_value.parse::<i32>().is_ok() {
-        return ColumnType::Int;
-    }
     if sample_value.parse::<f64>().is_ok() {
-        return ColumnType::Float;
+        return ColumnType::Number;
     }
     // Check for DateTime (simple heuristic for common formats)
     if is_datetime(sample_value) {
@@ -21,14 +18,13 @@ pub fn infer_column_type(name: &str, sample_value: &str) -> ColumnType {
         return ColumnType::Bool;
     }
     
-    ColumnType::String
+    ColumnType::Text
 }
 
 pub fn map_cell_value(value: &str, column_type: ColumnType) -> CellValue {
     match column_type {
-        ColumnType::String => CellValue::String(value.to_string()),
-        ColumnType::Int => CellValue::Int(value.parse().unwrap_or(0)),
-        ColumnType::Float => CellValue::Float(value.parse().unwrap_or(0.0)),
+        ColumnType::Text => CellValue::String(value.to_string()),
+        ColumnType::Number => CellValue::Number(value.parse().unwrap_or(0.0)),
         ColumnType::DateTime => CellValue::DateTime(value.to_string()),
         ColumnType::Bool => {
             let b = match value.to_lowercase().as_str() {

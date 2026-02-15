@@ -14,9 +14,8 @@ impl RowCodec<Row> for Codec {
         let mut cells = Vec::with_capacity(self.column_configs.len());
         for config in &self.column_configs {
             let cell = match config.column_type {
-                ColumnType::String => CellValue::String("".to_string()),
-                ColumnType::Int => CellValue::Int(0),
-                ColumnType::Float => CellValue::Float(0.0),
+                ColumnType::Text => CellValue::String("".to_string()),
+                ColumnType::Number => CellValue::Number(0.0),
                 ColumnType::DateTime => CellValue::DateTime("".to_string()),
                 ColumnType::Bool => CellValue::Bool(false),
             };
@@ -29,8 +28,7 @@ impl RowCodec<Row> for Codec {
         if let Some(cell) = src_row.cells.get(column) {
             match cell {
                 CellValue::String(s) => dst.push_str(s),
-                CellValue::Int(i) => dst.push_str(&i.to_string()),
-                CellValue::Float(f) => dst.push_str(&f.to_string()),
+                CellValue::Number(n) => dst.push_str(&n.to_string()),
                 CellValue::DateTime(dt) => dst.push_str(dt),
                 CellValue::Bool(b) => dst.push_str(&b.to_string()),
             }
@@ -46,19 +44,14 @@ impl RowCodec<Row> for Codec {
         let config = self.column_configs.get(column).ok_or(DecodeErrorBehavior::SkipRow)?;
         
         match config.column_type {
-            ColumnType::String => {
+            ColumnType::Text => {
                 if let CellValue::String(ref mut s) = dst_row.cells[column] {
                     s.replace_range(.., src_data);
                 }
             }
-            ColumnType::Int => {
-                if let CellValue::Int(ref mut i) = dst_row.cells[column] {
-                    *i = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
-                }
-            }
-            ColumnType::Float => {
-                if let CellValue::Float(ref mut f) = dst_row.cells[column] {
-                    *f = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
+            ColumnType::Number => {
+                if let CellValue::Number(ref mut n) = dst_row.cells[column] {
+                    *n = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
                 }
             }
             ColumnType::DateTime => {
