@@ -4,7 +4,7 @@ use crate::data::ColumnType;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ColumnConfig {
     pub name: String,
-    #[serde(default, rename = "displayName")]
+    #[serde(default)]
     pub display_name: Option<String>,
     pub column_type: ColumnType,
     pub is_sortable: bool,
