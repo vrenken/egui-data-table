@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning].
 - Ability to rename a row by double-clicking its row header. The new name is persisted to the "name" column.
 - New cell type for float values, with support for automatic inference from CSV and Excel files.
 - New cell type for datetime values, with support for automatic inference from CSV and Excel files.
+- New popup panel that is shown when a column header is clicked with the left mouse button.
 
 ### Fixed
 - Fixed an issue where renamed data sources and sheets were not persisted to the `.correlate` file.
@@ -22,11 +23,12 @@ and this project adheres to [Semantic Versioning].
 - Fixed an issue where double-clicking a column header to rename it was overruled by a single click toggling the sort order.
 
 ### Changed
-- The visible name of a column is now stored as `displayName` in the `.correlate` file, while keeping the internal `name` unchanged.
-- Refactored `CorrelateApp` from `correlate/src/view/root_view.rs` into multiple modules in `correlate/src/view/app/` to improve code organization and maintainability.
-- Split UI components into `menu_bar.rs`, `bottom_panel.rs`, `central_panel.rs`, and `hierarchy_panel.rs`.
-- Moved data source management logic to `data_sources.rs` and shared types to `types.rs`.
-- Extracted value inference and mapping logic from `csv.rs` and `excel.rs` into a new `value_mapping.rs` module.
+- The column rename functionality is now integrated directly into the column header context menu as a permanent textbox, replacing the previous "Rename" button and the double-click trigger in the header itself.
+- Refactored context menus and event handling:
+    - Moved column rename functionality to the column header context menu.
+    - Moved column header and row context menus into dedicated modules (`central_panel_header_menu.rs`, `central_panel_row_context_menu.rs`).
+    - Extracted the hierarchy panel context menu into `hierarchy_panel_context_menu.rs`.
+    - Simplified central panel UI logic by moving event handling into a private `handle_viewer_requests` method.
 
 ## [0.1.0] - 2026-02-14
 

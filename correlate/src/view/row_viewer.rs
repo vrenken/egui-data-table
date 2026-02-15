@@ -320,26 +320,12 @@ impl RowViewer<Row> for Viewer {
         self.rename_row_requested = Some(row);
     }
 
-    fn column_header_double_clicked(&mut self, column: usize) {
-        self.rename_column_requested = Some(column);
+    fn column_header_double_clicked(&mut self, _column: usize) {
+        // self.rename_column_requested = Some(column);
     }
 
     fn show_column_header(&mut self, ui: &mut egui::Ui, column: usize) {
-        let renaming_this_col = self.renaming_item.as_ref().map_or(false, |(t, _)| *t == RenamingTarget::Column(column));
-
-        if renaming_this_col {
-            let (_, current_name) = self.renaming_item.as_mut().unwrap();
-            let res = ui.text_edit_singleline(current_name);
-            if res.lost_focus() || ui.input(|i| i.key_pressed(Key::Enter)) {
-                self.rename_committed = true;
-            }
-            if ui.input(|i| i.key_pressed(Key::Escape)) {
-                self.renaming_item = None;
-            }
-            res.request_focus();
-        } else {
-            ui.add(egui::Label::new(self.column_name(column)).selectable(false));
-        }
+        ui.add(egui::Label::new(self.column_name(column)).selectable(false));
     }
 
     fn show_row_header(&mut self, ui: &mut egui::Ui, row: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize) {

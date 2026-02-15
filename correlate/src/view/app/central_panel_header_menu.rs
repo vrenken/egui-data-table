@@ -1,7 +1,35 @@
 ﻿use crate::view::row_viewer::Viewer;
+use crate::view::app::types::RenamingTarget;
 
 impl Viewer {
-    pub fn ui_column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) {
+    pub fn ui_column_header_context_menu(
+        &mut self,
+        ui: &mut egui::Ui,
+        column: usize) {
+
+
+        ui.horizontal(|ui| {
+            ui.label(egui_material_icons::icons::ICON_NOTES);
+
+            let (_, current_name) = self.renaming_item.get_or_insert_with(|| {
+                let config = &self.column_configs[column];
+                let display_name = config.display_name.as_ref().unwrap_or(&config.name).clone();
+                (RenamingTarget::Column(column), display_name)
+            });
+
+            let res = ui.text_edit_singleline(current_name);
+            if res.lost_focus() || ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+                self.rename_committed = true;
+                ui.close();
+            }
+            if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                self.renaming_item = None;
+                ui.close();
+            }
+            res.request_focus();
+
+        });
+
         let is_name_active = self.column_configs[column].is_name;
         let is_key_active = self.column_configs[column].is_key;
 
@@ -11,6 +39,22 @@ impl Viewer {
         if (&mut*ui).checkbox(&mut is_key, "Use as key").clicked() {
             self.column_configs[column].is_key = is_key;
             self.save_requested = true;
+            ui.close();
+        }
+
+        if (&mut*ui).button(format!("{} Filter", egui_material_icons::icons::ICON_FILTER_LIST)).clicked() {
+            ui.close();
+        }
+        (&mut*ui).menu_button(format!("{} Sort", egui_material_icons::icons::ICON_SORT), |ui| {
+            if (&mut*ui).button(format!("{} Sort ascending", egui_material_icons::icons::ICON_NORTH)).clicked() {
+                ui.close();
+            }
+            if (&mut*ui).button(format!("{} Sort descending", egui_material_icons::icons::ICON_SOUTH)).clicked() {
+                ui.close();
+            }
+
+        });
+        if (&mut*ui).button(format!("{} Hide", egui_material_icons::icons::ICON_VISIBILITY_OFF)).clicked() {
             ui.close();
         }
 
@@ -56,5 +100,15 @@ impl Viewer {
                 ui.close();
             }
         }
+
+        ui.separator();
+
+        if (&mut*ui).button(format!("{} Duplicate", egui_material_icons::icons::ICON_STACK)).clicked() {
+            ui.close();
+        }
+        if (&mut*ui).button(format!("{} Trash", egui_material_icons::icons::ICON_DELETE)).clicked() {
+            ui.close();
+        }
+
     }
 }

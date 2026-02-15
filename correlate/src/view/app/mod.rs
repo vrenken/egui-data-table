@@ -6,3 +6,4 @@ pub mod central_panel;
 pub mod hierarchy_panel;
 pub mod central_panel_header_menu;
 pub mod central_panel_row_context_menu;
+pub mod hierarchy_panel_context_menu;
