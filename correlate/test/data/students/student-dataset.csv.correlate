@@ -58,7 +58,9 @@
           "is_virtual": true,
           "order": 4,
           "width": 155.34375,
-          "allowed_values": null
+          "allowed_values": [
+            "Test"
+          ]
         },
         {
           "name": "latitude",
