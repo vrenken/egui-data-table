@@ -3,11 +3,11 @@
   "sheets": [
     {
       "name": "Sheet1",
-      "displayName": null,
+      "display_name": null,
       "column_configs": [
         {
           "name": "Number",
-          "displayName": "New Colum",
+          "display_name": "New Colum",
           "column_type": "String",
           "is_sortable": true,
           "is_key": true,
@@ -18,7 +18,7 @@
         },
         {
           "name": "Currency",
-          "displayName": "Test Text",
+          "display_name": "Test Text",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -29,7 +29,7 @@
         },
         {
           "name": "Test Text",
-          "displayName": "Test Text",
+          "display_name": "Test Text",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -40,7 +40,7 @@
         },
         {
           "name": "Text",
-          "displayName": "Test Text",
+          "display_name": "Test Text",
           "column_type": "String",
           "is_sortable": true,
           "is_key": true,
@@ -51,7 +51,7 @@
         },
         {
           "name": "Date",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -62,7 +62,7 @@
         },
         {
           "name": "New Column 14",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -73,7 +73,7 @@
         },
         {
           "name": "Time",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -84,7 +84,7 @@
         },
         {
           "name": "Percentage",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -95,7 +95,7 @@
         },
         {
           "name": "Forumula",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
@@ -106,7 +106,7 @@
         },
         {
           "name": "New Column 8",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -117,7 +117,7 @@
         },
         {
           "name": "New Column 9",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -128,7 +128,7 @@
         },
         {
           "name": "New Column 10",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -139,7 +139,7 @@
         },
         {
           "name": "New Column 11",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -150,7 +150,7 @@
         },
         {
           "name": "New Column 12",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -164,11 +164,11 @@
     },
     {
       "name": "Additional Sheet",
-      "displayName": "Additional Sheet 222",
+      "display_name": "Additional Sheet 222",
       "column_configs": [
         {
           "name": "Text",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,

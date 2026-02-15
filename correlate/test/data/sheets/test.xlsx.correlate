@@ -3,11 +3,11 @@
   "sheets": [
     {
       "name": "Sheet1",
-      "displayName": "Test Data",
+      "display_name": "Test Data",
       "column_configs": [
         {
           "name": "Text",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -18,7 +18,7 @@
         },
         {
           "name": "Number",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -29,7 +29,7 @@
         },
         {
           "name": "Date",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -40,7 +40,7 @@
         },
         {
           "name": "Currency",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -51,7 +51,7 @@
         },
         {
           "name": "Time",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -62,7 +62,7 @@
         },
         {
           "name": "Percentage",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -73,7 +73,7 @@
         },
         {
           "name": "Forumula",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,

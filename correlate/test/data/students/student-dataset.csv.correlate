@@ -3,11 +3,11 @@
   "sheets": [
     {
       "name": "student-dataset.csv",
-      "displayName": "Students",
+      "display_name": "Students",
       "column_configs": [
         {
           "name": "id",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": true,
@@ -18,7 +18,7 @@
         },
         {
           "name": "name",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -29,7 +29,7 @@
         },
         {
           "name": "nationality",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -40,7 +40,7 @@
         },
         {
           "name": "city",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -51,7 +51,7 @@
         },
         {
           "name": "latitude",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -62,7 +62,7 @@
         },
         {
           "name": "longitude",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -73,7 +73,7 @@
         },
         {
           "name": "gender",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -84,7 +84,7 @@
         },
         {
           "name": "ethnic.group",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -95,7 +95,7 @@
         },
         {
           "name": "age",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
@@ -106,7 +106,7 @@
         },
         {
           "name": "english.grade",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -117,7 +117,7 @@
         },
         {
           "name": "math.grade",
-          "displayName": "Math",
+          "display_name": "Math",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -128,7 +128,7 @@
         },
         {
           "name": "sciences.grade",
-          "displayName": "Sciences",
+          "display_name": "Sciences",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -139,7 +139,7 @@
         },
         {
           "name": "language.grade",
-          "displayName": "Language",
+          "display_name": "Language",
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
@@ -150,7 +150,7 @@
         },
         {
           "name": "portfolio.rating",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
@@ -161,7 +161,7 @@
         },
         {
           "name": "coverletter.rating",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
@@ -172,7 +172,7 @@
         },
         {
           "name": "refletter.rating",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,

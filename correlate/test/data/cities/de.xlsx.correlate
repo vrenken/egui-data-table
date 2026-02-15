@@ -3,11 +3,11 @@
   "sheets": [
     {
       "name": "Sheet1",
-      "displayName": "Germany",
+      "display_name": "Germany",
       "column_configs": [
         {
           "name": "city",
-          "displayName": "City",
+          "display_name": "City",
           "column_type": "String",
           "is_sortable": true,
           "is_key": true,
@@ -18,7 +18,7 @@
         },
         {
           "name": "lat",
-          "displayName": "Latitude",
+          "display_name": "Latitude",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -29,7 +29,7 @@
         },
         {
           "name": "lng",
-          "displayName": "Longitude",
+          "display_name": "Longitude",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -40,7 +40,7 @@
         },
         {
           "name": "country",
-          "displayName": "Country",
+          "display_name": "Country",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -51,7 +51,7 @@
         },
         {
           "name": "iso2",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -62,7 +62,7 @@
         },
         {
           "name": "admin_name",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -73,7 +73,7 @@
         },
         {
           "name": "capital",
-          "displayName": null,
+          "display_name": null,
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -84,7 +84,7 @@
         },
         {
           "name": "Population Type",
-          "displayName": "Population Type",
+          "display_name": "Population Type",
           "column_type": "String",
           "is_sortable": true,
           "is_key": false,
@@ -95,7 +95,7 @@
         },
         {
           "name": "population",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
@@ -106,7 +106,7 @@
         },
         {
           "name": "population_proper",
-          "displayName": null,
+          "display_name": null,
           "column_type": "Int",
           "is_sortable": true,
           "is_key": false,
