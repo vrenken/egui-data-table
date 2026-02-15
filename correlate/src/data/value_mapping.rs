@@ -33,6 +33,8 @@ pub fn map_cell_value(value: &str, column_type: ColumnType) -> CellValue {
             };
             CellValue::Bool(b)
         }
+        ColumnType::Select => CellValue::Select(if value.is_empty() { None } else { Some(value.to_string()) }),
+        ColumnType::MultiSelect => CellValue::MultiSelect(value.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect()),
     }
 }
 

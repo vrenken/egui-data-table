@@ -100,6 +100,8 @@ impl RowViewer<Row> for RowView {
             (CellValue::Number(l), CellValue::Number(r)) => l.partial_cmp(r).unwrap_or(std::cmp::Ordering::Equal),
             (CellValue::DateTime(l), CellValue::DateTime(r)) => l.cmp(r),
             (CellValue::Bool(l), CellValue::Bool(r)) => l.cmp(r),
+            (CellValue::Select(l), CellValue::Select(r)) => l.cmp(r),
+            (CellValue::MultiSelect(l), CellValue::MultiSelect(r)) => l.cmp(r),
             _ => std::cmp::Ordering::Equal,
         }
     }
@@ -131,6 +133,8 @@ impl RowViewer<Row> for RowView {
             CellValue::Number(n) => { ui.label(n.to_string()) }
             CellValue::DateTime(dt) => { ui.label(dt) }
             CellValue::Bool(b) => { ui.checkbox(&mut { *b }, "") }
+            CellValue::Select(s) => { ui.label(s.as_deref().unwrap_or("")) }
+            CellValue::MultiSelect(v) => { ui.label(v.join(", ")) }
         };
 
         if let Some(config) = self.column_configs.get(column) {
@@ -163,6 +167,8 @@ impl RowViewer<Row> for RowView {
                         ColumnType::Number => CellValue::Number(99.99),
                         ColumnType::DateTime => CellValue::DateTime("2024-02-14 12:00:00".to_string()),
                         ColumnType::Bool => CellValue::Bool(false),
+                        ColumnType::Select => CellValue::Select(Some((*x).clone())),
+                        ColumnType::MultiSelect => CellValue::MultiSelect(vec![(*x).clone()]),
                     };
                     cells.push(cell);
                 }
@@ -216,6 +222,22 @@ impl RowViewer<Row> for RowView {
             //         }).response
             // }
             CellValue::Bool(b) => ui.checkbox(b, ""),
+            CellValue::Select(s) => {
+                let mut text = s.clone().unwrap_or_default();
+                let res = ui.text_edit_singleline(&mut text);
+                if res.changed() {
+                    *s = if text.is_empty() { None } else { Some(text) };
+                }
+                res
+            }
+            CellValue::MultiSelect(v) => {
+                let mut text = v.join(", ");
+                let res = ui.text_edit_singleline(&mut text);
+                if res.changed() {
+                    *v = text.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect();
+                }
+                res
+            }
             // CellValue::Grade(grade) => {
             //     ui.horizontal_wrapped(|ui| {
             //         ui.radio_value(grade, Grade::A, "A")
@@ -277,6 +299,8 @@ impl RowViewer<Row> for RowView {
                 ColumnType::Number => CellValue::Number(0.0),
                 ColumnType::DateTime => CellValue::DateTime("".to_string()),
                 ColumnType::Bool => CellValue::Bool(false),
+                ColumnType::Select => CellValue::Select(None),
+                ColumnType::MultiSelect => CellValue::MultiSelect(Vec::new()),
             };
             cells.push(cell);
         }
@@ -348,6 +372,7 @@ impl RowViewer<Row> for RowView {
             is_virtual: true,
             order: self.column_configs.len(),
             width: None,
+            allowed_values: None,
         };
         self.column_configs.insert(at, new_column);
         // Update all rows in the table
@@ -406,13 +431,23 @@ impl RowViewer<Row> for RowView {
                 ui.close();
             }
 
+            let is_virtual = self.column_configs[column].is_virtual;
+            ui.add_enabled_ui(is_virtual, |ui| {
+                let mut is_select = current_type == ColumnType::Select;
+                if ui.checkbox(&mut is_select, format!("{} Select", ColumnType::Select.icon())).clicked() {
+                    self.column_configs[column].column_type = ColumnType::Select;
+                    action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
+                    ui.close();
+                }
+                let mut is_multi_select = current_type == ColumnType::MultiSelect;
+                if ui.checkbox(&mut is_multi_select, format!("{} Multi-select", ColumnType::MultiSelect.icon())).clicked() {
+                    self.column_configs[column].column_type = ColumnType::MultiSelect;
+                    action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
+                    ui.close();
+                }
+            });
+
             ui.add_enabled_ui(false, |ui| {
-                if ui.button(format!("{} Select", egui_material_icons::icons::ICON_ARROW_DROP_DOWN_CIRCLE)).clicked() {
-                    ui.close();
-                }
-                if ui.button(format!("{} Multi-select", egui_material_icons::icons::ICON_LIST)).clicked() {
-                    ui.close();
-                }
                 if ui.button(format!("{} Status", egui_material_icons::icons::ICON_TARGET)).clicked() {
                     ui.close();
                 }
@@ -564,6 +599,8 @@ impl RowViewer<Row> for RowView {
                 CellValue::Number(n) => n.to_string(),
                 CellValue::DateTime(dt) => dt.clone(),
                 CellValue::Bool(b) => b.to_string(),
+                CellValue::Select(s) => s.clone().unwrap_or_default(),
+                CellValue::MultiSelect(v) => v.join(", "),
             };
 
             let mut current_name = ui.data_mut(|d| d.get_temp::<String>(ui.id().with("rename")).unwrap_or(initial_name));

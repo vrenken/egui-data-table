@@ -6,6 +6,8 @@ pub enum ColumnType {
     Number,
     DateTime,
     Bool,
+    Select,
+    MultiSelect,
 }
 
 impl ColumnType {
@@ -15,6 +17,8 @@ impl ColumnType {
             ColumnType::Number => egui_material_icons::icons::ICON_TAG,
             ColumnType::DateTime => egui_material_icons::icons::ICON_CALENDAR_CLOCK,
             ColumnType::Bool => egui_material_icons::icons::ICON_CHECK_BOX,
+            ColumnType::Select => egui_material_icons::icons::ICON_ARROW_DROP_DOWN_CIRCLE,
+            ColumnType::MultiSelect => egui_material_icons::icons::ICON_LIST,
         }
     }
 }

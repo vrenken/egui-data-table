@@ -17,4 +17,6 @@ pub struct ColumnConfig {
     pub order: usize,
     #[serde(default)]
     pub width: Option<f32>,
+    #[serde(default)]
+    pub allowed_values: Option<Vec<String>>,
 }

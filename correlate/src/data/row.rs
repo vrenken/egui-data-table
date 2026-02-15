@@ -4,6 +4,8 @@ pub enum CellValue {
     Number(f64),
     DateTime(String),
     Bool(bool),
+    Select(Option<String>),
+    MultiSelect(Vec<String>),
 }
 
 #[derive(Debug, Clone)]

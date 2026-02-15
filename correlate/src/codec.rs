@@ -18,6 +18,8 @@ impl RowCodec<Row> for Codec {
                 ColumnType::Number => CellValue::Number(0.0),
                 ColumnType::DateTime => CellValue::DateTime("".to_string()),
                 ColumnType::Bool => CellValue::Bool(false),
+                ColumnType::Select => CellValue::Select(None),
+                ColumnType::MultiSelect => CellValue::MultiSelect(Vec::new()),
             };
             cells.push(cell);
         }
@@ -31,6 +33,8 @@ impl RowCodec<Row> for Codec {
                 CellValue::Number(n) => dst.push_str(&n.to_string()),
                 CellValue::DateTime(dt) => dst.push_str(dt),
                 CellValue::Bool(b) => dst.push_str(&b.to_string()),
+                CellValue::Select(s) => if let Some(s) = s { dst.push_str(s) },
+                CellValue::MultiSelect(v) => dst.push_str(&v.join(", ")),
             }
         }
     }
@@ -62,6 +66,16 @@ impl RowCodec<Row> for Codec {
             ColumnType::Bool => {
                 if let CellValue::Bool(ref mut b) = dst_row.cells[column] {
                     *b = src_data.parse().map_err(|_| DecodeErrorBehavior::SkipRow)?;
+                }
+            }
+            ColumnType::Select => {
+                if let CellValue::Select(ref mut s) = dst_row.cells[column] {
+                    *s = if src_data.is_empty() { None } else { Some(src_data.to_string()) };
+                }
+            }
+            ColumnType::MultiSelect => {
+                if let CellValue::MultiSelect(ref mut v) = dst_row.cells[column] {
+                    *v = src_data.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect();
                 }
             }
         }

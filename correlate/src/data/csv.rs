@@ -63,6 +63,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
                 is_virtual: false,
                 order: i,
                 width: None,
+                allowed_values: None,
             });
         }
     } else {
