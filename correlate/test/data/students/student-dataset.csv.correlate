@@ -13,7 +13,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 58.25
+          "width": 74.25
         },
         {
           "name": "name",
@@ -46,14 +46,24 @@
           "width": 130.0
         },
         {
+          "name": "New Column 17",
+          "display_name": null,
+          "column_type": "Text",
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": true,
+          "order": 4,
+          "width": 154.6875
+        },
+        {
           "name": "latitude",
           "display_name": null,
           "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 4,
-          "width": 76.46875
+          "order": 5,
+          "width": 92.46875
         },
         {
           "name": "longitude",
@@ -62,8 +72,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 5,
-          "width": 87.125
+          "order": 6,
+          "width": 103.125
         },
         {
           "name": "gender",
@@ -72,8 +82,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 6,
-          "width": 72.875
+          "order": 7,
+          "width": 88.875
         },
         {
           "name": "ethnic.group",
@@ -82,8 +92,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 7,
-          "width": 104.9375
+          "order": 8,
+          "width": 121.59375
         },
         {
           "name": "age",
@@ -92,8 +102,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 8,
-          "width": 52.46875
+          "order": 9,
+          "width": 68.46875
         },
         {
           "name": "english.grade",
@@ -102,8 +112,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 9,
-          "width": 109.125
+          "order": 10,
+          "width": 125.8125
         },
         {
           "name": "math.grade",
@@ -112,8 +122,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 10,
-          "width": 61.40625
+          "order": 11,
+          "width": 77.40625
         },
         {
           "name": "sciences.grade",
@@ -122,8 +132,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 11,
-          "width": 80.25
+          "order": 12,
+          "width": 96.25
         },
         {
           "name": "language.grade",
@@ -132,8 +142,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 12,
-          "width": 87.8125
+          "order": 13,
+          "width": 103.8125
         },
         {
           "name": "portfolio.rating",
@@ -142,8 +152,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 13,
-          "width": 120.125
+          "order": 14,
+          "width": 136.78125
         },
         {
           "name": "coverletter.rating",
@@ -152,8 +162,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 14,
-          "width": 132.78125
+          "order": 15,
+          "width": 149.46875
         },
         {
           "name": "refletter.rating",
@@ -162,7 +172,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 15,
+          "order": 16,
           "width": 462.25
         }
       ],
