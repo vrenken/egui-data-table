@@ -385,17 +385,62 @@ impl RowViewer<Row> for RowView {
 
         });
 
+        ui.menu_button(format!("{} Change type", egui_material_icons::icons::ICON_EDIT_SQUARE), |ui| {
+            if ui.button(format!("{} Text", egui_material_icons::icons::ICON_SUBJECT)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Number", egui_material_icons::icons::ICON_TAG)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Select", egui_material_icons::icons::ICON_ARROW_DROP_DOWN_CIRCLE)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Multi-select", egui_material_icons::icons::ICON_LIST)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Status", egui_material_icons::icons::ICON_TARGET)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Person", egui_material_icons::icons::ICON_GROUP)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} URL", egui_material_icons::icons::ICON_LINK)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Email", egui_material_icons::icons::ICON_ALTERNATE_EMAIL)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Phone", egui_material_icons::icons::ICON_CALL)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Relation", egui_material_icons::icons::ICON_NORTH_EAST)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Rollup", egui_material_icons::icons::ICON_SEARCH)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Created time", egui_material_icons::icons::ICON_NEST_CLOCK_FARSIGHT_ANALOG)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Created by", egui_material_icons::icons::ICON_ACCOUNT_CIRCLE)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Last edited time", egui_material_icons::icons::ICON_NEST_CLOCK_FARSIGHT_ANALOG)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Last edited by", egui_material_icons::icons::ICON_ACCOUNT_CIRCLE)).clicked() {
+                ui.close();
+            }
+            if ui.button(format!("{} Location", egui_material_icons::icons::ICON_LOCATION_ON)).clicked() {
+                ui.close();
+            }
+
+        });
+
         let is_name_active = self.column_configs[column].is_name;
         let is_key_active = self.column_configs[column].is_key;
 
         ui.separator(); // ========================================
-
-        let mut is_key = is_key_active;
-        if ui.checkbox(&mut is_key, "Use as key").clicked() {
-            self.column_configs[column].is_key = is_key;
-            action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
-            ui.close();
-        }
 
         if ui.button(format!("{} Filter", egui_material_icons::icons::ICON_FILTER_LIST)).clicked() {
             ui.close();
@@ -410,6 +455,13 @@ impl RowViewer<Row> for RowView {
 
         });
         if ui.button(format!("{} Hide", egui_material_icons::icons::ICON_VISIBILITY_OFF)).clicked() {
+            ui.close();
+        }
+
+        let mut is_key = is_key_active;
+        if ui.checkbox(&mut is_key, "Use as key").clicked() {
+            self.column_configs[column].is_key = is_key;
+            action = Some(egui_data_table::viewer::HeaderAction::RequestSave);
             ui.close();
         }
 
