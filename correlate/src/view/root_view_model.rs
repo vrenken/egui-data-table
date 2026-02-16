@@ -139,6 +139,8 @@ impl RootViewModel {
                 row_protection: false,
                 hotkeys: Vec::new(),
                 column_configs: Vec::new(),
+                config: config.clone(),
+                data_sources: data_sources.clone(),
             };
 
             return Self {
@@ -162,6 +164,8 @@ impl RootViewModel {
             row_protection: false,
             hotkeys: Vec::new(),
             column_configs: sheet.column_configs.clone(),
+            config: config.clone(),
+            data_sources: data_sources.clone(),
         };
 
         Self {
@@ -251,7 +255,9 @@ impl RootViewModel {
         ds.selected_sheet_index = sheet_idx;
         let sheet = &ds.sheets[sheet_idx];
         self.table = sheet.table.clone();
+        self.viewer.config = self.config.clone();
         self.viewer.column_configs = sheet.column_configs.clone();
+        self.viewer.data_sources = self.data_sources.clone();
     }
 
     pub fn save_datasource_configuration(&mut self) {
