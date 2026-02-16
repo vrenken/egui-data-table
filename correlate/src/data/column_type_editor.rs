@@ -1,5 +1,15 @@
-﻿use egui::{Response, Ui};
-use crate::data::{CellValue, ColumnConfig};
+﻿use egui::{Response, Ui, Color32};
+use crate::data::*;
+
+fn get_random_gentle_color() -> [u8; 3] {
+    let h = fastrand::f32();
+    let s = 0.5; // gentle saturation
+    let l = 0.8; // gentle lightness
+    
+    let color = egui::ecolor::Hsva::new(h, s, l, 1.0);
+    let rgb = Color32::from(color);
+    [rgb.r(), rgb.g(), rgb.b()]
+}
 
 pub trait ColumnTypeEditor {
     fn show(
@@ -83,10 +93,27 @@ impl ColumnTypeEditor for SelectEditor {
         column_config: &mut ColumnConfig,
     ) -> Option<Response> {
         let text = if cell_value.0.is_empty() { "Select...".to_string() } else { cell_value.0.clone() };
+        let mut color = Color32::TRANSPARENT;
+
+        if let Some(allowed) = &column_config.allowed_values {
+            if let Some(av) = allowed.iter().find(|av| av.value == cell_value.0) {
+                color = Color32::from_rgb(av.color[0], av.color[1], av.color[2]);
+            }
+        }
+
         let popup_id = ui.make_persistent_id("select_editor_popup");
         
         // We show a label as a placeholder in the cell.
-        let placeholder_res = ui.selectable_label(false, text);
+        let placeholder_res = if color != Color32::TRANSPARENT {
+            ui.scope(|ui| {
+                ui.visuals_mut().widgets.inactive.weak_bg_fill = color;
+                ui.visuals_mut().widgets.hovered.weak_bg_fill = color;
+                ui.visuals_mut().widgets.active.weak_bg_fill = color;
+                ui.button(text)
+            }).inner
+        } else {
+            ui.selectable_label(false, text)
+        };
         
         // Check if the popup was open in the previous frame
         let was_open = egui::Popup::is_id_open(ui.ctx(), popup_id);
@@ -104,6 +131,7 @@ impl ColumnTypeEditor for SelectEditor {
             let text_edit_res = ui.text_edit_singleline(&mut cell_value.0);
             if text_edit_res.changed() {
                 response.mark_changed();
+                ui.ctx().request_repaint(); // Ensure it updates and eventually saves
             }
             if text_edit_res.lost_focus() || ui.input(|i| i.key_pressed(egui::Key::Enter)) {
                 ui.close();
@@ -118,25 +146,39 @@ impl ColumnTypeEditor for SelectEditor {
             ui.separator();
 
             if let Some(allowed_values) = &column_config.allowed_values {
-                for value in allowed_values {
-                    if ui.selectable_label(&cell_value.0 == value, value).clicked() {
-                        cell_value.0 = value.clone();
+                for av in allowed_values {
+                    let av_color = Color32::from_rgb(av.color[0], av.color[1], av.color[2]);
+                    let clicked = ui.scope(|ui| {
+                        ui.visuals_mut().widgets.inactive.weak_bg_fill = av_color;
+                        ui.visuals_mut().widgets.hovered.weak_bg_fill = av_color;
+                        ui.visuals_mut().widgets.active.weak_bg_fill = av_color;
+                        ui.selectable_label(cell_value.0 == av.value, &av.value)
+                    }).inner.clicked();
+
+                    if clicked {
+                        cell_value.0 = av.value.clone();
                         response.mark_changed();
+                        ui.ctx().request_repaint(); // Ensure it updates and eventually saves
                         ui.close();
                     }
                 }
             }
         });
 
-        // Update allowed_values only when the popup closes or if something changed.
+        // Update allowed_values and cell_values only when the popup closes or if something changed.
         // If it was open but now it's closed, it means it just closed.
         let is_open = egui::Popup::is_id_open(ui.ctx(), popup_id);
         if was_open && !is_open {
             if !cell_value.0.is_empty() {
+                // 1. Update allowed_values in column_config
                 let allowed = column_config.allowed_values.get_or_insert_with(Vec::new);
-                if !allowed.contains(&cell_value.0) {
-                    allowed.push(cell_value.0.clone());
+                if !allowed.iter().any(|av| av.value == cell_value.0) {
+                    allowed.push(AllowedValue {
+                        value: cell_value.0.clone(),
+                        color: get_random_gentle_color(),
+                    });
                     response.mark_changed();
+                    ui.ctx().request_repaint(); // Ensure it updates and eventually saves
                 }
             }
         }

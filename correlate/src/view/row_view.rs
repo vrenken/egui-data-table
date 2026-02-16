@@ -11,7 +11,7 @@ pub struct RowView {
     pub name_filter: String,
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
-    pub column_configs: Vec<ColumnConfig>,
+    pub column_configs: Vec<ColumnConfig>
 }
 
 impl RowViewer<Row> for RowView {
@@ -129,6 +129,25 @@ impl RowViewer<Row> for RowView {
             ColumnType::Bool => {
                 let mut b = cell.0.parse::<bool>().unwrap_or(false);
                 ui.checkbox(&mut b, "")
+            }
+            ColumnType::Select => {
+                let mut color = egui::Color32::TRANSPARENT;
+                if let Some(allowed) = &self.column_configs[column].allowed_values {
+                    if let Some(av) = allowed.iter().find(|av| av.value == cell.0) {
+                        color = egui::Color32::from_rgb(av.color[0], av.color[1], av.color[2]);
+                    }
+                }
+
+                if color != egui::Color32::TRANSPARENT {
+                    ui.scope(|ui| {
+                        ui.visuals_mut().widgets.inactive.weak_bg_fill = color;
+                        ui.visuals_mut().widgets.hovered.weak_bg_fill = color;
+                        ui.visuals_mut().widgets.active.weak_bg_fill = color;
+                        ui.button(&cell.0)
+                    }).inner
+                } else {
+                    ui.label(&cell.0)
+                }
             }
             _ => ui.label(&cell.0),
         };

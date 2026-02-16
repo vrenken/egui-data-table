@@ -1,6 +1,6 @@
 ﻿use serde::{Deserialize, Serialize};
 use egui::{Response, Ui};
-use crate::data::{CellValue, ColumnConfig, ColumnTypeEditor, TextEditor, NumberEditor, DateTimeEditor, BoolEditor, SelectEditor, MultiSelectEditor};
+use crate::data::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ColumnType {

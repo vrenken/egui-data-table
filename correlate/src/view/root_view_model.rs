@@ -42,20 +42,16 @@ impl RootViewModel {
                     let rows: &Vec<Row> = &sheet.table;
                     for row in rows {
                         let key = row.cells[key_idx].0.clone();
-                        if key.is_empty() { continue; }
-                        
-                        // For now we store all virtual column values. 
-                        // If there are multiple virtual columns, we might need a more complex structure,
-                        // but the requirement says "add the 'key' ... as well as a 'value' field".
-                        // If there's only one virtual column, it's clear. 
-                        // If there are multiple, maybe we should store them all?
-                        // Let's assume for now we take the first virtual column's value as "the" value 
-                        // or concatenated? The issue description is singular: "a 'value' field".
-                        if let Some(&v_idx) = virtual_cols.first() {
+                        if key.is_empty() {
+                            continue;
+                        }
+
+                        for &v_idx in &virtual_cols {
                             let value = row.cells[v_idx].0.clone();
                             if !value.is_empty() {
                                 cell_values.push(crate::data::CellValueConfig {
-                                    key,
+                                    key: key.clone(),
+                                    column_name: sheet.column_configs[v_idx].name.clone(),
                                     value,
                                 });
                             }
