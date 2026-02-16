@@ -1,4 +1,7 @@
-﻿pub mod row;
+﻿pub mod relation;
+pub use relation::*;
+
+pub mod row;
 pub use row::*;
 
 pub mod column_type;
