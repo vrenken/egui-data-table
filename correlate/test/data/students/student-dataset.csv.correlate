@@ -61,7 +61,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 4,
-          "width": 95.125,
+          "width": 95.8125,
           "allowed_values": null,
           "related_source": null
         },
@@ -73,7 +73,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 5,
-          "width": 106.125,
+          "width": 106.46875,
           "allowed_values": null,
           "related_source": null
         },
@@ -190,6 +190,22 @@
                 170,
                 231
               ]
+            },
+            {
+              "value": "Paris",
+              "color": [
+                201,
+                170,
+                231
+              ]
+            },
+            {
+              "value": "Deventer",
+              "color": [
+                229,
+                170,
+                231
+              ]
             }
           ],
           "related_source": null
@@ -202,9 +218,9 @@
           "is_name": false,
           "is_virtual": true,
           "order": 7,
-          "width": 154.34375,
+          "width": 301.71875,
           "allowed_values": null,
-          "related_source": null
+          "related_source": "correlate/test/data/students/student-dataset.csv > student-dataset.csv"
         },
         {
           "name": "gender",
@@ -330,9 +346,34 @@
       "sort_config": null,
       "cell_values": [
         {
+          "key": "1",
+          "column_name": "Type",
+          "value": "Venlo"
+        },
+        {
+          "key": "2",
+          "column_name": "Type",
+          "value": "Amsterdam"
+        },
+        {
           "key": "3",
           "column_name": "Type",
           "value": "Test"
+        },
+        {
+          "key": "4",
+          "column_name": "Type",
+          "value": "Berlin"
+        },
+        {
+          "key": "5",
+          "column_name": "Type",
+          "value": "Paris"
+        },
+        {
+          "key": "6",
+          "column_name": "Type",
+          "value": "Arnhem"
         },
         {
           "key": "7",
@@ -340,9 +381,19 @@
           "value": "Berlin"
         },
         {
+          "key": "8",
+          "column_name": "Type",
+          "value": "Berlin"
+        },
+        {
           "key": "9",
           "column_name": "Type",
           "value": "Amsterdam"
+        },
+        {
+          "key": "10",
+          "column_name": "Type",
+          "value": "Berlin"
         },
         {
           "key": "11",
@@ -365,9 +416,29 @@
           "value": "Amsterdam"
         },
         {
+          "key": "15",
+          "column_name": "Type",
+          "value": "Venlo"
+        },
+        {
+          "key": "16",
+          "column_name": "Type",
+          "value": "Maastricht"
+        },
+        {
+          "key": "17",
+          "column_name": "Type",
+          "value": "Groningen"
+        },
+        {
           "key": "18",
           "column_name": "Type",
           "value": "Amsterdam"
+        },
+        {
+          "key": "20",
+          "column_name": "Type",
+          "value": "Arnhem"
         },
         {
           "key": "21",
@@ -390,6 +461,11 @@
           "value": "Test"
         },
         {
+          "key": "25",
+          "column_name": "Type",
+          "value": "Deventer"
+        },
+        {
           "key": "26",
           "column_name": "Type",
           "value": "Berlin"
@@ -398,6 +474,11 @@
           "key": "28",
           "column_name": "Type",
           "value": "Berlin"
+        },
+        {
+          "key": "30",
+          "column_name": "Type",
+          "value": "Maastricht"
         },
         {
           "key": "31",
@@ -463,6 +544,11 @@
           "key": "53",
           "column_name": "Type",
           "value": "Test"
+        },
+        {
+          "key": "54",
+          "column_name": "Type",
+          "value": "Arnhem"
         },
         {
           "key": "56",
