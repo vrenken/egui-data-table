@@ -1169,6 +1169,11 @@ impl<R> UiState<R> {
                 vwr.on_column_inserted(table, *at);
                 self.cc_dirty = true;
             }
+            Command::MoveColumn(from, to) => {
+                table.dirty_flag = true;
+                vwr.on_column_moved(table, *from, *to);
+                self.cc_dirty = true;
+            }
             Command::RequestSave => {
                 table.dirty_flag = true;
             }
