@@ -40,7 +40,7 @@
         },
         {
           "name": "city",
-          "display_name": null,
+          "display_name": "City",
           "column_type": "Text",
           "is_key": false,
           "is_name": false,
@@ -50,8 +50,8 @@
           "allowed_values": null
         },
         {
-          "name": "New Column 17",
-          "display_name": null,
+          "name": "Relation",
+          "display_name": "Relation",
           "column_type": "Select",
           "is_key": false,
           "is_name": false,
@@ -63,7 +63,8 @@
             "Something",
             "Kinkie",
             "Tjakka",
-            "Berlin"
+            "Berlin",
+            "Amsterdam"
           ]
         },
         {
@@ -202,8 +203,24 @@
       "sort_config": null,
       "cell_values": [
         {
+          "key": "0",
+          "value": "Berlin"
+        },
+        {
+          "key": "1",
+          "value": "Amsterdam"
+        },
+        {
+          "key": "3",
+          "value": "Amsterdam"
+        },
+        {
           "key": "4",
           "value": "Something"
+        },
+        {
+          "key": "5",
+          "value": "Kinkie"
         },
         {
           "key": "6",

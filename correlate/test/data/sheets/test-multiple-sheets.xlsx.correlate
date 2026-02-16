@@ -13,7 +13,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 128.0
+          "width": 129.90625,
+          "allowed_values": null
         },
         {
           "name": "Currency",
@@ -23,7 +24,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 1,
-          "width": 98.66669
+          "width": 100.375,
+          "allowed_values": null
         },
         {
           "name": "Test Text",
@@ -33,7 +35,8 @@
           "is_name": false,
           "is_virtual": true,
           "order": 2,
-          "width": 100.375
+          "width": 116.375,
+          "allowed_values": null
         },
         {
           "name": "Text",
@@ -43,7 +46,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 3,
-          "width": 127.625
+          "width": 127.625,
+          "allowed_values": null
         },
         {
           "name": "Date",
@@ -53,7 +57,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 4,
-          "width": 102.6875
+          "width": 102.6875,
+          "allowed_values": null
         },
         {
           "name": "New Column 14",
@@ -63,7 +68,8 @@
           "is_name": false,
           "is_virtual": true,
           "order": 5,
-          "width": 139.34381
+          "width": 154.6875,
+          "allowed_values": null
         },
         {
           "name": "Time",
@@ -73,7 +79,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 6,
-          "width": 74.15625
+          "width": 75.8125,
+          "allowed_values": null
         },
         {
           "name": "Percentage",
@@ -83,7 +90,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 7,
-          "width": 97.8125
+          "width": 113.125,
+          "allowed_values": null
         },
         {
           "name": "Forumula",
@@ -93,7 +101,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 8,
-          "width": 89.125
+          "width": 101.96875,
+          "allowed_values": null
         },
         {
           "name": "New Column 8",
@@ -103,7 +112,8 @@
           "is_name": false,
           "is_virtual": true,
           "order": 9,
-          "width": 164.46875
+          "width": 164.46875,
+          "allowed_values": null
         },
         {
           "name": "New Column 9",
@@ -113,7 +123,8 @@
           "is_name": false,
           "is_virtual": true,
           "order": 10,
-          "width": 132.0
+          "width": 147.34375,
+          "allowed_values": null
         },
         {
           "name": "New Column 10",
@@ -123,7 +134,8 @@
           "is_name": false,
           "is_virtual": true,
           "order": 11,
-          "width": 139.34375
+          "width": 154.6875,
+          "allowed_values": null
         },
         {
           "name": "New Column 11",
@@ -133,7 +145,8 @@
           "is_name": false,
           "is_virtual": true,
           "order": 12,
-          "width": 498.21875
+          "width": 498.21875,
+          "allowed_values": null
         },
         {
           "name": "New Column 12",
@@ -143,10 +156,12 @@
           "is_name": false,
           "is_virtual": true,
           "order": 13,
-          "width": 139.34375
+          "width": 154.6875,
+          "allowed_values": null
         }
       ],
-      "sort_config": null
+      "sort_config": null,
+      "cell_values": []
     },
     {
       "name": "Additional Sheet",
@@ -160,10 +175,12 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 1994.9062
+          "width": 1994.9062,
+          "allowed_values": null
         }
       ],
-      "sort_config": null
+      "sort_config": null,
+      "cell_values": []
     }
   ]
 }

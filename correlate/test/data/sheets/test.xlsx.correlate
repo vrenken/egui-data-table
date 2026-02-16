@@ -13,7 +13,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 145.34375
+          "width": 145.34375,
+          "allowed_values": null
         },
         {
           "name": "Number",
@@ -23,7 +24,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 1,
-          "width": 89.125
+          "width": 89.125,
+          "allowed_values": null
         },
         {
           "name": "Date",
@@ -33,7 +35,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 2,
-          "width": 96.19794
+          "width": 96.19794,
+          "allowed_values": null
         },
         {
           "name": "Currency",
@@ -43,7 +46,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 3,
-          "width": 115.0
+          "width": 115.0,
+          "allowed_values": null
         },
         {
           "name": "Time",
@@ -53,7 +57,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 4,
-          "width": 74.15625
+          "width": 74.15625,
+          "allowed_values": null
         },
         {
           "name": "Percentage",
@@ -63,7 +68,8 @@
           "is_name": false,
           "is_virtual": false,
           "order": 5,
-          "width": 89.8125
+          "width": 105.12506,
+          "allowed_values": null
         },
         {
           "name": "Forumula",
@@ -73,10 +79,12 @@
           "is_name": false,
           "is_virtual": false,
           "order": 6,
-          "width": 89.12506
+          "width": 93.96875,
+          "allowed_values": null
         }
       ],
-      "sort_config": null
+      "sort_config": null,
+      "cell_values": []
     }
   ]
 }
