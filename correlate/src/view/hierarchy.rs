@@ -17,7 +17,7 @@ impl HierarchyPanel {
                     ui.heading("Project");
                     ui.separator();
 
-                    egui::collapsing_header::CollapsingHeader::new(format!("{} Datasources", egui_material_icons::icons::ICON_FOLDER))
+                    let header_res = egui::collapsing_header::CollapsingHeader::new(format!("{} Data sources", egui_material_icons::icons::ICON_FOLDER))
                         .default_open(true)
                         .show(ui, |ui| {
                             
@@ -191,6 +191,12 @@ impl HierarchyPanel {
                             }
                         });
 
+                    header_res.header_response.context_menu(|ui| {
+                        if let Some(path) = Self::ui_hierarchy_panel_context_menu(ui) {
+                            view_model.pending_file_to_add = Some(path);
+                        }
+                    });
+
                     ui.add_space(20.);
 
                     ui.heading("Configuration");
@@ -229,7 +235,7 @@ impl HierarchyPanel {
 
     pub fn ui_hierarchy_panel_context_menu(ui: &mut egui::Ui) -> Option<std::path::PathBuf> {
         let mut result = None;
-        if ui.button("Add").clicked() {
+        if ui.button("Add data source").clicked() {
             if let Some(path) = rfd::FileDialog::new()
                 .add_filter("Excel Files", &["xlsx"])
                 .add_filter("CSV Files", &["csv"])
