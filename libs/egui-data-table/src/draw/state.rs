@@ -851,6 +851,9 @@ impl<R> UiState<R> {
 
         // Generate redo argument from command
         let restore = match command {
+            Command::MoveColumn(from, to) => {
+                vec![Command::MoveColumn(to, from)]
+            }
             Command::CcHideColumn(column_idx) => {
                 if self.p.vis_cols.len() == 1 {
                     return;
