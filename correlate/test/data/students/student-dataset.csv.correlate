@@ -57,7 +57,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 4,
-          "width": 92.46875,
+          "width": 95.125,
           "allowed_values": null
         },
         {
@@ -68,12 +68,12 @@
           "is_name": false,
           "is_virtual": false,
           "order": 5,
-          "width": 103.125,
+          "width": 106.125,
           "allowed_values": null
         },
         {
-          "name": "Relation",
-          "display_name": null,
+          "name": "Type",
+          "display_name": "Type",
           "column_type": "Select",
           "is_key": false,
           "is_name": false,
@@ -124,13 +124,24 @@
           ]
         },
         {
+          "name": "Relation",
+          "display_name": null,
+          "column_type": "Relation",
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": true,
+          "order": 7,
+          "width": 154.34375,
+          "allowed_values": null
+        },
+        {
           "name": "gender",
           "display_name": null,
           "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 7,
+          "order": 8,
           "width": 88.875,
           "allowed_values": null
         },
@@ -141,7 +152,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 8,
+          "order": 9,
           "width": 121.59375,
           "allowed_values": null
         },
@@ -152,7 +163,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 9,
+          "order": 10,
           "width": 68.46875,
           "allowed_values": null
         },
@@ -163,7 +174,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 10,
+          "order": 11,
           "width": 125.8125,
           "allowed_values": null
         },
@@ -174,7 +185,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 11,
+          "order": 12,
           "width": 114.46875,
           "allowed_values": null
         },
@@ -185,7 +196,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 12,
+          "order": 13,
           "width": 131.8125,
           "allowed_values": null
         },
@@ -196,7 +207,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 13,
+          "order": 14,
           "width": 137.8125,
           "allowed_values": null
         },
@@ -207,7 +218,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 14,
+          "order": 15,
           "width": 136.78125,
           "allowed_values": null
         },
@@ -218,7 +229,7 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 15,
+          "order": 16,
           "width": 149.46875,
           "allowed_values": null
         },
@@ -229,8 +240,8 @@
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
-          "order": 16,
-          "width": 134.125,
+          "order": 17,
+          "width": 134.4375,
           "allowed_values": null
         }
       ],
@@ -238,48 +249,63 @@
       "cell_values": [
         {
           "key": "7",
-          "column_name": "Relation",
+          "column_name": "Type",
           "value": "Berlin"
         },
         {
           "key": "9",
-          "column_name": "Relation",
+          "column_name": "Type",
           "value": "Amsterdam"
         },
         {
           "key": "11",
-          "column_name": "Relation",
+          "column_name": "Type",
           "value": "Venlo"
         },
         {
           "key": "18",
-          "column_name": "Relation",
+          "column_name": "Type",
           "value": "Amsterdam"
         },
         {
           "key": "21",
-          "column_name": "Relation",
+          "column_name": "Type",
           "value": "Amsterdam"
         },
         {
           "key": "22",
-          "column_name": "Relation",
+          "column_name": "Type",
+          "value": "Berlin"
+        },
+        {
+          "key": "23",
+          "column_name": "Type",
           "value": "Berlin"
         },
         {
           "key": "34",
-          "column_name": "Relation",
+          "column_name": "Type",
           "value": "Ahlen"
         },
         {
           "key": "116",
-          "column_name": "Relation",
+          "column_name": "Type",
           "value": "Berlin"
         },
         {
           "key": "120",
-          "column_name": "Relation",
+          "column_name": "Type",
           "value": "Test"
+        },
+        {
+          "key": "213",
+          "column_name": "Type",
+          "value": "Test"
+        },
+        {
+          "key": "218",
+          "column_name": "Type",
+          "value": "Berlin"
         }
       ]
     }
