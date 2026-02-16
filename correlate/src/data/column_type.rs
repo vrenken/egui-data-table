@@ -43,4 +43,8 @@ impl ColumnType {
     ) -> Option<Response> {
         self.editor().show(ui, cell_value, column_config)
     }
+
+    pub fn default_value(&self) -> CellValue {
+        CellValue("".to_string())
+    }
 }
