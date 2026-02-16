@@ -105,6 +105,9 @@ impl ColumnTypeEditor for SelectEditor {
             if text_edit_res.changed() {
                 response.mark_changed();
             }
+            if text_edit_res.lost_focus() || ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+                ui.close();
+            }
 
             // If it was NOT open in the previous frame, but is open now (it is, since we are inside the popup),
             // it means it was just opened.
