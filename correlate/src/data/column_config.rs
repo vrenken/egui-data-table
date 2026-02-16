@@ -25,4 +25,6 @@ pub struct ColumnConfig {
     pub width: Option<f32>,
     #[serde(default)]
     pub allowed_values: Option<Vec<AllowedValue>>,
+    #[serde(default)]
+    pub related_source: Option<String>,
 }

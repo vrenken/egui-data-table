@@ -64,6 +64,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
                 order: i,
                 width: None,
                 allowed_values: None,
+                related_source: None,
             });
         }
     } else {
