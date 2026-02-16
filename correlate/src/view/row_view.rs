@@ -182,38 +182,11 @@ impl RowViewer<Row> for RowView {
         row: &mut Row,
         column: usize,
     ) -> Option<Response> {
-        match &mut row.cells[column] {
-            CellValue::String(s) => {
-                egui::TextEdit::multiline(s)
-                    .desired_rows(1)
-                    .code_editor()
-                    .show(ui)
-                    .response
-            }
-            CellValue::Number(n) => ui.add(egui::DragValue::new(n).speed(0.1)),
-            CellValue::DateTime(dt) => {
-                egui::TextEdit::singleline(dt)
-                    .show(ui)
-                    .response
-            }
-            CellValue::Bool(b) => ui.checkbox(b, ""),
-            CellValue::Select(s) => {
-                let mut text = s.clone().unwrap_or_default();
-                let res = ui.text_edit_singleline(&mut text);
-                if res.changed() {
-                    *s = if text.is_empty() { None } else { Some(text) };
-                }
-                res
-            }
-            CellValue::MultiSelect(v) => {
-                let mut text = v.join(", ");
-                let res = ui.text_edit_singleline(&mut text);
-                if res.changed() {
-                    *v = text.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect();
-                }
-                res
-            }
-        }
+        let column_config = self.column_configs.get_mut(column)?;
+        let column_type = column_config.column_type;
+        let cell_value = &mut row.cells[column];
+
+        column_type.show_editor(ui, cell_value, column_config)
     }
 
     fn set_cell_value(&mut self, src: &Row, dst: &mut Row, column: usize) {
