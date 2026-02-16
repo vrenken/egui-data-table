@@ -1,8 +1,7 @@
 ﻿use std::borrow::Cow;
-use egui::Key;
+use egui::{Key, PopupCloseBehavior};
 use egui_data_table::viewer::{HeaderAction, HeaderResult};
-use crate::data::column_config::ColumnConfig;
-use crate::data::column_type::ColumnType;
+use crate::data::*;
 
 pub struct ColumnHeader<'a> {
     pub column_configs: &'a mut Vec<ColumnConfig>,
@@ -206,15 +205,13 @@ impl<'a> ColumnHeader<'a> {
 
         if column > 0 {
             if ui.button("Move Left").clicked() {
-                self.column_configs.swap(column, column - 1);
-                action = Some(HeaderAction::RequestSave);
+                action = Some(HeaderAction::MoveColumn(column, column - 1));
                 ui.close();
             }
         }
         if column < self.column_configs.len() - 1 {
             if ui.button("Move Right").clicked() {
-                self.column_configs.swap(column, column + 1);
-                action = Some(HeaderAction::RequestSave);
+                action = Some(HeaderAction::MoveColumn(column, column + 1));
                 ui.close();
             }
         }
