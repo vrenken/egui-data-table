@@ -12,7 +12,6 @@ impl CentralPanelViewModel {
     }
 
     pub fn handle_viewer_requests(&mut self, view_model: &mut RootViewModel) {
-
         // Handle column reordering from the data table
         Self::handle_column_reordering(view_model);
 
