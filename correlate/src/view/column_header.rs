@@ -1,4 +1,5 @@
 ﻿use std::borrow::Cow;
+use eframe::epaint::text::TextWrapMode;
 use egui::{Key, PopupCloseBehavior};
 use egui_data_table::viewer::{HeaderAction, HeaderResult};
 use crate::data::*;
@@ -38,18 +39,20 @@ impl<'a> ColumnHeader<'a> {
         ui.add(egui::Label::new(self.name(column)).selectable(false));
     }
 
-    pub fn context_menu(&mut self, ui: &mut egui::Ui, column: usize) -> HeaderResult {
+    pub fn context_menu(&mut self, ui: &mut egui::Ui, column: usize, data_sources: Vec<DataSource>) -> HeaderResult {
+
+        let config = &self.column_configs[column];
+
         let mut action = None;
         ui.horizontal(|ui| {
             ui.label(egui_material_icons::icons::ICON_NOTES);
 
-            let config = &self.column_configs[column];
             let initial_name = config.display_name.as_ref().unwrap_or(&config.name).clone();
 
             let mut current_name = ui.data_mut(|d| d.get_temp::<String>(ui.id().with("rename")).unwrap_or(initial_name));
 
-            let res = ui.text_edit_singleline(&mut current_name);
-            if res.lost_focus() || ui.input(|i| i.key_pressed(Key::Enter)) {
+            ui.text_edit_singleline(&mut current_name);
+            if ui.input(|i| i.key_pressed(Key::Enter)) {
                 action = Some(HeaderAction::RenameCommitted(current_name.clone()));
                 ui.data_mut(|d| d.remove::<String>(ui.id().with("rename")));
                 ui.close();
@@ -59,9 +62,46 @@ impl<'a> ColumnHeader<'a> {
             } else {
                 ui.data_mut(|d| d.insert_temp(ui.id().with("rename"), current_name));
             }
-            res.request_focus();
 
         });
+
+        ui.separator();
+
+        if config.column_type == ColumnType::Relation {
+            
+            ui.horizontal(|ui| {
+                 ui.label("Related source:");
+                let current_source = self.column_configs[column].related_source.clone().unwrap_or_default();
+                let selected_source = current_source.clone();
+
+                let mut available_sources = Vec::new();
+                for ds in &data_sources {
+                    let source_name = ds.name.clone().unwrap_or_else(|| ds.path.clone());
+                    for sheet in &ds.sheets {
+                        let sheet_name = sheet.display_name.as_ref().unwrap_or(&sheet.name);
+                        available_sources.push(format!("{} > {}", source_name, sheet_name));
+                    }
+                }
+
+                egui::ComboBox::from_id_salt("column-header-combobox")
+                    .selected_text(&selected_source)
+                    .truncate()
+                    .wrap_mode(TextWrapMode::Truncate)
+                    .close_behavior(PopupCloseBehavior::CloseOnClickOutside)
+                    .show_ui(ui, |ui| {
+                        for source in available_sources {
+                            ui
+                                .selectable_value(&mut &selected_source, &source, format!("{source}"))
+                                .clicked_elsewhere();
+                        }
+                    });
+
+                if selected_source != current_source {
+                    self.column_configs[column].related_source = Some(selected_source);
+                    action = Some(HeaderAction::RequestSave);
+                }
+            });
+        }
 
         ui.menu_button(format!("{} Change type", egui_material_icons::icons::ICON_EDIT_SQUARE), |ui| {
             let current_type = self.column_configs[column].column_type;
@@ -70,19 +110,19 @@ impl<'a> ColumnHeader<'a> {
             if ui.checkbox(&mut is_text, format!("{} Text", ColumnType::Text.icon())).clicked() {
                 self.column_configs[column].column_type = ColumnType::Text;
                 action = Some(HeaderAction::RequestSave);
-                ui.close();
+                //ui.close();
             }
             let mut is_number = current_type == ColumnType::Number;
             if ui.checkbox(&mut is_number, format!("{} Number", ColumnType::Number.icon())).clicked() {
                 self.column_configs[column].column_type = ColumnType::Number;
                 action = Some(HeaderAction::RequestSave);
-                ui.close();
+                //ui.close();
             }
             let mut is_date_time = current_type == ColumnType::DateTime;
             if ui.checkbox(&mut is_date_time, format!("{} Date / time", ColumnType::DateTime.icon())).clicked() {
                 self.column_configs[column].column_type = ColumnType::DateTime;
                 action = Some(HeaderAction::RequestSave);
-                ui.close();
+                //ui.close();
             }
 
             let is_virtual = self.column_configs[column].is_virtual;
@@ -91,19 +131,19 @@ impl<'a> ColumnHeader<'a> {
                 if ui.checkbox(&mut is_select, format!("{} Select", ColumnType::Select.icon())).clicked() {
                     self.column_configs[column].column_type = ColumnType::Select;
                     action = Some(HeaderAction::RequestSave);
-                    ui.close();
+                    //ui.close();
                 }
                 let mut is_multi_select = current_type == ColumnType::MultiSelect;
                 if ui.checkbox(&mut is_multi_select, format!("{} Multi-select", ColumnType::MultiSelect.icon())).clicked() {
                     self.column_configs[column].column_type = ColumnType::MultiSelect;
                     action = Some(HeaderAction::RequestSave);
-                    ui.close();
+                    //ui.close();
                 }
                 let mut is_relation = current_type == ColumnType::Relation;
                 if ui.checkbox(&mut is_relation, format!("{} Relation", ColumnType::Relation.icon())).clicked() {
                     self.column_configs[column].column_type = ColumnType::Relation;
                     action = Some(HeaderAction::RequestSave);
-                    ui.close();
+                    //ui.close();
                 }
             });
 

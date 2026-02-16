@@ -322,6 +322,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                                 crate::viewer::HeaderAction::RenameCommitted(new_name) => {
                                     commands.push(Command::RenameCommitted(crate::viewer::RenameTarget::Column(col.0), new_name));
                                 }
+                                crate::viewer::HeaderAction::MoveColumn(at, s) => commands.push(Command::MoveColumn(at, s))
                             }
                         }
                     });

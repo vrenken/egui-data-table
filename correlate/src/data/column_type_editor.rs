@@ -1,4 +1,4 @@
-﻿use egui::{Response, Ui, Color32};
+﻿use egui::{Response, Ui, Color32, Popup};
 use crate::data::*;
 
 fn get_random_gentle_color() -> [u8; 3] {
@@ -120,7 +120,7 @@ impl ColumnTypeEditor for SelectEditor {
 
         // Force the popup to open immediately.
         if !was_open {
-            egui::Popup::open_id(ui.ctx(), popup_id);
+            Popup::open_id(ui.ctx(), popup_id);
         }
 
         let mut response = placeholder_res.clone();
@@ -179,6 +179,8 @@ impl ColumnTypeEditor for SelectEditor {
                     });
                     response.mark_changed();
                     ui.ctx().request_repaint(); // Ensure it updates and eventually saves
+                    //ui.close();
+                    Popup::close_all(ui.ctx());//ui.ctx(), popup_id);
                 }
             }
         }
@@ -210,6 +212,22 @@ impl ColumnTypeEditor for RelationEditor {
     ) -> Option<Response> {
         ui.horizontal(|ui| {
             ui.label(egui_material_icons::icons::ICON_NORTH_EAST);
+            
+            // Try to parse the current value as a Relation
+            let mut relation = cell_value.0.parse::<Relation>().unwrap_or_else(|_| Relation::new("", "", ""));
+            
+            let mut changed = false;
+            ui.label("Source:");
+            if ui.text_edit_singleline(&mut relation.source).changed() { changed = true; }
+            ui.label("Key:");
+            if ui.text_edit_singleline(&mut relation.key).changed() { changed = true; }
+            ui.label("Value:");
+            if ui.text_edit_singleline(&mut relation.value).changed() { changed = true; }
+
+            if changed {
+                cell_value.0 = relation.to_string();
+            }
+            
             ui.text_edit_singleline(&mut cell_value.0)
         })
         .inner

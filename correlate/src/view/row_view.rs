@@ -331,8 +331,8 @@ impl RowViewer<Row> for RowView {
         table.mark_as_modified();
     }
 
-    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize, column_header_was_closed: bool) -> (egui_data_table::viewer::HeaderResult, bool) {
-        ColumnHeader::new(&mut self.column_configs).context_menu(ui, column, self.data_sources.clone(), column_header_was_closed)
+    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) -> egui_data_table::viewer::HeaderResult {
+        ColumnHeader::new(&mut self.column_configs).context_menu(ui, column, self.data_sources.clone())
     }
 
     fn row_header_double_clicked(&mut self, ctx: &egui::Context, row_idx: usize, _row: &Row) {
