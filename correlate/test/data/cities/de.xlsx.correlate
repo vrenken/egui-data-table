@@ -14,7 +14,8 @@
           "is_virtual": false,
           "order": 0,
           "width": 130.66663,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "lat",
@@ -25,7 +26,8 @@
           "is_virtual": false,
           "order": 1,
           "width": 143.0,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "lng",
@@ -36,7 +38,8 @@
           "is_virtual": false,
           "order": 2,
           "width": 191.0,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "country",
@@ -47,7 +50,8 @@
           "is_virtual": false,
           "order": 3,
           "width": 111.0,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "iso2",
@@ -58,7 +62,8 @@
           "is_virtual": false,
           "order": 4,
           "width": 70.6875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "admin_name",
@@ -69,7 +74,8 @@
           "is_virtual": false,
           "order": 5,
           "width": 219.0,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "capital",
@@ -80,7 +86,8 @@
           "is_virtual": false,
           "order": 6,
           "width": 85.3125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Population Type",
@@ -91,7 +98,8 @@
           "is_virtual": true,
           "order": 7,
           "width": 157.125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "population",
@@ -102,7 +110,8 @@
           "is_virtual": false,
           "order": 8,
           "width": 141.125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "population_proper",
@@ -113,7 +122,8 @@
           "is_virtual": false,
           "order": 9,
           "width": 1346.8124,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         }
       ],
       "sort_config": null,

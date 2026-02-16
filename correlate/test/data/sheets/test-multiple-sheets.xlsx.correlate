@@ -14,7 +14,8 @@
           "is_virtual": false,
           "order": 0,
           "width": 129.90625,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Currency",
@@ -25,7 +26,8 @@
           "is_virtual": false,
           "order": 1,
           "width": 100.375,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Test Text",
@@ -36,7 +38,8 @@
           "is_virtual": true,
           "order": 2,
           "width": 116.375,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Text",
@@ -47,7 +50,8 @@
           "is_virtual": false,
           "order": 3,
           "width": 127.625,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Date",
@@ -58,7 +62,8 @@
           "is_virtual": false,
           "order": 4,
           "width": 102.6875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "New Column 14",
@@ -69,7 +74,8 @@
           "is_virtual": true,
           "order": 5,
           "width": 154.6875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Time",
@@ -80,7 +86,8 @@
           "is_virtual": false,
           "order": 6,
           "width": 75.8125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Percentage",
@@ -91,7 +98,8 @@
           "is_virtual": false,
           "order": 7,
           "width": 113.125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Forumula",
@@ -102,7 +110,8 @@
           "is_virtual": false,
           "order": 8,
           "width": 101.96875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "New Column 8",
@@ -113,7 +122,8 @@
           "is_virtual": true,
           "order": 9,
           "width": 164.46875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "New Column 9",
@@ -124,7 +134,8 @@
           "is_virtual": true,
           "order": 10,
           "width": 147.34375,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "New Column 10",
@@ -135,7 +146,8 @@
           "is_virtual": true,
           "order": 11,
           "width": 154.6875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "New Column 11",
@@ -146,7 +158,8 @@
           "is_virtual": true,
           "order": 12,
           "width": 498.21875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "New Column 12",
@@ -157,7 +170,8 @@
           "is_virtual": true,
           "order": 13,
           "width": 154.6875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         }
       ],
       "sort_config": null,
@@ -176,7 +190,8 @@
           "is_virtual": false,
           "order": 0,
           "width": 1994.9062,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         }
       ],
       "sort_config": null,

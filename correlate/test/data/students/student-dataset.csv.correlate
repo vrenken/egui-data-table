@@ -14,7 +14,8 @@
           "is_virtual": false,
           "order": 0,
           "width": 74.25,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "name",
@@ -25,7 +26,8 @@
           "is_virtual": false,
           "order": 1,
           "width": 175.07294,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "nationality",
@@ -36,7 +38,8 @@
           "is_virtual": false,
           "order": 2,
           "width": 184.00006,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "city",
@@ -47,7 +50,8 @@
           "is_virtual": false,
           "order": 3,
           "width": 144.0,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "latitude",
@@ -58,7 +62,8 @@
           "is_virtual": false,
           "order": 4,
           "width": 95.125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "longitude",
@@ -69,7 +74,8 @@
           "is_virtual": false,
           "order": 5,
           "width": 106.125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "Type",
@@ -120,19 +126,85 @@
                 170,
                 231
               ]
+            },
+            {
+              "value": "Roermond",
+              "color": [
+                231,
+                170,
+                227
+              ]
+            },
+            {
+              "value": "Eindhoven",
+              "color": [
+                170,
+                231,
+                219
+              ]
+            },
+            {
+              "value": "Enschede",
+              "color": [
+                211,
+                231,
+                170
+              ]
+            },
+            {
+              "value": "Arnhem",
+              "color": [
+                231,
+                219,
+                170
+              ]
+            },
+            {
+              "value": "Utrecht",
+              "color": [
+                223,
+                231,
+                170
+              ]
+            },
+            {
+              "value": "Maastricht",
+              "color": [
+                170,
+                231,
+                213
+              ]
+            },
+            {
+              "value": "Boxtel",
+              "color": [
+                193,
+                231,
+                170
+              ]
+            },
+            {
+              "value": "Groningen",
+              "color": [
+                172,
+                170,
+                231
+              ]
             }
-          ]
+          ],
+          "related_source": null
         },
         {
           "name": "Relation",
-          "display_name": null,
+          "display_name": "Relation",
           "column_type": "Relation",
           "is_key": false,
           "is_name": false,
           "is_virtual": true,
           "order": 7,
           "width": 154.34375,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "gender",
@@ -143,7 +215,8 @@
           "is_virtual": false,
           "order": 8,
           "width": 88.875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "ethnic.group",
@@ -154,7 +227,8 @@
           "is_virtual": false,
           "order": 9,
           "width": 121.59375,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "age",
@@ -165,7 +239,8 @@
           "is_virtual": false,
           "order": 10,
           "width": 68.46875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "english.grade",
@@ -176,7 +251,8 @@
           "is_virtual": false,
           "order": 11,
           "width": 125.8125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "math.grade",
@@ -187,7 +263,8 @@
           "is_virtual": false,
           "order": 12,
           "width": 114.46875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "sciences.grade",
@@ -198,7 +275,8 @@
           "is_virtual": false,
           "order": 13,
           "width": 131.8125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "language.grade",
@@ -209,7 +287,8 @@
           "is_virtual": false,
           "order": 14,
           "width": 137.8125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "portfolio.rating",
@@ -220,7 +299,8 @@
           "is_virtual": false,
           "order": 15,
           "width": 136.78125,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "coverletter.rating",
@@ -231,7 +311,8 @@
           "is_virtual": false,
           "order": 16,
           "width": 149.46875,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         },
         {
           "name": "refletter.rating",
@@ -242,11 +323,17 @@
           "is_virtual": false,
           "order": 17,
           "width": 134.4375,
-          "allowed_values": null
+          "allowed_values": null,
+          "related_source": null
         }
       ],
       "sort_config": null,
       "cell_values": [
+        {
+          "key": "3",
+          "column_name": "Type",
+          "value": "Test"
+        },
         {
           "key": "7",
           "column_name": "Type",
@@ -261,6 +348,21 @@
           "key": "11",
           "column_name": "Type",
           "value": "Venlo"
+        },
+        {
+          "key": "12",
+          "column_name": "Type",
+          "value": "Berlin"
+        },
+        {
+          "key": "13",
+          "column_name": "Type",
+          "value": "Amsterdam"
+        },
+        {
+          "key": "14",
+          "column_name": "Type",
+          "value": "Amsterdam"
         },
         {
           "key": "18",
@@ -283,9 +385,104 @@
           "value": "Berlin"
         },
         {
+          "key": "24",
+          "column_name": "Type",
+          "value": "Test"
+        },
+        {
+          "key": "26",
+          "column_name": "Type",
+          "value": "Berlin"
+        },
+        {
+          "key": "28",
+          "column_name": "Type",
+          "value": "Berlin"
+        },
+        {
+          "key": "31",
+          "column_name": "Type",
+          "value": "Roermond"
+        },
+        {
           "key": "34",
           "column_name": "Type",
           "value": "Ahlen"
+        },
+        {
+          "key": "37",
+          "column_name": "Type",
+          "value": "Eindhoven"
+        },
+        {
+          "key": "39",
+          "column_name": "Type",
+          "value": "Groningen"
+        },
+        {
+          "key": "40",
+          "column_name": "Type",
+          "value": "Venlo"
+        },
+        {
+          "key": "41",
+          "column_name": "Type",
+          "value": "Arnhem"
+        },
+        {
+          "key": "42",
+          "column_name": "Type",
+          "value": "Enschede"
+        },
+        {
+          "key": "44",
+          "column_name": "Type",
+          "value": "Utrecht"
+        },
+        {
+          "key": "45",
+          "column_name": "Type",
+          "value": "Venlo"
+        },
+        {
+          "key": "49",
+          "column_name": "Type",
+          "value": "Venlo"
+        },
+        {
+          "key": "51",
+          "column_name": "Type",
+          "value": "Roermond"
+        },
+        {
+          "key": "52",
+          "column_name": "Type",
+          "value": "Test"
+        },
+        {
+          "key": "53",
+          "column_name": "Type",
+          "value": "Test"
+        },
+        {
+          "key": "56",
+          "column_name": "Type",
+          "value": "Roermond"
+        },
+        {
+          "key": "58",
+          "column_name": "Type",
+          "value": "Maastricht"
+        },
+        {
+          "key": "60",
+          "column_name": "Type",
+          "value": "Eindhoven"
+        },
+        {
+          "key": "62",
+          "column_name": "Type",
+          "value": "Boxtel"
         },
         {
           "key": "116",
