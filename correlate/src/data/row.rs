@@ -1,11 +1,10 @@
 ﻿#[derive(Debug, Clone, PartialEq)]
-pub enum CellValue {
-    String(String),
-    Number(f64),
-    DateTime(String),
-    Bool(bool),
-    Select(Option<String>),
-    MultiSelect(Vec<String>),
+pub struct CellValue(pub String);
+
+impl CellValue {
+    pub fn to_string(&self) -> String {
+        self.0.clone()
+    }
 }
 
 #[derive(Debug, Clone)]
