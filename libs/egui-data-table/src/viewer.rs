@@ -346,6 +346,7 @@ pub type HeaderResult = Option<HeaderAction>;
 #[non_exhaustive]
 pub enum HeaderAction {
     AddColumn(usize),
+    MoveColumn(usize, usize),
     RenameCommitted(String),
     RequestSave,
 }
