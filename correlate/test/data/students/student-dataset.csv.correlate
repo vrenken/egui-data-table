@@ -35,7 +35,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 2,
-          "width": 161.34375,
+          "width": 184.00006,
           "allowed_values": null
         },
         {
@@ -46,23 +46,23 @@
           "is_name": false,
           "is_virtual": false,
           "order": 3,
-          "width": 122.65625,
+          "width": 144.0,
           "allowed_values": null
         },
         {
           "name": "latitude",
-          "display_name": null,
+          "display_name": "Latitude",
           "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "order": 4,
-          "width": 92.46881,
+          "width": 92.46875,
           "allowed_values": null
         },
         {
           "name": "longitude",
-          "display_name": null,
+          "display_name": "Longitude",
           "column_type": "Number",
           "is_key": false,
           "is_name": false,
