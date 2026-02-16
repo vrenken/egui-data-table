@@ -100,6 +100,12 @@ impl<'a> ColumnHeader<'a> {
                     action = Some(HeaderAction::RequestSave);
                     ui.close();
                 }
+                let mut is_relation = current_type == ColumnType::Relation;
+                if ui.checkbox(&mut is_relation, format!("{} Relation", ColumnType::Relation.icon())).clicked() {
+                    self.column_configs[column].column_type = ColumnType::Relation;
+                    action = Some(HeaderAction::RequestSave);
+                    ui.close();
+                }
             });
 
             ui.add_enabled_ui(false, |ui| {
@@ -118,9 +124,7 @@ impl<'a> ColumnHeader<'a> {
                 if ui.button(format!("{} Phone", egui_material_icons::icons::ICON_CALL)).clicked() {
                     ui.close();
                 }
-                if ui.button(format!("{} Relation", egui_material_icons::icons::ICON_NORTH_EAST)).clicked() {
-                    ui.close();
-                }
+                // Moved Relation to enabled section above.
                 if ui.button(format!("{} Rollup", egui_material_icons::icons::ICON_SEARCH)).clicked() {
                     ui.close();
                 }

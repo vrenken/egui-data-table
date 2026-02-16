@@ -10,6 +10,7 @@ pub enum ColumnType {
     Bool,
     Select,
     MultiSelect,
+    Relation,
 }
 
 impl ColumnType {
@@ -21,6 +22,7 @@ impl ColumnType {
             ColumnType::Bool => Box::new(BoolEditor),
             ColumnType::Select => Box::new(SelectEditor),
             ColumnType::MultiSelect => Box::new(MultiSelectEditor),
+            ColumnType::Relation => Box::new(RelationEditor),
         }
     }
 
@@ -32,6 +34,7 @@ impl ColumnType {
             ColumnType::Bool => egui_material_icons::icons::ICON_CHECK_BOX,
             ColumnType::Select => egui_material_icons::icons::ICON_ARROW_DROP_DOWN_CIRCLE,
             ColumnType::MultiSelect => egui_material_icons::icons::ICON_LIST,
+            ColumnType::Relation => egui_material_icons::icons::ICON_NORTH_EAST,
         }
     }
 

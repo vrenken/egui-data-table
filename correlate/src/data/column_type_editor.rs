@@ -198,3 +198,21 @@ impl ColumnTypeEditor for MultiSelectEditor {
         Some(ui.text_edit_singleline(&mut cell_value.0))
     }
 }
+
+pub struct RelationEditor;
+
+impl ColumnTypeEditor for RelationEditor {
+    fn show(
+        &self,
+        ui: &mut Ui,
+        cell_value: &mut CellValue,
+        _column_config: &mut ColumnConfig,
+    ) -> Option<Response> {
+        ui.horizontal(|ui| {
+            ui.label(egui_material_icons::icons::ICON_NORTH_EAST);
+            ui.text_edit_singleline(&mut cell_value.0)
+        })
+        .inner
+        .into()
+    }
+}

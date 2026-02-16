@@ -167,6 +167,7 @@ impl RowViewer<Row> for RowView {
                         ColumnType::Bool => config.column_type.default_value(),
                         ColumnType::Select => CellValue((*x).clone()),
                         ColumnType::MultiSelect => CellValue((*x).clone()),
+                        ColumnType::Relation => CellValue((*x).clone()),
                     };
                     cells.push(cell);
                 }
