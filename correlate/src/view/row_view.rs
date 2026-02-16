@@ -13,6 +13,8 @@ pub struct RowView {
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
     pub column_configs: Vec<ColumnConfig>,
+    pub config: Config,
+    pub data_sources: Vec<DataSource>,
 }
 
 impl RowViewer<Row> for RowView {
@@ -312,8 +314,25 @@ impl RowViewer<Row> for RowView {
         table.mark_as_modified();
     }
 
-    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) -> egui_data_table::viewer::HeaderResult {
-        ColumnHeader::new(&mut self.column_configs).context_menu(ui, column)
+    fn on_column_moved(&mut self, table: &mut egui_data_table::DataTable<Row>, from: usize, to: usize) {
+        if from == to || from >= self.column_configs.len() || to >= self.column_configs.len() {
+            return;
+        }
+
+        // Swap column configs
+        self.column_configs.swap(from, to);
+
+        // Update all rows in the table
+        let mut rows = table.take();
+        for row in &mut rows {
+            row.cells.swap(from, to);
+        }
+        table.replace(rows);
+        table.mark_as_modified();
+    }
+
+    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize, column_header_was_closed: bool) -> (egui_data_table::viewer::HeaderResult, bool) {
+        ColumnHeader::new(&mut self.column_configs).context_menu(ui, column, self.data_sources.clone(), column_header_was_closed)
     }
 
     fn row_header_double_clicked(&mut self, ctx: &egui::Context, row_idx: usize, _row: &Row) {
