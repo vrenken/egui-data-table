@@ -12,7 +12,7 @@ pub struct RowView {
     pub name_filter: String,
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
-    pub column_configs: Vec<ColumnConfig>
+    pub column_configs: Vec<ColumnConfig>,
 }
 
 impl RowViewer<Row> for RowView {
@@ -300,6 +300,7 @@ impl RowViewer<Row> for RowView {
             order: self.column_configs.len(),
             width: None,
             allowed_values: None,
+            related_source: None,
         };
         self.column_configs.insert(at, new_column);
         // Update all rows in the table
