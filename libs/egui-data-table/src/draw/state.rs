@@ -1697,6 +1697,7 @@ pub(crate) enum Command<R> {
 
     InsertRows(RowIdx, Box<[R]>),
     AddColumn(usize),
+    MoveColumn(usize, usize),
     RenameCommitted(crate::viewer::RenameTarget, String),
     RequestSave,
     RemoveRow(Vec<RowIdx>),
