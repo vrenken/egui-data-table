@@ -21,21 +21,8 @@ pub fn infer_column_type(name: &str, sample_value: &str) -> ColumnType {
     ColumnType::Text
 }
 
-pub fn map_cell_value(value: &str, column_type: ColumnType) -> CellValue {
-    match column_type {
-        ColumnType::Text => CellValue::String(value.to_string()),
-        ColumnType::Number => CellValue::Number(value.parse().unwrap_or(0.0)),
-        ColumnType::DateTime => CellValue::DateTime(value.to_string()),
-        ColumnType::Bool => {
-            let b = match value.to_lowercase().as_str() {
-                "true" | "1" | "yes" | "y" => true,
-                _ => false,
-            };
-            CellValue::Bool(b)
-        }
-        ColumnType::Select => CellValue::Select(if value.is_empty() { None } else { Some(value.to_string()) }),
-        ColumnType::MultiSelect => CellValue::MultiSelect(value.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect()),
-    }
+pub fn map_cell_value(value: &str, _column_type: ColumnType) -> CellValue {
+    CellValue(value.to_string())
 }
 
 fn is_datetime(s: &str) -> bool {

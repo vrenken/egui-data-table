@@ -22,7 +22,8 @@ impl CentralPanelViewModel {
             let mut rows = view_model.table.take();
             for row in &mut rows {
                 while row.cells.len() < view_model.viewer.column_configs.len() {
-                    row.cells.push(crate::data::CellValue::String("".to_string()));
+                    let next_col_idx = row.cells.len();
+                    row.cells.push(view_model.viewer.column_configs[next_col_idx].column_type.default_value());
                 }
             }
             view_model.table.replace(rows);

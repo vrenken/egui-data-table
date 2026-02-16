@@ -59,7 +59,11 @@
           "order": 4,
           "width": 155.34375,
           "allowed_values": [
-            "Test"
+            "Test",
+            "Something",
+            "Kinkie",
+            "Tjakka",
+            "Berlin"
           ]
         },
         {
@@ -195,7 +199,21 @@
           "allowed_values": null
         }
       ],
-      "sort_config": null
+      "sort_config": null,
+      "cell_values": [
+        {
+          "key": "4",
+          "value": "Something"
+        },
+        {
+          "key": "6",
+          "value": "Test"
+        },
+        {
+          "key": "8",
+          "value": "Berlin"
+        }
+      ]
     }
   ]
 }

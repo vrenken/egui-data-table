@@ -18,15 +18,11 @@ impl ColumnTypeEditor for TextEditor {
         cell_value: &mut CellValue,
         _column_config: &mut ColumnConfig,
     ) -> Option<Response> {
-        if let CellValue::String(s) = cell_value {
-            Some(egui::TextEdit::multiline(s)
-                .desired_rows(1)
-                .code_editor()
-                .show(ui)
-                .response)
-        } else {
-            None
-        }
+        Some(egui::TextEdit::multiline(&mut cell_value.0)
+            .desired_rows(1)
+            .code_editor()
+            .show(ui)
+            .response)
     }
 }
 
@@ -38,11 +34,12 @@ impl ColumnTypeEditor for NumberEditor {
         cell_value: &mut CellValue,
         _column_config: &mut ColumnConfig,
     ) -> Option<Response> {
-        if let CellValue::Number(n) = cell_value {
-            Some(ui.add(egui::DragValue::new(n).speed(0.1)))
-        } else {
-            None
+        let mut n: f64 = cell_value.0.parse().unwrap_or(0.0);
+        let res = ui.add(egui::DragValue::new(&mut n).speed(0.1));
+        if res.changed() {
+            cell_value.0 = n.to_string();
         }
+        Some(res)
     }
 }
 
@@ -54,13 +51,9 @@ impl ColumnTypeEditor for DateTimeEditor {
         cell_value: &mut CellValue,
         _column_config: &mut ColumnConfig,
     ) -> Option<Response> {
-        if let CellValue::DateTime(dt) = cell_value {
-            Some(egui::TextEdit::singleline(dt)
-                .show(ui)
-                .response)
-        } else {
-            None
-        }
+        Some(egui::TextEdit::singleline(&mut cell_value.0)
+            .show(ui)
+            .response)
     }
 }
 
@@ -72,11 +65,12 @@ impl ColumnTypeEditor for BoolEditor {
         cell_value: &mut CellValue,
         _column_config: &mut ColumnConfig,
     ) -> Option<Response> {
-        if let CellValue::Bool(b) = cell_value {
-            Some(ui.checkbox(b, ""))
-        } else {
-            None
+        let mut b: bool = cell_value.0.parse().unwrap_or(false);
+        let res = ui.checkbox(&mut b, "");
+        if res.changed() {
+            cell_value.0 = b.to_string();
         }
+        Some(res)
     }
 }
 
@@ -88,55 +82,63 @@ impl ColumnTypeEditor for SelectEditor {
         cell_value: &mut CellValue,
         column_config: &mut ColumnConfig,
     ) -> Option<Response> {
-        if let CellValue::Select(s) = cell_value {
-            let popup_id = ui.id().with("popup");
-            let text = s.clone().unwrap_or_default();
-            let mut response = ui.add_sized(ui.available_size(), egui::Label::new(text).sense(egui::Sense::click()));
+        let text = if cell_value.0.is_empty() { "Select...".to_string() } else { cell_value.0.clone() };
+        let popup_id = ui.make_persistent_id("select_editor_popup");
+        
+        // We show a label as a placeholder in the cell.
+        let placeholder_res = ui.selectable_label(false, text);
+        
+        // Check if the popup was open in the previous frame
+        let was_open = egui::Popup::is_id_open(ui.ctx(), popup_id);
 
-            if !egui::Popup::is_id_open(ui.ctx(), popup_id) {
-                egui::Popup::open_id(ui.ctx(), popup_id);
+        // Force the popup to open immediately.
+        if !was_open {
+            egui::Popup::open_id(ui.ctx(), popup_id);
+        }
+
+        let mut response = placeholder_res.clone();
+
+        egui::popup_below_widget(ui, popup_id, &placeholder_res, egui::PopupCloseBehavior::CloseOnClickOutside, |ui| {
+            ui.set_min_width(150.0);
+            
+            let text_edit_res = ui.text_edit_singleline(&mut cell_value.0);
+            if text_edit_res.changed() {
+                response.mark_changed();
             }
 
-            let inner = egui::Popup::from_response(&response)
-                .id(popup_id)
-                .show(|ui| {
-                    ui.set_min_width(150.0);
-                    let mut edit_text = s.clone().unwrap_or_default();
-                    if ui.text_edit_singleline(&mut edit_text).changed() {
-                        *s = if edit_text.is_empty() { None } else { Some(edit_text) };
+            // If it was NOT open in the previous frame, but is open now (it is, since we are inside the popup),
+            // it means it was just opened.
+            if !was_open {
+                text_edit_res.request_focus();
+            }
+
+            ui.separator();
+
+            if let Some(allowed_values) = &column_config.allowed_values {
+                for value in allowed_values {
+                    if ui.selectable_label(&cell_value.0 == value, value).clicked() {
+                        cell_value.0 = value.clone();
                         response.mark_changed();
-                    }
-
-                    ui.separator();
-
-                    if let Some(allowed_values) = &column_config.allowed_values {
-                        for value in allowed_values {
-                            if ui.selectable_label(s.as_deref() == Some(value), value).clicked() {
-                                *s = Some(value.clone());
-                                response.mark_changed();
-                                ui.close();
-                            }
-                        }
-                    }
-                });
-
-            if let Some(inner) = inner {
-                response = response.union(inner.response);
-            }
-
-            if response.changed() || !egui::Popup::is_id_open(ui.ctx(), popup_id) {
-                if let Some(val) = s.as_ref() {
-                    let allowed = column_config.allowed_values.get_or_insert_with(Vec::new);
-                    if !allowed.contains(val) {
-                        allowed.push(val.clone());
+                        ui.close();
                     }
                 }
             }
+        });
 
-            Some(response)
-        } else {
-            None
+        // Update allowed_values only when the popup closes or if something changed.
+        // If it was open but now it's closed, it means it just closed.
+        let is_open = egui::Popup::is_id_open(ui.ctx(), popup_id);
+        if was_open && !is_open {
+            if !cell_value.0.is_empty() {
+                let allowed = column_config.allowed_values.get_or_insert_with(Vec::new);
+                if !allowed.contains(&cell_value.0) {
+                    allowed.push(cell_value.0.clone());
+                    response.mark_changed();
+                }
+            }
         }
+
+        Some(response)
     }
 }
 
@@ -148,15 +150,6 @@ impl ColumnTypeEditor for MultiSelectEditor {
         cell_value: &mut CellValue,
         _column_config: &mut ColumnConfig,
     ) -> Option<Response> {
-        if let CellValue::MultiSelect(v) = cell_value {
-            let mut text = v.join(", ");
-            let res = ui.text_edit_singleline(&mut text);
-            if res.changed() {
-                *v = text.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect();
-            }
-            Some(res)
-        } else {
-            None
-        }
+        Some(ui.text_edit_singleline(&mut cell_value.0))
     }
 }

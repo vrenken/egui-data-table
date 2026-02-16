@@ -71,18 +71,40 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
     }
 
     let mut rows = Vec::new();
+    let cell_values = config_sheet.map(|s| &s.cell_values);
+
     for result in reader.records() {
         let record = result.map_err(|e| e.to_string())?;
+        
+        // 1. First pass: get the physical key value if it exists
+        let mut row_key = None;
+        let mut phys_idx = 0;
+        for config in &column_configs {
+            if !config.is_virtual {
+                if config.is_key {
+                    row_key = record.get(phys_idx).map(|v| v.to_string());
+                }
+                phys_idx += 1;
+            }
+        }
+
+        // 2. Second pass: build the row
         let mut cells = Vec::new();
-        let mut physical_col_idx = 0;
+        let mut phys_idx = 0;
         for config in &column_configs {
             if config.is_virtual {
-                cells.push(CellValue::String("".to_string()));
+                let mut val = "".to_string();
+                if let (Some(key), Some(stored_values)) = (&row_key, cell_values) {
+                    if let Some(stored) = stored_values.iter().find(|cv| cv.key == *key) {
+                        val = stored.value.clone();
+                    }
+                }
+                cells.push(CellValue(val));
             } else {
-                if let Some(value) = record.get(physical_col_idx) {
+                if let Some(value) = record.get(phys_idx) {
                     cells.push(map_cell_value(value, config.column_type));
                 }
-                physical_col_idx += 1;
+                phys_idx += 1;
             }
         }
         rows.push(Row { cells });
@@ -97,6 +119,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
                 display_name: sheet_display_name.clone(),
                 column_configs: column_configs.clone(),
                 sort_config: None, // Will be updated by UI
+                cell_values: Vec::new(),
             }]
         };
         if let Err(e) = new_config.save(&companion_path) {

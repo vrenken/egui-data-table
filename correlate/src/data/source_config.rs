@@ -17,6 +17,14 @@ pub struct SheetConfig {
     pub display_name: Option<String>,
     pub column_configs: Vec<ColumnConfig>,
     pub sort_config: Option<SortConfig>,
+    #[serde(default)]
+    pub cell_values: Vec<CellValueConfig>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CellValueConfig {
+    pub key: String,
+    pub value: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

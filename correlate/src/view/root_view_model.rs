@@ -17,19 +17,64 @@ impl RootViewModel {
     pub fn save_source_config(&mut self, index: usize) {
         if let Some(ds) = self.data_sources.get_mut(index) {
             let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
+            
+            // If the data source being saved is the currently selected one, 
+            // update its internal state from the viewer and table first.
+            if Some(index) == self.selected_index {
+                ds.sheets[ds.selected_sheet_index].column_configs = self.viewer.column_configs.clone();
+                ds.sheets[ds.selected_sheet_index].table = self.table.clone();
+            }
+
+            let mut sheet_configs = Vec::new();
             for sheet in &mut ds.sheets {
                 for (i, config) in sheet.column_configs.iter_mut().enumerate() {
                     config.order = i;
                 }
+
+                let key_col_idx = sheet.column_configs.iter().position(|c| c.is_key);
+                let virtual_cols: Vec<usize> = sheet.column_configs.iter().enumerate()
+                    .filter(|(_, c)| c.is_virtual)
+                    .map(|(i, _)| i)
+                    .collect();
+
+                let mut cell_values = Vec::new();
+                if let Some(key_idx) = key_col_idx {
+                    let rows: &Vec<Row> = &sheet.table;
+                    for row in rows {
+                        let key = row.cells[key_idx].0.clone();
+                        if key.is_empty() { continue; }
+                        
+                        // For now we store all virtual column values. 
+                        // If there are multiple virtual columns, we might need a more complex structure,
+                        // but the requirement says "add the 'key' ... as well as a 'value' field".
+                        // If there's only one virtual column, it's clear. 
+                        // If there are multiple, maybe we should store them all?
+                        // Let's assume for now we take the first virtual column's value as "the" value 
+                        // or concatenated? The issue description is singular: "a 'value' field".
+                        if let Some(&v_idx) = virtual_cols.first() {
+                            let value = row.cells[v_idx].0.clone();
+                            if !value.is_empty() {
+                                cell_values.push(crate::data::CellValueConfig {
+                                    key,
+                                    value,
+                                });
+                            }
+                        }
+                    }
+                }
+
+                sheet_configs.push(crate::data::SheetConfig {
+                    name: sheet.name.clone(),
+                    display_name: sheet.display_name.clone(),
+                    column_configs: sheet.column_configs.clone(),
+                    sort_config: None,
+                    cell_values,
+                });
             }
+
             let source_config = crate::data::SourceConfig {
                 name: ds.name.clone(),
-                sheets: ds.sheets.iter().map(|s| crate::data::SheetConfig {
-                    name: s.name.clone(),
-                    display_name: s.display_name.clone(),
-                    column_configs: s.column_configs.clone(),
-                    sort_config: None,
-                }).collect(),
+                sheets: sheet_configs,
             };
             if let Err(e) = source_config.save(companion_path) {
                 log::error!("Failed to save companion config for {}: {}", ds.path, e);
@@ -248,7 +293,8 @@ impl RootViewModel {
                     .unwrap_or(0);
 
                 if let Some(row) = self.table.get_mut(row_idx) {
-                    row.cells[name_col_idx] = crate::data::CellValue::String(new_name);
+                    let column_type = self.viewer.column_configs[name_col_idx].column_type;
+                    row.cells[name_col_idx] = crate::data::map_cell_value(&new_name, column_type);
                 }
             }
             RenamingTarget::Column(col_idx) => {

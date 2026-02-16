@@ -65,19 +65,35 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
             display_name: sheet_display_name.clone(),
             column_configs: column_configs.clone(),
             sort_config: None,
+            cell_values: Vec::new(),
         });
 
-        // 2. Load data rows
         let mut rows = Vec::new();
-        let max_col_idx = column_configs.len();
+        let cell_values = config_sheet.map(|s| &s.cell_values);
+
         for row_idx in 2..=max_row {
+            // 1. First pass: get the physical key value if it exists
+            let mut row_key = None;
+            for (col_idx, config) in column_configs.iter().enumerate() {
+                if !config.is_virtual && config.is_key {
+                    row_key = Some(sheet.get_formatted_value((col_idx as u32 + 1, row_idx)));
+                    break;
+                }
+            }
+
+            // 2. Second pass: build the row
             let mut cells = Vec::new();
-            for col_idx in 1..=max_col_idx {
-                let config = &column_configs.get(col_idx - 1).unwrap();
+            for (col_idx, config) in column_configs.iter().enumerate() {
                 if config.is_virtual {
-                    cells.push(CellValue::String("".to_string()));
+                    let mut val = "".to_string();
+                    if let (Some(key), Some(stored_values)) = (&row_key, cell_values) {
+                        if let Some(stored) = stored_values.iter().find(|cv| cv.key == *key) {
+                            val = stored.value.clone();
+                        }
+                    }
+                    cells.push(CellValue(val));
                 } else {
-                    let value = sheet.get_formatted_value((col_idx as u32, row_idx));
+                    let value = sheet.get_formatted_value((col_idx as u32 + 1, row_idx));
                     cells.push(map_cell_value(&value, config.column_type));
                 }
             }
