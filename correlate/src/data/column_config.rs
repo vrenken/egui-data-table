@@ -1,6 +1,12 @@
 ﻿use serde::{Deserialize, Serialize};
 use crate::data::ColumnType;
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct AllowedValue {
+    pub value: String,
+    pub color: [u8; 3],
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ColumnConfig {
     pub name: String,
@@ -18,5 +24,5 @@ pub struct ColumnConfig {
     #[serde(default)]
     pub width: Option<f32>,
     #[serde(default)]
-    pub allowed_values: Option<Vec<String>>,
+    pub allowed_values: Option<Vec<AllowedValue>>,
 }
