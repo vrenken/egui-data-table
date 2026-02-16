@@ -268,6 +268,9 @@ pub trait RowViewer<R>: 'static {
     fn on_rename_row(&mut self, _row_index: usize, _new_name: String) {}
     fn on_rename_column(&mut self, _column_index: usize, _new_name: String) {}
 
+    /// Called when a column has been moved
+    fn on_column_moved(&mut self, _table: &mut DataTable<R>, _from: usize, _to: usize) {}
+
     /// Called when a column has been inserted
     fn on_column_inserted(&mut self, _table: &mut DataTable<R>, _column_index: usize) {}
 
