@@ -1,5 +1,6 @@
 ﻿use crate::data::Row;
 
+#[derive(Clone)]
 pub struct DataSheet {
     pub name: String,
     pub display_name: Option<String>,
@@ -7,6 +8,7 @@ pub struct DataSheet {
     pub table: egui_data_table::DataTable<Row>,
 }
 
+#[derive(Clone)]
 pub struct DataSource {
     pub path: String,
     pub name: Option<String>,
