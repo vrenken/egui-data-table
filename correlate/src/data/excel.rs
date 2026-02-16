@@ -87,7 +87,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
                 if config.is_virtual {
                     let mut val = "".to_string();
                     if let (Some(key), Some(stored_values)) = (&row_key, cell_values) {
-                        if let Some(stored) = stored_values.iter().find(|cv| cv.key == *key) {
+                        if let Some(stored) = stored_values.iter().find(|cv| cv.key == *key && cv.column_name == config.name) {
                             val = stored.value.clone();
                         }
                     }
