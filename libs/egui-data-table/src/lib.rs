@@ -141,6 +141,15 @@ impl<R> DataTable<R> {
             ui.force_mark_dirty();
         }
     }
+
+    /// Sets the visual column order.
+    pub fn set_visual_column_order(&mut self, order: Vec<usize>) {
+        if let Some(ui) = self.ui.as_mut() {
+            let new_vis_cols = order.into_iter().map(ColumnIdx).collect::<Vec<_>>();
+            ui.p.vis_cols = new_vis_cols;
+            ui.force_mark_dirty();
+        }
+    }
 }
 
 impl<R> Extend<R> for DataTable<R> {

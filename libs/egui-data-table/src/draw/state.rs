@@ -1103,11 +1103,13 @@ impl<R> UiState<R> {
                 self.p.vis_cols.clear();
                 self.p.vis_cols.extend(cols.iter().cloned());
                 self.cc_dirty = true;
+                table.dirty_flag = true;
             }
             Command::SetColumnSort(new_sort) => {
                 self.p.sort.clear();
                 self.p.sort.extend(new_sort.iter().cloned());
                 self.cc_dirty = true;
+                table.dirty_flag = true;
             }
             Command::SetRowValue(row_id, value) => {
                 self.cc_num_frame_from_last_edit = 0;
