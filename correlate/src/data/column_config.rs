@@ -28,3 +28,12 @@ pub struct ColumnConfig {
     #[serde(default)]
     pub related_source: Option<String>,
 }
+
+impl ColumnConfig {
+    pub fn find_name_column_index(configs: &[ColumnConfig]) -> usize {
+        configs.iter().position(|c| c.is_name)
+            .or_else(|| configs.iter().position(|c| c.name.to_lowercase().contains("name")))
+            .or_else(|| configs.iter().position(|c| c.column_type == ColumnType::Text))
+            .unwrap_or(0)
+    }
+}

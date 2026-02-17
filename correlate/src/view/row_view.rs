@@ -92,10 +92,7 @@ impl RowViewer<Row> for RowView {
     }
 
     fn filter_row(&mut self, row: &Row) -> bool {
-        // filter by the first string column found, or "Name"
-        let name_idx = self.column_configs.iter().position(|c| c.name.contains("Name"))
-            .or_else(|| self.column_configs.iter().position(|c| c.column_type == ColumnType::Text))
-            .unwrap_or(0);
+        let name_idx = ColumnConfig::find_name_column_index(&self.column_configs);
 
         if let Some(cell) = row.cells.get(name_idx) {
             cell.to_string().contains(&self.name_filter)
@@ -266,10 +263,7 @@ impl RowViewer<Row> for RowView {
         if let Some(renaming_target) = renaming_target {
             match renaming_target {
                 RenamingTarget::Row(row_idx) => {
-                    let name_col_idx = self.column_configs.iter().position(|c| c.is_name)
-                        .or_else(|| self.column_configs.iter().position(|c| c.name.contains("Name")))
-                        .or_else(|| self.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::Text))
-                        .unwrap_or(0);
+                    let name_col_idx = ColumnConfig::find_name_column_index(&self.column_configs);
 
                     if let Some(row) = table.get_mut(row_idx) {
                         let column_type = self.column_configs[name_col_idx].column_type;
@@ -353,10 +347,7 @@ impl RowViewer<Row> for RowView {
         let mut committed = None;
 
         if renaming_this_row {
-            let name_col_idx = self.column_configs.iter().position(|c| c.is_name)
-                .or_else(|| self.column_configs.iter().position(|c| c.name.contains("Name")))
-                .or_else(|| self.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::Text))
-                .unwrap_or(0);
+            let name_col_idx = ColumnConfig::find_name_column_index(&self.column_configs);
 
             let initial_name = row.cells[name_col_idx].0.clone();
 
