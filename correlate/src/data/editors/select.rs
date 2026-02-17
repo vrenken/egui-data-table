@@ -35,7 +35,7 @@ impl ColumnTypeEditor for SelectEditor {
         };
         
         // Check if the popup was open in the previous frame
-        let was_open = egui::Popup::is_id_open(ui.ctx(), popup_id);
+        let was_open = Popup::is_id_open(ui.ctx(), popup_id);
 
         // Force the popup to open immediately.
         if !was_open {
@@ -48,18 +48,18 @@ impl ColumnTypeEditor for SelectEditor {
             ui.set_min_width(150.0);
             
             let text_edit_res = ui.text_edit_singleline(&mut cell_value.0);
+            
+            // Ensure the text box gets focus when the popup is first opened.
+            if !was_open {
+                text_edit_res.request_focus();
+            }
+
             if text_edit_res.changed() {
                 response.mark_changed();
                 ui.ctx().request_repaint(); // Ensure it updates and eventually saves
             }
             if text_edit_res.lost_focus() || ui.input(|i| i.key_pressed(egui::Key::Enter)) {
                 Popup::close_id(ui.ctx(), popup_id);
-            }
-
-            // If it was NOT open in the previous frame, but is open now (it is, since we are inside the popup),
-            // it means it was just opened.
-            if !was_open {
-                text_edit_res.request_focus();
             }
 
             ui.separator();

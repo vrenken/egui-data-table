@@ -1,4 +1,4 @@
-﻿use egui::{Response, Ui, Color32, Popup};
+﻿use egui::{Response, Ui, Popup};
 use crate::data::*;
 use super::ColumnTypeEditor;
 
@@ -68,11 +68,10 @@ impl ColumnTypeEditor for RelationEditor {
             current_display
         };
 
-        // Show placeholder button/label
         let popup_id = ui.make_persistent_id("relation_editor_popup");
         let placeholder_res = ui.selectable_label(false, placeholder);
 
-        // Force the popup to open immediately.
+        // Check if the popup was open in the previous frame
         let was_open = Popup::is_id_open(ui.ctx(), popup_id);
 
         // Force the popup to open immediately.
@@ -87,6 +86,12 @@ impl ColumnTypeEditor for RelationEditor {
             // Use the current key for the text edit query, but we need to handle the fact that it might be a serialized relation
             let mut query_buffer = current_key.clone();
             let text_edit_res = ui.text_edit_singleline(&mut query_buffer);
+            
+            // Ensure the text box gets focus when the popup is first opened.
+            if !was_open {
+                text_edit_res.request_focus();
+            }
+
             if text_edit_res.changed() {
                 cell_value.0 = query_buffer.clone();
                 response.mark_changed();
@@ -94,12 +99,6 @@ impl ColumnTypeEditor for RelationEditor {
             }
             if text_edit_res.lost_focus() || ui.input(|i| i.key_pressed(egui::Key::Enter)) {
                 Popup::close_id(ui.ctx(), popup_id);
-            }
-
-            // If it was NOT open in the previous frame, but is open now (it is, since we are inside the popup),
-            // it means it was just opened.
-            if !was_open {
-                text_edit_res.request_focus();
             }
 
             ui.separator();
