@@ -69,10 +69,8 @@ impl<'a> ColumnHeader<'a> {
 
         if config.column_type == ColumnType::Relation {
             
-            ui.horizontal(|ui| {
-                 ui.label("Related source:");
+            ui.menu_button("Related source", |ui| {
                 let current_source = self.column_configs[column].related_source.clone().unwrap_or_default();
-                let selected_source = current_source.clone();
 
                 let mut available_sources = Vec::new();
                 for ds in &data_sources {
@@ -83,22 +81,16 @@ impl<'a> ColumnHeader<'a> {
                     }
                 }
 
-                egui::ComboBox::from_id_salt("column-header-combobox")
-                    .selected_text(&selected_source)
-                    .truncate()
-                    .wrap_mode(TextWrapMode::Truncate)
-                    .close_behavior(PopupCloseBehavior::CloseOnClickOutside)
-                    .show_ui(ui, |ui| {
-                        for source in available_sources {
-                            ui
-                                .selectable_value(&mut &selected_source, &source, format!("{source}"))
-                                .clicked_elsewhere();
+                for source in available_sources {
+                    let mut is_selected = current_source == source;
+                    if ui.checkbox(&mut is_selected, &source).clicked() {
+                        if is_selected {
+                            self.column_configs[column].related_source = Some(source.clone());
+                        } else {
+                            self.column_configs[column].related_source = None;
                         }
-                    });
-
-                if selected_source != current_source {
-                    self.column_configs[column].related_source = Some(selected_source);
-                    action = Some(HeaderAction::RequestSave);
+                        action = Some(HeaderAction::RequestSave);
+                    }
                 }
             });
         }
