@@ -1,6 +1,7 @@
 ﻿use eframe::emath::Align;
 use egui::Layout;
 use egui::scroll_area::ScrollBarVisibility;
+use egui_data_table::RowViewer;
 use crate::view::root_view_model::RootViewModel;
 use crate::view::*;
 
@@ -50,8 +51,34 @@ impl CentralPanel {
                 }
 
                 central_panel_view_model.handle_viewer_requests(view_model);
+                Self::show_trash_confirmation_modal(ctx, view_model);
             });
         });
+    }
+
+    fn show_trash_confirmation_modal(ctx: &egui::Context, view_model: &mut RootViewModel) {
+        let trash_column_index = ctx.data(|d| d.get_temp::<Option<usize>>(egui::Id::new("trash_column_index"))).flatten();
+        if let Some(column_idx) = trash_column_index {
+            egui::Modal::new(egui::Id::new("confirm_trash_modal")).show(ctx, |ui| {
+                ui.set_width(300.0);
+                ui.heading("Confirm Trash");
+                ui.label(format!("Are you sure you want to delete the column '{}'?", 
+                    view_model.viewer.column_configs[column_idx].display_name.as_ref().unwrap_or(&view_model.viewer.column_configs[column_idx].name)));
+                ui.add_space(10.0);
+                ui.horizontal(|ui| {
+                    if ui.button("Yes, Delete").clicked() {
+                        view_model.viewer.on_column_removed(&mut view_model.table, column_idx);
+                        ctx.data_mut(|d| d.insert_temp(egui::Id::new("trash_column_index"), None::<usize>));
+                    }
+                    if ui.button("Cancel").clicked() {
+                        ctx.data_mut(|d| d.insert_temp(egui::Id::new("trash_column_index"), None::<usize>));
+                    }
+                });
+                if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                    ctx.data_mut(|d| d.insert_temp(egui::Id::new("trash_column_index"), None::<usize>));
+                }
+            });
+        }
     }
 
     pub fn ui_row_context_menu(viewer: &mut crate::view::RowView, ui: &mut egui::Ui, column: usize) {

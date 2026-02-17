@@ -66,7 +66,7 @@ impl<'a> ColumnHeader<'a> {
         self.show_move_section(ui, column, &mut action);
         ui.separator();
 
-        self.show_footer_section(ui, column);
+        self.show_footer_section(ui, column, &mut action);
 
         action
     }
@@ -274,12 +274,17 @@ impl<'a> ColumnHeader<'a> {
         }
     }
 
-    fn show_footer_section(&mut self, ui: &mut egui::Ui, _column: usize) {
+    fn show_footer_section(&mut self, ui: &mut egui::Ui, column: usize, _action: &mut HeaderResult) {
         if ui.button(format!("{} Duplicate", egui_material_icons::icons::ICON_STACK)).clicked() {
             ui.close();
         }
-        if ui.button(format!("{} Trash", egui_material_icons::icons::ICON_DELETE)).clicked() {
-            ui.close();
-        }
+
+        let is_virtual = self.column_configs[column].is_virtual;
+        ui.add_enabled_ui(is_virtual, |ui| {
+            if ui.button(format!("{} Trash", egui_material_icons::icons::ICON_DELETE)).clicked() {
+                ui.data_mut(|d| d.insert_temp(egui::Id::new("trash_column_index"), Some(column)));
+                ui.close();
+            }
+        });
     }
 }

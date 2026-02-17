@@ -307,6 +307,25 @@ impl RowViewer<Row> for RowView {
         table.mark_as_modified();
     }
 
+    fn on_column_removed(&mut self, table: &mut egui_data_table::DataTable<Row>, index: usize) {
+        if index >= self.column_configs.len() {
+            return;
+        }
+
+        // Remove column config
+        self.column_configs.remove(index);
+
+        // Update all rows in the table
+        let mut rows = table.take();
+        for row in &mut rows {
+            if index < row.cells.len() {
+                row.cells.remove(index);
+            }
+        }
+        table.replace(rows);
+        table.mark_as_modified();
+    }
+
     fn on_column_inserted(&mut self, table: &mut egui_data_table::DataTable<Row>, at: usize) {
         let new_column = crate::data::ColumnConfig {
             name: format!("New Column {}", self.column_configs.len() + 1),
