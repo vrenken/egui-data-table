@@ -209,13 +209,14 @@ impl<'a> ColumnHeader<'a> {
             let hidden: Vec<usize> = (0..total).filter(|i| !visible_set.contains(i)).collect();
             if !hidden.is_empty() {
                 ui.separator();
-                ui.label("Hidden");
-                for idx in hidden {
-                    if ui.button(self.name(idx)).clicked() {
-                        *action = Some(HeaderAction::ShowHidden(idx));
-                        ui.close();
+                ui.menu_button("Show", |ui| {
+                    for idx in hidden {
+                        if ui.button(self.name(idx)).clicked() {
+                            *action = Some(HeaderAction::ShowHidden(idx));
+                            ui.close();
+                        }
                     }
-                }
+                });
             }
         }
     }
