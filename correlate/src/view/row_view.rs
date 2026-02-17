@@ -290,6 +290,23 @@ impl RowViewer<Row> for RowView {
         }
     }
 
+    fn on_column_moved(&mut self, table: &mut egui_data_table::DataTable<Row>, from: usize, to: usize) {
+        if from == to || from >= self.column_configs.len() || to >= self.column_configs.len() {
+            return;
+        }
+
+        // Swap column configs
+        self.column_configs.swap(from, to);
+
+        // Update all rows in the table
+        let mut rows = table.take();
+        for row in &mut rows {
+            row.cells.swap(from, to);
+        }
+        table.replace(rows);
+        table.mark_as_modified();
+    }
+
     fn on_column_inserted(&mut self, table: &mut egui_data_table::DataTable<Row>, at: usize) {
         let new_column = crate::data::ColumnConfig {
             name: format!("New Column {}", self.column_configs.len() + 1),
@@ -314,25 +331,11 @@ impl RowViewer<Row> for RowView {
         table.mark_as_modified();
     }
 
-    fn on_column_moved(&mut self, table: &mut egui_data_table::DataTable<Row>, from: usize, to: usize) {
-        if from == to || from >= self.column_configs.len() || to >= self.column_configs.len() {
-            return;
-        }
-
-        // Swap column configs
-        self.column_configs.swap(from, to);
-
-        // Update all rows in the table
-        let mut rows = table.take();
-        for row in &mut rows {
-            row.cells.swap(from, to);
-        }
-        table.replace(rows);
-        table.mark_as_modified();
-    }
-
     fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) -> egui_data_table::viewer::HeaderResult {
-        ColumnHeader::new_with_visibility(&mut self.column_configs, self.visible_columns.clone()).context_menu(ui, column, self.data_sources.clone())
+        let view_model_ptr = ui.ctx().data(|d| d.get_temp::<usize>(egui::Id::new("root_view_model"))).expect("RootViewModel pointer not found in egui data");
+        let view_model = unsafe { &mut *(view_model_ptr as *mut RootViewModel) };
+        ColumnHeader::new_with_visibility(&mut self.column_configs, self.visible_columns.clone())
+            .context_menu(ui, column, view_model)
     }
 
     fn row_header_double_clicked(&mut self, ctx: &egui::Context, row_idx: usize, _row: &Row) {

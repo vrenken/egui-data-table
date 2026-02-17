@@ -44,18 +44,18 @@ impl<'a> ColumnHeader<'a> {
         ui.add(egui::Label::new(self.name(column)).selectable(false));
     }
 
-    pub fn context_menu(&mut self, ui: &mut egui::Ui, column: usize, data_sources: Vec<DataSource>) -> HeaderResult {
+    pub fn context_menu(&mut self, ui: &mut egui::Ui, column: usize, view_model: &mut RootViewModel) -> HeaderResult {
         let mut action = None;
 
         self.show_rename_section(ui, column, &mut action);
         ui.separator();
 
-        self.show_relation_section(ui, column, &data_sources, &mut action);
+        self.show_relation_section(ui, column, &view_model.data_sources, &mut action);
         self.show_change_type_section(ui, column, &mut action);
 
         ui.separator();
 
-        self.show_filter_sort_hide_section(ui, column, &mut action);
+        self.show_filter_sort_hide_section(ui, column, &mut action, view_model);
         self.show_key_name_toggles(ui, column, &mut action);
 
         ui.separator();
@@ -199,6 +199,8 @@ impl<'a> ColumnHeader<'a> {
         });
 
         if ui.button(format!("{} Hide", egui_material_icons::icons::ICON_VISIBILITY_OFF)).clicked() {
+            self.column_configs[column].is_visible = false;
+            view_model.save_datasource_configuration();
             *action = Some(HeaderAction::HideColumn(column));
             ui.close();
         }
@@ -209,10 +211,11 @@ impl<'a> ColumnHeader<'a> {
             let visible_set: std::collections::HashSet<usize> = vis.iter().cloned().collect();
             let hidden: Vec<usize> = (0..total).filter(|i| !visible_set.contains(i)).collect();
             if !hidden.is_empty() {
-                ui.separator();
                 ui.menu_button("Show", |ui| {
                     for idx in hidden {
                         if ui.button(self.name(idx)).clicked() {
+                            self.column_configs[idx].is_visible = true;
+                            view_model.save_datasource_configuration();
                             *action = Some(HeaderAction::ShowHidden(idx));
                             ui.close();
                         }
@@ -220,6 +223,7 @@ impl<'a> ColumnHeader<'a> {
                 });
             }
         }
+        ui.separator();
     }
 
     fn show_key_name_toggles(&mut self, ui: &mut egui::Ui, column: usize, action: &mut HeaderResult) {

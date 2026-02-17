@@ -13,6 +13,8 @@ impl CentralPanel {
               central_panel_view_model: &mut CentralPanelViewModel,
               ctx: &egui::Context) {
 
+        ctx.data_mut(|d| d.insert_temp(egui::Id::new("root_view_model"), view_model as *mut RootViewModel as usize));
+
         egui::CentralPanel::default()
             .show(ctx, |ui| {
 
