@@ -51,6 +51,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
                     is_key: false,
                     is_name: false,
                     is_virtual: false,
+                    is_visible: true,
                     order: col_idx as usize - 1,
                     width: None,
                     allowed_values: None,

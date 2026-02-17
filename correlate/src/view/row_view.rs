@@ -301,6 +301,7 @@ impl RowViewer<Row> for RowView {
             is_key: false,
             is_name: false,
             is_virtual: true,
+            is_visible: true,
             order: self.column_configs.len(),
             width: None,
             allowed_values: None,

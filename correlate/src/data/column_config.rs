@@ -19,6 +19,8 @@ pub struct ColumnConfig {
     pub is_name: bool,
     #[serde(default)]
     pub is_virtual: bool,
+    #[serde(default = "default_true")]
+    pub is_visible: bool,
     #[serde(default)]
     pub order: usize,
     #[serde(default)]
@@ -27,6 +29,10 @@ pub struct ColumnConfig {
     pub allowed_values: Option<Vec<AllowedValue>>,
     #[serde(default)]
     pub related_source: Option<String>,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl ColumnConfig {
