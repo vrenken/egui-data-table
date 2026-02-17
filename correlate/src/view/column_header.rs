@@ -179,7 +179,7 @@ impl<'a> ColumnHeader<'a> {
         });
     }
 
-    fn show_filter_sort_hide_section(&mut self, ui: &mut egui::Ui, column: usize, action: &mut HeaderResult) {
+    fn show_filter_sort_hide_section(&mut self, ui: &mut egui::Ui, column: usize, action: &mut HeaderResult, view_model: &mut RootViewModel) {
         if ui.button(format!("{} Filter", egui_material_icons::icons::ICON_FILTER_LIST)).clicked() {
             ui.close();
         }
