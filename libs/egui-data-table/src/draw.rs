@@ -200,7 +200,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                     // TODO: Add `Configure Sorting` button
                 });
 
-                let has_any_hidden_col = s.vis_cols().len() != s.num_columns();
+                let _has_any_hidden_col = s.vis_cols().len() != s.num_columns();
 
                 for (vis_col, &col) in s.vis_cols().iter().enumerate() {
                     let vis_col = VisColumnPos(vis_col);
