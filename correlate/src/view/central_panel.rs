@@ -2,7 +2,7 @@
 use egui::Layout;
 use egui::scroll_area::ScrollBarVisibility;
 use crate::view::root_view_model::RootViewModel;
-use crate::view::CentralPanelViewModel;
+use crate::view::*;
 
 #[derive(Default)]
 pub struct CentralPanel {}

@@ -3,10 +3,7 @@ use egui::{Response, Key};
 use egui_data_table::RowViewer;
 use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
 use crate::data::*;
-use crate::data::column_config::ColumnConfig;
-use crate::data::column_type::ColumnType;
-use crate::data::RenamingTarget;
-use crate::view::column_header::ColumnHeader;
+use crate::view::*;
 
 pub struct RowView {
     pub name_filter: String,

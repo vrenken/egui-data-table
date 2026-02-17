@@ -1,5 +1,7 @@
 ﻿pub mod row_view;
 pub mod column_header;
+pub use column_header::*;
+
 pub mod hierarchy;
 pub use hierarchy::*;
 pub mod central_panel;
@@ -24,5 +26,3 @@ pub use hierarchy_view_model::*;
 
 mod central_panel_view_model;
 pub use central_panel_view_model::*;
-
-

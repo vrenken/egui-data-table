@@ -2,6 +2,7 @@
 use egui::Key;
 use egui_data_table::viewer::{HeaderAction, HeaderResult};
 use crate::data::*;
+use crate::view::*;
 
 pub struct ColumnHeader<'a> {
     pub column_configs: &'a mut Vec<ColumnConfig>,
