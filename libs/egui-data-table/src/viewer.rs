@@ -274,6 +274,9 @@ pub trait RowViewer<R>: 'static {
     /// Called when a column has been inserted
     fn on_column_inserted(&mut self, _table: &mut DataTable<R>, _column_index: usize) {}
 
+    /// Called when a column has been removed
+    fn on_column_removed(&mut self, _table: &mut DataTable<R>, _column_index: usize) {}
+
     /// Add custom items to the column header context menu.
     fn column_header_context_menu(&mut self, _ui: &mut egui::Ui, _column: usize) -> HeaderResult { None }
 
@@ -352,6 +355,7 @@ pub enum HeaderAction {
     HideColumn(usize),
     ClearSort,
     ShowHidden(usize),
+    RemoveColumn(usize),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

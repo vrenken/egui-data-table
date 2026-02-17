@@ -1065,6 +1065,10 @@ impl<R> UiState<R> {
                 // as we don't store the old name in the command.
                 vec![]
             }
+            Command::RemoveColumn(_idx) => {
+                // Similarly to AddColumn, we don't support undoing column removal easily yet
+                vec![]
+            }
             Command::CcUpdateSystemClipboard(..) => {
                 // This command MUST've be consumed before calling this.
                 unreachable!()
@@ -1174,6 +1178,11 @@ impl<R> UiState<R> {
             Command::MoveColumn(from, to) => {
                 table.dirty_flag = true;
                 vwr.on_column_moved(table, *from, *to);
+                self.cc_dirty = true;
+            }
+            Command::RemoveColumn(idx) => {
+                table.dirty_flag = true;
+                vwr.on_column_removed(table, *idx);
                 self.cc_dirty = true;
             }
             Command::RequestSave => {
@@ -1703,6 +1712,7 @@ pub(crate) enum Command<R> {
     RenameCommitted(crate::viewer::RenameTarget, String),
     RequestSave,
     RemoveRow(Vec<RowIdx>),
+    RemoveColumn(usize),
 
     CcEditStart(RowIdx, VisColumnPos, Box<R>),
     CcCancelEdit,

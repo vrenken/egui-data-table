@@ -300,6 +300,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                                 crate::viewer::HeaderAction::HideColumn(_) => commands.push(Command::CcHideColumn(col)),
                                 crate::viewer::HeaderAction::ClearSort => commands.push(Command::SetColumnSort(Vec::new())),
                                 crate::viewer::HeaderAction::ShowHidden(what) => commands.push(Command::CcShowColumn { what: ColumnIdx(what), at: vis_col }),
+                                crate::viewer::HeaderAction::RemoveColumn(idx) => commands.push(Command::RemoveColumn(idx)),
                             }
                         }
                     });
