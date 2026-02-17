@@ -1,4 +1,4 @@
-﻿use egui::{Response, Ui};
+﻿use egui::{Response, Ui, Color32, Popup};
 use crate::data::*;
 use super::ColumnTypeEditor;
 
@@ -72,10 +72,12 @@ impl ColumnTypeEditor for RelationEditor {
         let popup_id = ui.make_persistent_id("relation_editor_popup");
         let placeholder_res = ui.selectable_label(false, placeholder);
 
-        // Manage popup open/close similar to SelectEditor
-        let was_open = egui::Popup::is_id_open(ui.ctx(), popup_id);
+        // Force the popup to open immediately.
+        let was_open = Popup::is_id_open(ui.ctx(), popup_id);
+
+        // Force the popup to open immediately.
         if !was_open {
-            egui::Popup::open_id(ui.ctx(), popup_id);
+            Popup::open_id(ui.ctx(), popup_id);
         }
         let mut response = placeholder_res.clone();
 
@@ -91,9 +93,14 @@ impl ColumnTypeEditor for RelationEditor {
                 ui.ctx().request_repaint();
             }
             if text_edit_res.lost_focus() || ui.input(|i| i.key_pressed(egui::Key::Enter)) {
-                ui.close();
+                Popup::close_id(ui.ctx(), popup_id);
             }
-            if !was_open { text_edit_res.request_focus(); }
+
+            // If it was NOT open in the previous frame, but is open now (it is, since we are inside the popup),
+            // it means it was just opened.
+            if !was_open {
+                text_edit_res.request_focus();
+            }
 
             ui.separator();
 
@@ -111,7 +118,7 @@ impl ColumnTypeEditor for RelationEditor {
                     cell_value.0 = relation.to_string();
                     response.mark_changed();
                     ui.ctx().request_repaint();
-                    ui.close();
+                    Popup::close_id(ui.ctx(), popup_id);
                 }
             }
         });
