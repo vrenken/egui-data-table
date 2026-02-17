@@ -13,7 +13,7 @@
           "is_name": false,
           "is_virtual": false,
           "order": 0,
-          "width": 74.25,
+          "width": 74.71875,
           "allowed_values": null,
           "related_source": null
         },
@@ -22,7 +22,7 @@
           "display_name": null,
           "column_type": "Text",
           "is_key": false,
-          "is_name": false,
+          "is_name": true,
           "is_virtual": false,
           "order": 1,
           "width": 175.07294,
