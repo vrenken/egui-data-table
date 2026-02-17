@@ -9,12 +9,12 @@
           "name": "id",
           "display_name": null,
           "column_type": "Number",
-          "is_key": true,
+          "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
           "order": 0,
-          "width": 95.0,
+          "width": 57.59375,
           "allowed_values": null,
           "related_source": null
         },
@@ -23,11 +23,11 @@
           "display_name": null,
           "column_type": "Text",
           "is_key": false,
-          "is_name": true,
+          "is_name": false,
           "is_virtual": false,
           "is_visible": true,
           "order": 1,
-          "width": 205.0,
+          "width": 220.40625,
           "allowed_values": null,
           "related_source": null
         },
@@ -40,7 +40,7 @@
           "is_virtual": false,
           "is_visible": true,
           "order": 2,
-          "width": 184.00006,
+          "width": 224.0,
           "allowed_values": null,
           "related_source": null
         },
@@ -53,209 +53,33 @@
           "is_virtual": false,
           "is_visible": true,
           "order": 3,
-          "width": 143.99994,
+          "width": 89.5625,
           "allowed_values": null,
           "related_source": null
         },
         {
           "name": "latitude",
-          "display_name": "Latitude",
+          "display_name": null,
           "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
           "order": 4,
-          "width": 106.125,
+          "width": 92.125,
           "allowed_values": null,
           "related_source": null
         },
         {
           "name": "longitude",
-          "display_name": "Longitude",
+          "display_name": null,
           "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
           "order": 5,
-          "width": 106.46875,
-          "allowed_values": null,
-          "related_source": null
-        },
-        {
-          "name": "Type",
-          "display_name": "Type",
-          "column_type": "Select",
-          "is_key": false,
-          "is_name": false,
-          "is_virtual": true,
-          "is_visible": true,
-          "order": 6,
-          "width": 154.6875,
-          "allowed_values": [
-            {
-              "value": "Test",
-              "color": [
-                231,
-                170,
-                200
-              ]
-            },
-            {
-              "value": "Berlin",
-              "color": [
-                170,
-                198,
-                231
-              ]
-            },
-            {
-              "value": "Amsterdam",
-              "color": [
-                212,
-                231,
-                170
-              ]
-            },
-            {
-              "value": "Venlo",
-              "color": [
-                202,
-                231,
-                170
-              ]
-            },
-            {
-              "value": "Ahlen",
-              "color": [
-                170,
-                170,
-                231
-              ]
-            },
-            {
-              "value": "Roermond",
-              "color": [
-                231,
-                170,
-                227
-              ]
-            },
-            {
-              "value": "Eindhoven",
-              "color": [
-                170,
-                231,
-                219
-              ]
-            },
-            {
-              "value": "Enschede",
-              "color": [
-                211,
-                231,
-                170
-              ]
-            },
-            {
-              "value": "Arnhem",
-              "color": [
-                231,
-                219,
-                170
-              ]
-            },
-            {
-              "value": "Utrecht",
-              "color": [
-                223,
-                231,
-                170
-              ]
-            },
-            {
-              "value": "Maastricht",
-              "color": [
-                170,
-                231,
-                213
-              ]
-            },
-            {
-              "value": "Boxtel",
-              "color": [
-                193,
-                231,
-                170
-              ]
-            },
-            {
-              "value": "Groningen",
-              "color": [
-                172,
-                170,
-                231
-              ]
-            },
-            {
-              "value": "Paris",
-              "color": [
-                201,
-                170,
-                231
-              ]
-            },
-            {
-              "value": "Deventer",
-              "color": [
-                229,
-                170,
-                231
-              ]
-            },
-            {
-              "value": "Sevenum",
-              "color": [
-                170,
-                231,
-                229
-              ]
-            },
-            {
-              "value": "Scheveningen",
-              "color": [
-                231,
-                170,
-                214
-              ]
-            }
-          ],
-          "related_source": null
-        },
-        {
-          "name": "Relation",
-          "display_name": "Relation",
-          "column_type": "Relation",
-          "is_key": false,
-          "is_name": false,
-          "is_virtual": true,
-          "is_visible": true,
-          "order": 7,
-          "width": 301.71875,
-          "allowed_values": null,
-          "related_source": "Germany > Germany"
-        },
-        {
-          "name": "ethnic.group",
-          "display_name": null,
-          "column_type": "Text",
-          "is_key": false,
-          "is_name": false,
-          "is_virtual": false,
-          "is_visible": true,
-          "order": 8,
-          "width": 330.53125,
+          "width": 103.125,
           "allowed_values": null,
           "related_source": null
         },
@@ -267,8 +91,21 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 9,
+          "order": 6,
           "width": 88.875,
+          "allowed_values": null,
+          "related_source": null
+        },
+        {
+          "name": "ethnic.group",
+          "display_name": null,
+          "column_type": "Text",
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "is_visible": true,
+          "order": 7,
+          "width": 120.59375,
           "allowed_values": null,
           "related_source": null
         },
@@ -280,8 +117,8 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 10,
-          "width": 125.125,
+          "order": 8,
+          "width": 68.125,
           "allowed_values": null,
           "related_source": null
         },
@@ -293,8 +130,8 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 11,
-          "width": 125.8125,
+          "order": 9,
+          "width": 125.125,
           "allowed_values": null,
           "related_source": null
         },
@@ -306,8 +143,8 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 12,
-          "width": 131.125,
+          "order": 10,
+          "width": 114.125,
           "allowed_values": null,
           "related_source": null
         },
@@ -319,8 +156,8 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 13,
-          "width": 137.125,
+          "order": 11,
+          "width": 131.125,
           "allowed_values": null,
           "related_source": null
         },
@@ -332,8 +169,8 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 14,
-          "width": 137.8125,
+          "order": 12,
+          "width": 137.125,
           "allowed_values": null,
           "related_source": null
         },
@@ -345,8 +182,8 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 15,
-          "width": 148.4375,
+          "order": 13,
+          "width": 136.4375,
           "allowed_values": null,
           "related_source": null
         },
@@ -358,8 +195,8 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 16,
-          "width": 149.46875,
+          "order": 14,
+          "width": 148.4375,
           "allowed_values": null,
           "related_source": null
         },
@@ -371,330 +208,14 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 17,
-          "width": 156.4375,
+          "order": 15,
+          "width": 134.4375,
           "allowed_values": null,
           "related_source": null
         }
       ],
       "sort_config": null,
-      "cell_values": [
-        {
-          "key": "1",
-          "column_name": "Type",
-          "value": "Venlo"
-        },
-        {
-          "key": "1",
-          "column_name": "Relation",
-          "value": "Munich"
-        },
-        {
-          "key": "2",
-          "column_name": "Type",
-          "value": "Amsterdam"
-        },
-        {
-          "key": "3",
-          "column_name": "Type",
-          "value": "Test"
-        },
-        {
-          "key": "3",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Wiesbaden/Wiesbaden"
-        },
-        {
-          "key": "4",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "4",
-          "column_name": "Relation",
-          "value": "Mainz"
-        },
-        {
-          "key": "5",
-          "column_name": "Type",
-          "value": "Paris"
-        },
-        {
-          "key": "6",
-          "column_name": "Type",
-          "value": "Arnhem"
-        },
-        {
-          "key": "7",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "8",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "8",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Münster/Münster"
-        },
-        {
-          "key": "9",
-          "column_name": "Type",
-          "value": "Amsterdam"
-        },
-        {
-          "key": "10",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "11",
-          "column_name": "Type",
-          "value": "Venlo"
-        },
-        {
-          "key": "12",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "12",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Krefeld/Krefeld"
-        },
-        {
-          "key": "13",
-          "column_name": "Type",
-          "value": "Amsterdam"
-        },
-        {
-          "key": "14",
-          "column_name": "Type",
-          "value": "Amsterdam"
-        },
-        {
-          "key": "15",
-          "column_name": "Type",
-          "value": "Venlo"
-        },
-        {
-          "key": "16",
-          "column_name": "Type",
-          "value": "Maastricht"
-        },
-        {
-          "key": "17",
-          "column_name": "Type",
-          "value": "Groningen"
-        },
-        {
-          "key": "17",
-          "column_name": "Relation",
-          "value": "Gelsenkirchen"
-        },
-        {
-          "key": "18",
-          "column_name": "Type",
-          "value": "Amsterdam"
-        },
-        {
-          "key": "20",
-          "column_name": "Type",
-          "value": "Arnhem"
-        },
-        {
-          "key": "21",
-          "column_name": "Type",
-          "value": "Amsterdam"
-        },
-        {
-          "key": "22",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "22",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Dortmund/Dortmund"
-        },
-        {
-          "key": "23",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "23",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Oldenburg/Oldenburg"
-        },
-        {
-          "key": "24",
-          "column_name": "Type",
-          "value": "Test"
-        },
-        {
-          "key": "24",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Augsburg/Augsburg"
-        },
-        {
-          "key": "25",
-          "column_name": "Type",
-          "value": "Deventer"
-        },
-        {
-          "key": "25",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Lübeck/Lübeck"
-        },
-        {
-          "key": "26",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "27",
-          "column_name": "Type",
-          "value": "Roermond"
-        },
-        {
-          "key": "27",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Mannheim/Mannheim"
-        },
-        {
-          "key": "28",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "29",
-          "column_name": "Type",
-          "value": "Sevenum"
-        },
-        {
-          "key": "30",
-          "column_name": "Type",
-          "value": "Maastricht"
-        },
-        {
-          "key": "31",
-          "column_name": "Type",
-          "value": "Roermond"
-        },
-        {
-          "key": "34",
-          "column_name": "Type",
-          "value": "Ahlen"
-        },
-        {
-          "key": "37",
-          "column_name": "Type",
-          "value": "Scheveningen"
-        },
-        {
-          "key": "39",
-          "column_name": "Type",
-          "value": "Groningen"
-        },
-        {
-          "key": "40",
-          "column_name": "Type",
-          "value": "Venlo"
-        },
-        {
-          "key": "41",
-          "column_name": "Type",
-          "value": "Arnhem"
-        },
-        {
-          "key": "42",
-          "column_name": "Type",
-          "value": "Enschede"
-        },
-        {
-          "key": "44",
-          "column_name": "Type",
-          "value": "Utrecht"
-        },
-        {
-          "key": "45",
-          "column_name": "Type",
-          "value": "Venlo"
-        },
-        {
-          "key": "45",
-          "column_name": "Relation",
-          "value": "relation://Germany > Germany/Frankfurt/Frankfurt"
-        },
-        {
-          "key": "49",
-          "column_name": "Type",
-          "value": "Venlo"
-        },
-        {
-          "key": "51",
-          "column_name": "Type",
-          "value": "Roermond"
-        },
-        {
-          "key": "52",
-          "column_name": "Type",
-          "value": "Test"
-        },
-        {
-          "key": "53",
-          "column_name": "Type",
-          "value": "Test"
-        },
-        {
-          "key": "54",
-          "column_name": "Type",
-          "value": "Arnhem"
-        },
-        {
-          "key": "56",
-          "column_name": "Type",
-          "value": "Roermond"
-        },
-        {
-          "key": "58",
-          "column_name": "Type",
-          "value": "Maastricht"
-        },
-        {
-          "key": "60",
-          "column_name": "Type",
-          "value": "Eindhoven"
-        },
-        {
-          "key": "62",
-          "column_name": "Type",
-          "value": "Boxtel"
-        },
-        {
-          "key": "116",
-          "column_name": "Type",
-          "value": "Berlin"
-        },
-        {
-          "key": "120",
-          "column_name": "Type",
-          "value": "Test"
-        },
-        {
-          "key": "213",
-          "column_name": "Type",
-          "value": "Test"
-        },
-        {
-          "key": "218",
-          "column_name": "Type",
-          "value": "Berlin"
-        }
-      ]
+      "cell_values": []
     }
   ]
 }
