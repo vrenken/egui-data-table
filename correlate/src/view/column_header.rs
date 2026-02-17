@@ -1,6 +1,5 @@
 ﻿use std::borrow::Cow;
-use eframe::epaint::text::TextWrapMode;
-use egui::{Key, PopupCloseBehavior};
+use egui::Key;
 use egui_data_table::viewer::{HeaderAction, HeaderResult};
 use crate::data::*;
 
