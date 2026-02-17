@@ -131,6 +131,13 @@ impl RowViewer<Row> for RowView {
                     ui.label(&cell.0)
                 }
             }
+            ColumnType::Relation => {
+                let mut display = cell.0.clone();
+                if let Ok(rel) = cell.0.parse::<Relation>() {
+                    display = rel.value;
+                }
+                ui.label(display)
+            }
             _ => ui.label(&cell.0),
         };
 
