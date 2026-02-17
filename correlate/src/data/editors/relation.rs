@@ -9,7 +9,8 @@ impl ColumnTypeEditor for RelationEditor {
         &self,
         ui: &mut Ui,
         cell_value: &mut CellValue,
-        _column_config: &mut ColumnConfig,
+        column_config: &mut ColumnConfig,
+        data_sources: &[DataSource],
     ) -> Option<Response> {
         ui.horizontal(|ui| {
             ui.label(egui_material_icons::icons::ICON_NORTH_EAST);
