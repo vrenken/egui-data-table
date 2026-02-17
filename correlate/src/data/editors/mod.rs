@@ -7,6 +7,7 @@ pub trait ColumnTypeEditor {
         ui: &mut Ui,
         cell_value: &mut CellValue,
         column_config: &mut ColumnConfig,
+        data_sources: &[DataSource],
     ) -> Option<Response>;
 }
 

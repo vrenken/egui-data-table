@@ -9,6 +9,7 @@ impl ColumnTypeEditor for TextEditor {
         ui: &mut Ui,
         cell_value: &mut CellValue,
         _column_config: &mut ColumnConfig,
+        _data_sources: &[DataSource],
     ) -> Option<Response> {
         Some(egui::TextEdit::multiline(&mut cell_value.0)
             .desired_rows(1)

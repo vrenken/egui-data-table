@@ -43,8 +43,9 @@ impl ColumnType {
         ui: &mut Ui,
         cell_value: &mut CellValue,
         column_config: &mut ColumnConfig,
+        data_sources: &[DataSource],
     ) -> Option<Response> {
-        self.editor().show(ui, cell_value, column_config)
+        self.editor().show(ui, cell_value, column_config, data_sources)
     }
 
     pub fn default_value(&self) -> CellValue {

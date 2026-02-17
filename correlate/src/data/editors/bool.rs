@@ -9,6 +9,7 @@ impl ColumnTypeEditor for BoolEditor {
         ui: &mut Ui,
         cell_value: &mut CellValue,
         _column_config: &mut ColumnConfig,
+        _data_sources: &[DataSource],
     ) -> Option<Response> {
         let mut b: bool = cell_value.0.parse().unwrap_or(false);
         let res = ui.checkbox(&mut b, "");

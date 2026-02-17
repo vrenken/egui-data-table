@@ -184,7 +184,7 @@ impl RowViewer<Row> for RowView {
         let column_type = column_config.column_type;
         let cell_value = &mut row.cells[column];
 
-        column_type.show_editor(ui, cell_value, column_config)
+        column_type.show_editor(ui, cell_value, column_config, &self.data_sources)
     }
 
     fn set_cell_value(&mut self, src: &Row, dst: &mut Row, column: usize) {
