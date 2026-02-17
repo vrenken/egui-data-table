@@ -146,7 +146,9 @@ impl ColumnTypeEditor for SelectEditor {
             ui.separator();
 
             if let Some(allowed_values) = &column_config.allowed_values {
-                for av in allowed_values {
+                // Case-insensitive filter of allowed values based on the current text input
+                let query = cell_value.0.to_lowercase();
+                for av in allowed_values.iter().filter(|av| query.is_empty() || av.value.to_lowercase().contains(&query)) {
                     let av_color = Color32::from_rgb(av.color[0], av.color[1], av.color[2]);
                     let clicked = ui.scope(|ui| {
                         ui.visuals_mut().widgets.inactive.weak_bg_fill = av_color;

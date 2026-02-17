@@ -206,6 +206,22 @@
                 170,
                 231
               ]
+            },
+            {
+              "value": "Sevenum",
+              "color": [
+                170,
+                231,
+                229
+              ]
+            },
+            {
+              "value": "Scheveningen",
+              "color": [
+                231,
+                170,
+                214
+              ]
             }
           ],
           "related_source": null
@@ -220,7 +236,7 @@
           "order": 7,
           "width": 301.71875,
           "allowed_values": null,
-          "related_source": "correlate/test/data/students/student-dataset.csv > student-dataset.csv"
+          "related_source": "Test Data > Test Data"
         },
         {
           "name": "gender",
@@ -471,9 +487,19 @@
           "value": "Berlin"
         },
         {
+          "key": "27",
+          "column_name": "Type",
+          "value": "Roermond"
+        },
+        {
           "key": "28",
           "column_name": "Type",
           "value": "Berlin"
+        },
+        {
+          "key": "29",
+          "column_name": "Type",
+          "value": "Sevenum"
         },
         {
           "key": "30",
@@ -493,7 +519,7 @@
         {
           "key": "37",
           "column_name": "Type",
-          "value": "Eindhoven"
+          "value": "Scheveningen"
         },
         {
           "key": "39",
