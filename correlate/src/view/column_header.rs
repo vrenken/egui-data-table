@@ -18,13 +18,13 @@ impl<'a> ColumnHeader<'a> {
             .map(|c| {
                 let mut name = c.display_name.as_ref().unwrap_or(&c.name).clone();
                 if c.is_key {
-                    name = format!("{} {}", egui_material_icons::icons::ICON_KEY, name);
+                    name = format!("{} {}", name, egui_material_icons::icons::ICON_KEY);
                 }
                 if c.is_name {
-                    name = format!("{} {}", egui_material_icons::icons::ICON_VISIBILITY, name);
+                    name = format!("{} {}", name, egui_material_icons::icons::ICON_VISIBILITY);
                 }
                 if c.is_virtual {
-                    name = format!("{} {}", egui_material_icons::icons::ICON_SYRINGE, name);
+                    name = format!("{} {}", name, egui_material_icons::icons::ICON_SYRINGE);
                 }
 
                 let type_icon = c.column_type.icon();
