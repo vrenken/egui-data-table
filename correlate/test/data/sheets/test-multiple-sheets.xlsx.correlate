@@ -123,32 +123,6 @@
           "related_source": null
         },
         {
-          "name": "New Column 10",
-          "display_name": null,
-          "column_type": "Text",
-          "is_key": false,
-          "is_name": false,
-          "is_virtual": true,
-          "is_visible": true,
-          "order": 9,
-          "width": 154.6875,
-          "allowed_values": null,
-          "related_source": null
-        },
-        {
-          "name": "New Column 11",
-          "display_name": null,
-          "column_type": "Text",
-          "is_key": false,
-          "is_name": false,
-          "is_virtual": true,
-          "is_visible": true,
-          "order": 10,
-          "width": 498.21875,
-          "allowed_values": null,
-          "related_source": null
-        },
-        {
           "name": "New Column 12",
           "display_name": null,
           "column_type": "Text",
@@ -156,7 +130,7 @@
           "is_name": false,
           "is_virtual": true,
           "is_visible": true,
-          "order": 11,
+          "order": 9,
           "width": 154.6875,
           "allowed_values": null,
           "related_source": null
