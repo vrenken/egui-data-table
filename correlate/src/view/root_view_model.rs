@@ -141,6 +141,7 @@ impl RootViewModel {
                 column_configs: Vec::new(),
                 config: config.clone(),
                 data_sources: data_sources.clone(),
+                visible_columns: None,
             };
 
             return Self {
@@ -166,6 +167,7 @@ impl RootViewModel {
             column_configs: sheet.column_configs.clone(),
             config: config.clone(),
             data_sources: data_sources.clone(),
+            visible_columns: None,
         };
 
         Self {

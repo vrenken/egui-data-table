@@ -349,6 +349,9 @@ pub enum HeaderAction {
     MoveColumn(usize, usize),
     RenameCommitted(String),
     RequestSave,
+    HideColumn(usize),
+    ClearSort,
+    ShowHidden(usize),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -5,11 +5,16 @@ use crate::data::*;
 
 pub struct ColumnHeader<'a> {
     pub column_configs: &'a mut Vec<ColumnConfig>,
+    pub visible_columns: Option<Vec<usize>>, // indices of visible columns in order
 }
 
 impl<'a> ColumnHeader<'a> {
     pub fn new(column_configs: &'a mut Vec<ColumnConfig>) -> Self {
-        Self { column_configs }
+        Self { column_configs, visible_columns: None }
+    }
+
+    pub fn new_with_visibility(column_configs: &'a mut Vec<ColumnConfig>, visible_columns: Option<Vec<usize>>) -> Self {
+        Self { column_configs, visible_columns }
     }
 
     pub fn name(&self, column: usize) -> Cow<'static, str> {
@@ -49,7 +54,7 @@ impl<'a> ColumnHeader<'a> {
 
         ui.separator();
 
-        self.show_filter_sort_hide_section(ui, column);
+        self.show_filter_sort_hide_section(ui, column, &mut action);
         self.show_key_name_toggles(ui, column, &mut action);
 
         ui.separator();
@@ -174,7 +179,7 @@ impl<'a> ColumnHeader<'a> {
         });
     }
 
-    fn show_filter_sort_hide_section(&mut self, ui: &mut egui::Ui, _column: usize) {
+    fn show_filter_sort_hide_section(&mut self, ui: &mut egui::Ui, column: usize, action: &mut HeaderResult) {
         if ui.button(format!("{} Filter", egui_material_icons::icons::ICON_FILTER_LIST)).clicked() {
             ui.close();
         }
@@ -186,10 +191,32 @@ impl<'a> ColumnHeader<'a> {
             if ui.button(format!("{} Sort descending", egui_material_icons::icons::ICON_SOUTH)).clicked() {
                 ui.close();
             }
+            if ui.button("Clear sort").clicked() {
+                *action = Some(HeaderAction::ClearSort);
+                ui.close();
+            }
         });
 
         if ui.button(format!("{} Hide", egui_material_icons::icons::ICON_VISIBILITY_OFF)).clicked() {
+            *action = Some(HeaderAction::HideColumn(column));
             ui.close();
+        }
+
+        // Hidden columns submenu
+        if let Some(vis) = &self.visible_columns {
+            let total = self.column_configs.len();
+            let visible_set: std::collections::HashSet<usize> = vis.iter().cloned().collect();
+            let hidden: Vec<usize> = (0..total).filter(|i| !visible_set.contains(i)).collect();
+            if !hidden.is_empty() {
+                ui.separator();
+                ui.label("Hidden");
+                for idx in hidden {
+                    if ui.button(self.name(idx)).clicked() {
+                        *action = Some(HeaderAction::ShowHidden(idx));
+                        ui.close();
+                    }
+                }
+            }
         }
     }
 

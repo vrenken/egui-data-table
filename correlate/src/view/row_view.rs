@@ -15,6 +15,7 @@ pub struct RowView {
     pub column_configs: Vec<ColumnConfig>,
     pub config: Config,
     pub data_sources: Vec<DataSource>,
+    pub visible_columns: Option<Vec<usize>>,
 }
 
 impl RowViewer<Row> for RowView {
@@ -333,7 +334,7 @@ impl RowViewer<Row> for RowView {
     }
 
     fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) -> egui_data_table::viewer::HeaderResult {
-        ColumnHeader::new(&mut self.column_configs).context_menu(ui, column, self.data_sources.clone())
+        ColumnHeader::new_with_visibility(&mut self.column_configs, self.visible_columns.clone()).context_menu(ui, column, self.data_sources.clone())
     }
 
     fn row_header_double_clicked(&mut self, ctx: &egui::Context, row_idx: usize, _row: &Row) {

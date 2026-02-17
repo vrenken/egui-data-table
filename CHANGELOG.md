@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning].
 - Relation editor now behaves like a select: it sources options from the configured `related_source`, and stores selections as serialized `Relation` URIs (`relation://{source}/{key}/{value}`).
 - Relation cell visualization now shows only the human-readable name (`value`) instead of the full serialized URI, with graceful fallback for legacy/invalid strings.
 - `ColumnTypeEditor` system was modularized into separate files under `correlate/src/data/editors/`, and the trait signature now includes `&[DataSource]` so editors can resolve cross-sheet data; the call sites were updated to wire data sources through the pipeline.
+- Improved `Select` and `Relation` editors to correctly close the popup when pressing Enter or selecting an item.
+- Fixed an issue where the text box in `Select` and `Relation` editors did not automatically gain focus when the popup was opened.
 
 ## [0.1.1] - 2026-02-17
 

@@ -291,38 +291,15 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                     }
 
                     resp.context_menu(|ui| {
-                        if ui.button(self.translator.translate("context-menu-hide")).clicked() {
-                            commands.push(Command::CcHideColumn(col));
-                        }
-
-                        if !s.sort().is_empty() && ui.button(self.translator.translate("context-menu-clear-sort")).clicked() {
-                            commands.push(Command::SetColumnSort(Vec::new()));
-                        }
-
-                        if has_any_hidden_col {
-                            ui.separator();
-                            ui.label(self.translator.translate("context-menu-hidden"));
-
-                            for col in (0..s.num_columns()).map(ColumnIdx) {
-                                if !s.vis_cols().contains(&col)
-                                    && ui.button(viewer.column_name(col.0)).clicked()
-                                {
-                                    commands.push(Command::CcShowColumn {
-                                        what: col,
-                                        at: vis_col,
-                                    });
-                                }
-                            }
-                        }
-
                         if let Some(action) = viewer.column_header_context_menu(ui, col.0) {
                             match action {
                                 crate::viewer::HeaderAction::AddColumn(at) => commands.push(Command::AddColumn(at)),
                                 crate::viewer::HeaderAction::RequestSave => commands.push(Command::RequestSave),
-                                crate::viewer::HeaderAction::RenameCommitted(new_name) => {
-                                    commands.push(Command::RenameCommitted(crate::viewer::RenameTarget::Column(col.0), new_name));
-                                }
-                                crate::viewer::HeaderAction::MoveColumn(at, s) => commands.push(Command::MoveColumn(at, s))
+                                crate::viewer::HeaderAction::RenameCommitted(new_name) => commands.push(Command::RenameCommitted(crate::viewer::RenameTarget::Column(col.0), new_name)),
+                                crate::viewer::HeaderAction::MoveColumn(at, s) => commands.push(Command::MoveColumn(at, s)),
+                                crate::viewer::HeaderAction::HideColumn(_) => commands.push(Command::CcHideColumn(col)),
+                                crate::viewer::HeaderAction::ClearSort => commands.push(Command::SetColumnSort(Vec::new())),
+                                crate::viewer::HeaderAction::ShowHidden(what) => commands.push(Command::CcShowColumn { what: ColumnIdx(what), at: vis_col }),
                             }
                         }
                     });

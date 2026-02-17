@@ -12,6 +12,9 @@ impl CentralPanelViewModel {
     }
 
     pub fn handle_viewer_requests(&mut self, view_model: &mut RootViewModel) {
+        // Update visible columns snapshot for viewer (used by column header menu)
+        view_model.viewer.visible_columns = view_model.table.visual_column_order();
+
         // Handle column reordering from the data table
         Self::handle_column_reordering(view_model);
 
