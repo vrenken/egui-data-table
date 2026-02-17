@@ -123,6 +123,14 @@ impl ColumnTypeEditor for RelationEditor {
             }
         });
 
+        let is_open = Popup::is_id_open(ui.ctx(), popup_id);
+        if was_open && !is_open {
+            if !cell_value.0.is_empty() {
+                    response.mark_changed();
+                    ui.ctx().request_repaint(); // Ensure it updates and eventually saves
+                    Popup::close_id(ui.ctx(), popup_id);
+            }
+        }
         Some(response)
     }
 }

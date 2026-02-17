@@ -100,7 +100,6 @@ impl ColumnTypeEditor for SelectEditor {
                     });
                     response.mark_changed();
                     ui.ctx().request_repaint(); // Ensure it updates and eventually saves
-                    //ui.close();
                     Popup::close_id(ui.ctx(), popup_id);
                 }
             }
