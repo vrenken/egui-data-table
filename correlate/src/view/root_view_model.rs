@@ -3,7 +3,7 @@ use crate::data::{DataSheet, DataSource, RenamingTarget};
 use crate::view::RowView;
 
 pub struct RootViewModel {
-    pub(crate) config: crate::data::Config,
+    pub(crate) config: Config,
     pub(crate) table: egui_data_table::DataTable<Row>,
     pub(crate) viewer: RowView,
     pub(crate) data_sources: Vec<DataSource>,
