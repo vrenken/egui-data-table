@@ -107,6 +107,7 @@ impl Loader for ExcelSheet {
                 name: sheet_name,
                 custom_name: custom_name.clone(),
                 display_name: sheet_display_name,
+                icon: egui_material_icons::icons::ICON_TABLE_CHART,
                 column_configs,
                 table: rows.into_iter().collect(),
             });

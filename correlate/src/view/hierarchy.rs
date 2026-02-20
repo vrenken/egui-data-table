@@ -34,16 +34,7 @@ impl HierarchyPanel {
                                 
                                 let ds_display_name = ds.name.as_ref().unwrap_or(&default_file_name).clone();
                                 
-                                let extension = std::path::Path::new(&ds.path)
-                                    .extension()
-                                    .and_then(|e| e.to_str())
-                                    .unwrap_or("");
-                                
-                                let icon = if extension == "csv" {
-                                    egui_material_icons::icons::ICON_CSV
-                                } else {
-                                    egui_material_icons::icons::ICON_TABLE_CHART
-                                };
+                                let icon = ds.sheets.first().map(|s| s.icon).unwrap_or(egui_material_icons::icons::ICON_TABLE_CHART);
 
                                 if ds.sheets.len() > 1 {
                                     let mut header = egui::collapsing_header::CollapsingHeader::new(format!("{} {}", icon, ds_display_name))

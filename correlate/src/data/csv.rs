@@ -135,6 +135,7 @@ impl Loader for CsvSheet {
             name: file_name,
             custom_name,
             display_name: sheet_display_name,
+            icon: egui_material_icons::icons::ICON_CSV,
             column_configs,
             table: rows.into_iter().collect(),
         }])
