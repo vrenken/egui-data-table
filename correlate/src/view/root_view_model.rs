@@ -1,19 +1,5 @@
-﻿use crate::data::{Config, Row, Sheet, DataSheet, DataSource, RenamingTarget};
+﻿use crate::data::{Config, Row, DataSource, RenamingTarget, Loader};
 
-impl DataSheet {
-    pub fn from_sheet<S: Sheet + ?Sized>(sheet: &S) -> Self {
-        let name = sheet.name().to_string();
-        let display_name = sheet.display_name().map(|s| s.to_string());
-        let column_configs = sheet.column_configs().to_vec();
-        let table = sheet.cloned_rows().into_iter().collect();
-        Self {
-            name,
-            display_name,
-            column_configs,
-            table,
-        }
-    }
-}
 use crate::view::RowView;
 
 pub struct RootViewModel {
@@ -101,20 +87,22 @@ impl RootViewModel {
                 .and_then(|e| e.to_str())
                 .unwrap_or("");
 
-            let loaded = if extension == "csv" {
-                crate::data::CsvSheet::load(source)
+
+            let loader: Box<dyn Loader> = if extension == "csv" {
+                Box::new(crate::data::CsvSheet)
             } else {
-                crate::data::ExcelSheet::load(source)
+                Box::new(crate::data::ExcelSheet)
             };
+
+            let loaded = loader.load(source.clone());
 
             match loaded {
                 Ok(loaded_sheets) => {
-                    let custom_name = loaded_sheets.first().and_then(|s| s.custom_name().map(|n| n.to_string()));
-                    let sheets = loaded_sheets.iter().map(|s| DataSheet::from_sheet(s.as_ref())).collect();
+                    let custom_name = loaded_sheets.first().and_then(|s| s.custom_name.clone());
                     data_sources.push(DataSource {
                         path: source.to_string(),
                         name: custom_name,
-                        sheets,
+                        sheets: loaded_sheets,
                         selected_sheet_index: 0,
                     });
                 }
@@ -181,21 +169,20 @@ impl RootViewModel {
             let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
 
             let loaded_result = if extension == "csv" {
-                crate::data::CsvSheet::load(&path_str)
+                crate::data::CsvSheet.load(path_str.clone())
             } else {
-                crate::data::ExcelSheet::load(&path_str)
+                crate::data::ExcelSheet.load(path_str.clone())
             };
 
             match loaded_result {
                 Ok(sheets) => {
-                    let custom_name = sheets.first().and_then(|s| s.custom_name().map(|n| n.to_string()));
-                    let data_sheets = sheets.iter().map(|s| DataSheet::from_sheet(s.as_ref())).collect();
+                    let custom_name = sheets.first().and_then(|s| s.custom_name.clone());
                     let new_index = self.data_sources.len();
 
                     self.data_sources.push(DataSource {
                         path: path_str.clone(),
                         name: custom_name,
-                        sheets: data_sheets,
+                        sheets,
                         selected_sheet_index: 0,
                     });
 

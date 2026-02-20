@@ -1,44 +1,19 @@
-﻿use std::path::Path;
-use csv::ReaderBuilder;
-use crate::data::{ColumnConfig, Row, Sheet, SheetConfig, SourceConfig, infer_column_type};
+﻿use csv::ReaderBuilder;
+use crate::data::{ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type, DataSheet, Loader};
 
-pub struct CsvSheet {
-    pub name: String,
-    pub custom_name: Option<String>,
-    pub display_name: Option<String>,
-    pub column_configs: Vec<ColumnConfig>,
-    pub rows: Vec<Row>,
-}
+pub struct CsvSheet;
 
-impl Sheet for CsvSheet {
-    fn name(&self) -> &str {
-        &self.name
-    }
-
-    fn custom_name(&self) -> Option<&str> {
-        self.custom_name.as_deref()
-    }
-
-    fn display_name(&self) -> Option<&str> {
-        self.display_name.as_deref()
-    }
-
-    fn column_configs(&self) -> &[ColumnConfig] {
-        &self.column_configs
-    }
-
-    fn rows(self: Box<Self>) -> Vec<Row> {
-        self.rows
-    }
-
-    fn cloned_rows(&self) -> Vec<Row> {
-        self.rows.clone()
+impl Default for CsvSheet {
+    fn default() -> Self {
+        Self {
+        }
     }
 }
 
-impl CsvSheet {
-    pub fn load<P: AsRef<Path>>(path: P) -> Result<Vec<Box<dyn Sheet>>, String> {
-        let file_name = path.as_ref().file_name()
+impl Loader for CsvSheet {
+    fn load(&self, path: String) -> Result<Vec<DataSheet>, String> {
+        let file_name = std::path::Path::new(&path)
+            .file_name()
             .and_then(|n| n.to_str())
             .unwrap_or("CSV Data")
             .to_string();
@@ -156,12 +131,12 @@ impl CsvSheet {
             }
         }
 
-        Ok(vec![Box::new(CsvSheet {
+        Ok(vec![DataSheet {
             name: file_name,
             custom_name,
             display_name: sheet_display_name,
             column_configs,
-            rows,
-        })])
+            table: rows.into_iter().collect(),
+        }])
     }
 }

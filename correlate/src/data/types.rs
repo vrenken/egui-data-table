@@ -1,17 +1,13 @@
-﻿use crate::data::{ColumnConfig, Row};
+﻿use crate::data::*;
 
-pub trait Sheet {
-    fn name(&self) -> &str;
-    fn custom_name(&self) -> Option<&str>;
-    fn display_name(&self) -> Option<&str>;
-    fn column_configs(&self) -> &[ColumnConfig];
-    fn rows(self: Box<Self>) -> Vec<Row>;
-    fn cloned_rows(&self) -> Vec<Row>;
+pub trait Loader {
+    fn load(&self, path: String) -> Result<Vec<DataSheet>, String>;
 }
 
 #[derive(Clone)]
 pub struct DataSheet {
     pub name: String,
+    pub custom_name: Option<String>,
     pub display_name: Option<String>,
     pub column_configs: Vec<crate::data::ColumnConfig>,
     pub table: egui_data_table::DataTable<Row>,

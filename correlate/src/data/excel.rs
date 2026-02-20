@@ -1,50 +1,24 @@
-﻿use std::path::Path;
-use umya_spreadsheet::*;
-use crate::data::{ColumnConfig, Row, Sheet, SheetConfig, SourceConfig, infer_column_type};
+﻿use umya_spreadsheet::*;
+use crate::data::{ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type, DataSheet, Loader};
 
-pub struct ExcelSheet {
-    pub name: String,
-    pub custom_name: Option<String>,
-    pub display_name: Option<String>,
-    pub column_configs: Vec<ColumnConfig>,
-    pub rows: Vec<Row>,
+pub struct ExcelSheet;
+
+impl Default for ExcelSheet {
+    fn default() -> Self {
+        Self {
+        }
+    }   
 }
 
-impl Sheet for ExcelSheet {
-    fn name(&self) -> &str {
-        &self.name
-    }
-
-    fn custom_name(&self) -> Option<&str> {
-        self.custom_name.as_deref()
-    }
-
-    fn display_name(&self) -> Option<&str> {
-        self.display_name.as_deref()
-    }
-
-    fn column_configs(&self) -> &[ColumnConfig] {
-        &self.column_configs
-    }
-
-    fn rows(self: Box<Self>) -> Vec<Row> {
-        self.rows
-    }
-
-    fn cloned_rows(&self) -> Vec<Row> {
-        self.rows.clone()
-    }
-}
-
-impl ExcelSheet {
-    pub fn load<P: AsRef<Path>>(path: P) -> Result<Vec<Box<dyn Sheet>>, String> {
+impl Loader for ExcelSheet {
+    fn load(&self, path: String) -> Result<Vec<DataSheet>, String> {
         let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
         
         let companion_path = SourceConfig::get_companion_path(&path);
         let source_config = SourceConfig::load(&companion_path).ok();
         
         let custom_name = source_config.as_ref().and_then(|sc| sc.name.clone());
-        let mut sheets: Vec<Box<dyn Sheet>> = Vec::new();
+        let mut sheets: Vec<DataSheet> = Vec::new();
         let mut config_sheets = Vec::new();
 
         for sheet_idx in 0..book.get_sheet_count() {
@@ -129,13 +103,13 @@ impl ExcelSheet {
                 rows.push(Row { cells });
             }
 
-            sheets.push(Box::new(ExcelSheet {
+            sheets.push(DataSheet {
                 name: sheet_name,
                 custom_name: custom_name.clone(),
                 display_name: sheet_display_name,
                 column_configs,
-                rows,
-            }));
+                table: rows.into_iter().collect(),
+            });
         }
 
         // Save the companion file if it didn't exist
