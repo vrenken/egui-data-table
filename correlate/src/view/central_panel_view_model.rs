@@ -12,7 +12,7 @@ impl CentralPanelViewModel {
     }
 
     pub fn handle_viewer_requests(&mut self, view_model: &mut RootViewModel) {
-        // Update visible columns snapshot for viewer (used by column header menu)
+        // Update visible columns snapshot for the viewer (used by column header menu)
         view_model.viewer.visible_columns = view_model.table.visual_column_order();
 
         // Handle column reordering from the data table
@@ -20,7 +20,7 @@ impl CentralPanelViewModel {
 
         let column_count_changed = view_model.table.is_empty() || RowViewer::num_columns(&mut view_model.viewer) != view_model.table[0].cells.len();
         if column_count_changed {
-            // Update all rows in the table if needed (e.g. loading from file with virtual columns)
+            // Update all rows in the table if needed (e.g. loading from the file with virtual columns)
             let mut rows = view_model.table.take();
             for row in &mut rows {
                 while row.cells.len() < view_model.viewer.column_configs.len() {
@@ -41,14 +41,14 @@ impl CentralPanelViewModel {
             if total == 0 { return; }
 
             // visual_order only contains visible columns. Build a full permutation that keeps
-            // hidden columns (not present in visual_order) at the end preserving their
+            // hidden columns (not present in visual_order) at the end, preserving their
             // original relative order.
             let visible_set: std::collections::HashSet<usize> = visual_order.iter().cloned().collect();
             let hidden: Vec<usize> = (0..total).filter(|i| !visible_set.contains(i)).collect();
             let mut full_order = visual_order.clone();
             full_order.extend(hidden.iter().cloned());
 
-            // Always update visibility flags based on the visual_order from library
+            // Always update visibility flags based on the visual_order from a library
             let mut any_vis_change = false;
             for (i, cfg) in view_model.viewer.column_configs.iter_mut().enumerate() {
                 let should_be_visible = visible_set.contains(&i);
@@ -64,12 +64,12 @@ impl CentralPanelViewModel {
                 for &idx in &full_order {
                     let cfg = view_model.viewer.column_configs[idx].clone();
                     // No need to set is_visible here as we just updated it above, 
-                    // and visible_set is derived from idx being in visual_order which is correctly reflected in full_order.
+                    // and visible_set is derived from idx being in visual_order that is correctly reflected in full_order.
                     new_configs.push(cfg);
                 }
                 view_model.viewer.column_configs = new_configs;
 
-                // Update all rows in the table if needed (e.g. loading from file with virtual columns)
+                // Update all rows in the table if needed (e.g. loading from the file with virtual columns)
                 let mut rows = view_model.table.take();
                 for row in &mut rows {
                     let mut new_cells = Vec::with_capacity(row.cells.len());
@@ -91,7 +91,7 @@ impl CentralPanelViewModel {
                 view_model.save_datasource_configuration();
             }
         } else {
-            // If library doesn't have a visual order yet (first frame), 
+            // If the library doesn't have a visual order yet (first frame), 
             // initialize it from our column_configs' is_visible flags.
             let visible_indices: Vec<usize> = view_model.viewer.column_configs.iter()
                 .enumerate()
