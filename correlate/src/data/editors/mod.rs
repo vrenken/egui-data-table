@@ -7,7 +7,7 @@ pub trait ColumnTypeEditor {
         ui: &mut Ui,
         cell_value: &mut CellValue,
         column_config: &mut ColumnConfig,
-        data_sources: &[DataSource],
+        view_model: &mut RootViewModel
     ) -> Option<Response>;
 }
 
@@ -40,3 +40,4 @@ pub use multi_select::*;
 
 pub mod relation;
 pub use relation::*;
+use crate::view::RootViewModel;

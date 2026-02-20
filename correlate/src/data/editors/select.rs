@@ -1,5 +1,6 @@
 ﻿use egui::{Response, Ui, Color32, Popup};
 use crate::data::*;
+use crate::view::*;
 use super::{ColumnTypeEditor, get_random_gentle_color};
 
 pub struct SelectEditor;
@@ -9,7 +10,7 @@ impl ColumnTypeEditor for SelectEditor {
         ui: &mut Ui,
         cell_value: &mut CellValue,
         column_config: &mut ColumnConfig,
-        _data_sources: &[DataSource],
+        _view_model: &mut RootViewModel
     ) -> Option<Response> {
         let text = if cell_value.0.is_empty() { "Select...".to_string() } else { cell_value.0.clone() };
         let mut color = Color32::TRANSPARENT;

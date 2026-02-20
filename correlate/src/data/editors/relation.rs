@@ -1,5 +1,6 @@
 ﻿use egui::{Response, Ui, Popup};
 use crate::data::*;
+use crate::view::*;
 use super::ColumnTypeEditor;
 
 pub struct RelationEditor;
@@ -10,7 +11,7 @@ impl ColumnTypeEditor for RelationEditor {
         ui: &mut Ui,
         cell_value: &mut CellValue,
         column_config: &mut ColumnConfig,
-        data_sources: &[DataSource],
+        view_model: &mut RootViewModel
     ) -> Option<Response> {
         // Determine the related sheet from ColumnConfig.related_source (format: "Source > Sheet")
         let related = column_config.related_source.clone().unwrap_or_default();
@@ -22,7 +23,7 @@ impl ColumnTypeEditor for RelationEditor {
         let mut rel_sheet: Option<&DataSheet> = None;
         let mut resolved_src_name = String::new();
         if !src_part.is_empty() && !sheet_part.is_empty() {
-            for ds in data_sources {
+            for ds in &view_model.data_sources {
                 let display_source = ds.name.as_ref().unwrap_or(&ds.path);
                 if display_source == src_part {
                     for sheet in &ds.sheets {
@@ -68,6 +69,23 @@ impl ColumnTypeEditor for RelationEditor {
             current_display
         };
 
+        // Prepare options for the popup (to avoid borrowing view_model inside the closure)
+        let query_initial = current_key.to_lowercase();
+        let mut options = Vec::new();
+        for row in rel_sheet.table.iter() {
+            let key = row.cells.get(key_col_idx).map(|c| c.0.clone()).unwrap_or_default();
+            if key.is_empty() { continue; }
+            let display = row.cells.get(name_col_idx).map(|c| c.0.clone()).unwrap_or_else(|| key.clone());
+            if !query_initial.is_empty() && !display.to_lowercase().contains(&query_initial) {
+                // We'll filter again inside the closure because query_buffer can change,
+                // but we need to collect all possible candidates or just all rows.
+                // Actually, let's collect ALL rows with key/display pairs to be safe, 
+                // or just re-resolve inside the closure if we must.
+                // Collecting all for now as it's simpler.
+            }
+            options.push((key, display));
+        }
+
         let popup_id = ui.make_persistent_id("relation_editor_popup");
         let placeholder_res = ui.selectable_label(false, placeholder);
 
@@ -98,17 +116,15 @@ impl ColumnTypeEditor for RelationEditor {
                 ui.ctx().request_repaint();
             }
             if text_edit_res.lost_focus() || ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+                view_model.save_datasource_configuration();
                 Popup::close_id(ui.ctx(), popup_id);
             }
 
             ui.separator();
 
-            // Build and filter options from related sheet (display from name col, store key)
+            // Build and filter options from collected options
             let query = query_buffer.to_lowercase();
-            for row in rel_sheet.table.iter() {
-                let key = row.cells.get(key_col_idx).map(|c| c.0.clone()).unwrap_or_default();
-                if key.is_empty() { continue; }
-                let display = row.cells.get(name_col_idx).map(|c| c.0.clone()).unwrap_or_else(|| key.clone());
+            for (key, display) in options {
                 if !query.is_empty() && !display.to_lowercase().contains(&query) { continue; }
 
                 let clicked = ui.selectable_label(current_key == key, &display).clicked();
@@ -117,6 +133,7 @@ impl ColumnTypeEditor for RelationEditor {
                     cell_value.0 = relation.to_string();
                     response.mark_changed();
                     ui.ctx().request_repaint();
+                    view_model.save_datasource_configuration();
                     Popup::close_id(ui.ctx(), popup_id);
                 }
             }
@@ -127,7 +144,8 @@ impl ColumnTypeEditor for RelationEditor {
             if !cell_value.0.is_empty() {
                     response.mark_changed();
                     ui.ctx().request_repaint(); // Ensure it updates and eventually saves
-                    Popup::close_id(ui.ctx(), popup_id);
+                view_model.save_datasource_configuration();
+                Popup::close_id(ui.ctx(), popup_id);
             }
         }
         Some(response)

@@ -189,7 +189,10 @@ impl RowViewer<Row> for RowView {
         let column_type = column_config.column_type;
         let cell_value = &mut row.cells[column];
 
-        column_type.show_editor(ui, cell_value, column_config, &self.data_sources)
+        let view_model_ptr = ui.ctx().data(|d| d.get_temp::<usize>(egui::Id::new("root_view_model"))).expect("RootViewModel pointer not found in egui data");
+        let view_model = unsafe { &mut *(view_model_ptr as *mut RootViewModel) };
+
+        column_type.show_editor(ui, cell_value, column_config, view_model)
     }
 
     fn set_cell_value(&mut self, src: &Row, dst: &mut Row, column: usize) {

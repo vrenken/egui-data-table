@@ -1,6 +1,7 @@
 ﻿use serde::{Deserialize, Serialize};
 use egui::{Response, Ui};
 use crate::data::*;
+use crate::view::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ColumnType {
@@ -43,9 +44,10 @@ impl ColumnType {
         ui: &mut Ui,
         cell_value: &mut CellValue,
         column_config: &mut ColumnConfig,
-        data_sources: &[DataSource],
+        view_model: &mut RootViewModel
+
     ) -> Option<Response> {
-        self.editor().show(ui, cell_value, column_config, data_sources)
+        self.editor().show(ui, cell_value, column_config, view_model)
     }
 
     pub fn default_value(&self) -> CellValue {
