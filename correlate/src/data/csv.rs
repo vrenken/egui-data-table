@@ -112,7 +112,7 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
         rows.push(Row { cells });
     }
 
-    // Save companion file if it didn't exist
+    // Save the companion file if it didn't exist
     if source_config.is_none() {
         let new_config = SourceConfig {
             name: None,

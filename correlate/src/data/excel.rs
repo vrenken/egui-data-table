@@ -111,7 +111,7 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
         });
     }
 
-    // Save companion file if it didn't exist
+    // Save the companion file if it didn't exist
     if source_config.is_none() {
         let new_config = SourceConfig {
             name: None,
