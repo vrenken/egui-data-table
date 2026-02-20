@@ -8,11 +8,13 @@ and this project adheres to [Semantic Versioning].
 ## [Unreleased]
 
 ### Changed
-- Relation editor now behaves like a select: it sources options from the configured `related_source`, and stores selections as serialized `Relation` URIs (`relation://{source}/{key}/{value}`).
-- Relation cell visualization now shows only the human-readable name (`value`) instead of the full serialized URI, with graceful fallback for legacy/invalid strings.
-- `ColumnTypeEditor` system was modularized into separate files under `correlate/src/data/editors/`, and the trait signature now includes `&[DataSource]` so editors can resolve cross-sheet data; the call sites were updated to wire data sources through the pipeline.
-- Improved `Select` and `Relation` editors to correctly close the popup when pressing Enter or selecting an item.
-- Fixed an issue where the text box in `Select` and `Relation` editors did not automatically gain focus when the popup was opened.
+- **Flexible Data Storage**: Updated `cell_values` in `.correlate` files to support multiple values as an array, while maintaining backward compatibility with single-value strings.
+- Modal Confirmation for Column Trashing: Switched to `egui::Modal` for the deletion confirmation dialog, ensuring a standardized modal experience.
+- Modularized ColumnTypeEditor: Split the monolithic editor file into a new `correlate/src/data/editors/` structure.
+- Improved Select and Relation Editors: Added automatic focus and fixed popup closing behavior.
+- Enhanced Relation Storage: Switched to serialized `Relation` structs for data-driven cross-source linking.
+- Refined Column Visibility: Improved synchronization between the app's persistent configuration and the library's visual state.
+- Split Header Context Menu: Moved library-specific features (Hide, Clear Sort, Show Hidden) into the application layer for better control.
 
 ## [0.1.1] - 2026-02-17
 

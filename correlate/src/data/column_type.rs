@@ -53,4 +53,25 @@ impl ColumnType {
     pub fn default_value(&self) -> CellValue {
         CellValue("".to_string())
     }
+
+    pub fn load(
+        &self,
+        physical_value: Option<&str>,
+        config: &ColumnConfig,
+        row_key: Option<&str>,
+        stored_values: Option<&[CellValueConfig]>
+    ) -> CellValue {
+        if config.is_virtual {
+            let mut val = "".to_string();
+            if let (Some(key), Some(stored)) = (row_key, stored_values) {
+                if let Some(cv) = stored.iter().find(|cv| cv.key == key && cv.column_name == config.name) {
+                    val = cv.value.clone();
+                }
+            }
+            CellValue(val)
+        } else {
+            let value = physical_value.unwrap_or("");
+            map_cell_value(value, *self)
+        }
+    }
 }

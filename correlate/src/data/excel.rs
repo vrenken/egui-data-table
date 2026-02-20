@@ -1,6 +1,6 @@
 ﻿use std::path::Path;
 use umya_spreadsheet::*;
-use crate::data::{CellValue, ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type, map_cell_value};
+use crate::data::{ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type};
 
 pub struct ExcelSheet {
     pub name: String,
@@ -86,18 +86,18 @@ pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
             // 2. Second pass: build the row
             let mut cells = Vec::new();
             for (col_idx, config) in column_configs.iter().enumerate() {
-                if config.is_virtual {
-                    let mut val = "".to_string();
-                    if let (Some(key), Some(stored_values)) = (&row_key, cell_values) {
-                        if let Some(stored) = stored_values.iter().find(|cv| cv.key == *key && cv.column_name == config.name) {
-                            val = stored.value.clone();
-                        }
-                    }
-                    cells.push(CellValue(val));
+                let physical_value = if !config.is_virtual {
+                    Some(sheet.get_formatted_value((col_idx as u32 + 1, row_idx)))
                 } else {
-                    let value = sheet.get_formatted_value((col_idx as u32 + 1, row_idx));
-                    cells.push(map_cell_value(&value, config.column_type));
-                }
+                    None
+                };
+                
+                cells.push(config.column_type.load(
+                    physical_value.as_deref(),
+                    config,
+                    row_key.as_deref(),
+                    cell_values.map(|v| v.as_slice())
+                ));
             }
             rows.push(Row { cells });
         }

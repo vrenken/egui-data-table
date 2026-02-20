@@ -1,6 +1,6 @@
 ﻿use std::path::Path;
 use csv::ReaderBuilder;
-use crate::data::{CellValue, ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type, map_cell_value};
+use crate::data::{ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type};
 
 pub struct CsvSheet {
     pub name: String,
@@ -94,20 +94,20 @@ pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvSheet, String> {
         let mut cells = Vec::new();
         let mut phys_idx = 0;
         for config in &column_configs {
-            if config.is_virtual {
-                let mut val = "".to_string();
-                if let (Some(key), Some(stored_values)) = (&row_key, cell_values) {
-                    if let Some(stored) = stored_values.iter().find(|cv| cv.key == *key && cv.column_name == config.name) {
-                        val = stored.value.clone();
-                    }
-                }
-                cells.push(CellValue(val));
-            } else {
-                if let Some(value) = record.get(phys_idx) {
-                    cells.push(map_cell_value(value, config.column_type));
-                }
+            let physical_value = if !config.is_virtual {
+                let v = record.get(phys_idx);
                 phys_idx += 1;
-            }
+                v
+            } else {
+                None
+            };
+            
+            cells.push(config.column_type.load(
+                physical_value,
+                config,
+                row_key.as_deref(),
+                cell_values.map(|v| v.as_slice())
+            ));
         }
         rows.push(Row { cells });
     }
