@@ -1,6 +1,6 @@
 ﻿use std::path::Path;
 use umya_spreadsheet::*;
-use crate::data::{ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type};
+use crate::data::{ColumnConfig, Row, Sheet, SheetConfig, SourceConfig, infer_column_type};
 
 pub struct ExcelSheet {
     pub name: String,
@@ -10,117 +10,145 @@ pub struct ExcelSheet {
     pub rows: Vec<Row>,
 }
 
-pub fn load_xlsx<P: AsRef<Path>>(path: P) -> Result<Vec<ExcelSheet>, String> {
-    let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
-    
-    let companion_path = SourceConfig::get_companion_path(&path);
-    let source_config = SourceConfig::load(&companion_path).ok();
-    
-    let custom_name = source_config.as_ref().and_then(|sc| sc.name.clone());
-    let mut sheets = Vec::new();
-    let mut config_sheets = Vec::new();
+impl Sheet for ExcelSheet {
+    fn name(&self) -> &str {
+        &self.name
+    }
 
-    for sheet_idx in 0..book.get_sheet_count() {
-        let sheet = book.get_sheet(&sheet_idx).ok_or(format!("Sheet {} not found", sheet_idx))?;
-        let sheet_name = sheet.get_name().to_string();
+    fn custom_name(&self) -> Option<&str> {
+        self.custom_name.as_deref()
+    }
 
-        let (max_col, max_row) = sheet.get_highest_column_and_row();
+    fn display_name(&self) -> Option<&str> {
+        self.display_name.as_deref()
+    }
 
-        let config_sheet = source_config.as_ref()
-            .and_then(|sc| sc.sheets.iter().find(|s| s.name == sheet_name));
+    fn column_configs(&self) -> &[ColumnConfig] {
+        &self.column_configs
+    }
 
-        let mut column_configs = config_sheet
-            .map(|s| s.column_configs.clone())
-            .unwrap_or_default();
+    fn rows(self: Box<Self>) -> Vec<Row> {
+        self.rows
+    }
 
-        let sheet_display_name = config_sheet.and_then(|s| s.display_name.clone());
+    fn cloned_rows(&self) -> Vec<Row> {
+        self.rows.clone()
+    }
+}
 
-        // If not loaded from config, infer them
-        if column_configs.is_empty() {
-            for col_idx in 1..=max_col {
-                let col_name = sheet.get_formatted_value((col_idx, 1));
-                
-                // Infer type from the second row (first data row)
-                let first_data_value = sheet.get_formatted_value((col_idx, 2));
-                let column_type = infer_column_type(&col_name, &first_data_value);
+impl ExcelSheet {
+    pub fn load<P: AsRef<Path>>(path: P) -> Result<Vec<Box<dyn Sheet>>, String> {
+        let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
+        
+        let companion_path = SourceConfig::get_companion_path(&path);
+        let source_config = SourceConfig::load(&companion_path).ok();
+        
+        let custom_name = source_config.as_ref().and_then(|sc| sc.name.clone());
+        let mut sheets: Vec<Box<dyn Sheet>> = Vec::new();
+        let mut config_sheets = Vec::new();
 
-                column_configs.push(ColumnConfig {
-                    name: col_name,
-                    display_name: None,
-                    column_type,
-                    is_key: false,
-                    is_name: false,
-                    is_virtual: false,
-                    is_visible: true,
-                    order: col_idx as usize - 1,
-                    width: None,
-                    allowed_values: None,
-                    related_source: None,
-                });
-            }
-        } else {
-            column_configs.sort_by_key(|c| c.order);
-        }
+        for sheet_idx in 0..book.get_sheet_count() {
+            let sheet = book.get_sheet(&sheet_idx).ok_or(format!("Sheet {} not found", sheet_idx))?;
+            let sheet_name = sheet.get_name().to_string();
 
-        config_sheets.push(SheetConfig {
-            name: sheet_name.clone(),
-            display_name: sheet_display_name.clone(),
-            column_configs: column_configs.clone(),
-            sort_config: None,
-            cell_values: Vec::new(),
-        });
+            let (max_col, max_row) = sheet.get_highest_column_and_row();
 
-        let mut rows = Vec::new();
-        let cell_values = config_sheet.map(|s| &s.cell_values);
+            let config_sheet = source_config.as_ref()
+                .and_then(|sc| sc.sheets.iter().find(|s| s.name == sheet_name));
 
-        for row_idx in 2..=max_row {
-            // 1. First pass: get the physical key value if it exists
-            let mut row_key = None;
-            for (col_idx, config) in column_configs.iter().enumerate() {
-                if !config.is_virtual && config.is_key {
-                    row_key = Some(sheet.get_formatted_value((col_idx as u32 + 1, row_idx)));
-                    break;
+            let mut column_configs = config_sheet
+                .map(|s| s.column_configs.clone())
+                .unwrap_or_default();
+
+            let sheet_display_name = config_sheet.and_then(|s| s.display_name.clone());
+
+            // If not loaded from config, infer them
+            if column_configs.is_empty() {
+                for col_idx in 1..=max_col {
+                    let col_name = sheet.get_formatted_value((col_idx, 1));
+                    
+                    // Infer type from the second row (first data row)
+                    let first_data_value = sheet.get_formatted_value((col_idx, 2));
+                    let column_type = infer_column_type(&col_name, &first_data_value);
+
+                    column_configs.push(ColumnConfig {
+                        name: col_name,
+                        display_name: None,
+                        column_type,
+                        is_key: false,
+                        is_name: false,
+                        is_virtual: false,
+                        is_visible: true,
+                        order: col_idx as usize - 1,
+                        width: None,
+                        allowed_values: None,
+                        related_source: None,
+                    });
                 }
+            } else {
+                column_configs.sort_by_key(|c| c.order);
             }
 
-            // 2. Second pass: build the row
-            let mut cells = Vec::new();
-            for (col_idx, config) in column_configs.iter().enumerate() {
-                let physical_value = if !config.is_virtual {
-                    Some(sheet.get_formatted_value((col_idx as u32 + 1, row_idx)))
-                } else {
-                    None
-                };
-                
-                cells.push(config.column_type.load(
-                    physical_value.as_deref(),
-                    config,
-                    row_key.as_deref(),
-                    cell_values.map(|v| v.as_slice())
-                ));
+            config_sheets.push(SheetConfig {
+                name: sheet_name.clone(),
+                display_name: sheet_display_name.clone(),
+                column_configs: column_configs.clone(),
+                sort_config: None,
+                cell_values: Vec::new(),
+            });
+
+            let mut rows = Vec::new();
+            let cell_values = config_sheet.map(|s| &s.cell_values);
+
+            for row_idx in 2..=max_row {
+                // 1. First pass: get the physical key value if it exists
+                let mut row_key = None;
+                for (col_idx, config) in column_configs.iter().enumerate() {
+                    if !config.is_virtual && config.is_key {
+                        row_key = Some(sheet.get_formatted_value((col_idx as u32 + 1, row_idx)));
+                        break;
+                    }
+                }
+
+                // 2. Second pass: build the row
+                let mut cells = Vec::new();
+                for (col_idx, config) in column_configs.iter().enumerate() {
+                    let physical_value = if !config.is_virtual {
+                        Some(sheet.get_formatted_value((col_idx as u32 + 1, row_idx)))
+                    } else {
+                        None
+                    };
+                    
+                    cells.push(config.column_type.load(
+                        physical_value.as_deref(),
+                        config,
+                        row_key.as_deref(),
+                        cell_values.map(|v| v.as_slice())
+                    ));
+                }
+                rows.push(Row { cells });
             }
-            rows.push(Row { cells });
+
+            sheets.push(Box::new(ExcelSheet {
+                name: sheet_name,
+                custom_name: custom_name.clone(),
+                display_name: sheet_display_name,
+                column_configs,
+                rows,
+            }));
         }
 
-        sheets.push(ExcelSheet {
-            name: sheet_name,
-            custom_name: custom_name.clone(),
-            display_name: sheet_display_name,
-            column_configs,
-            rows,
-        });
-    }
-
-    // Save the companion file if it didn't exist
-    if source_config.is_none() {
-        let new_config = SourceConfig {
-            name: None,
-            sheets: config_sheets,
-        };
-        if let Err(e) = new_config.save(&companion_path) {
-            log::error!("Failed to save companion config to {:?}: {}", companion_path, e);
+        // Save the companion file if it didn't exist
+        if source_config.is_none() {
+            let new_config = SourceConfig {
+                name: None,
+                sheets: config_sheets,
+            };
+            if let Err(e) = new_config.save(&companion_path) {
+                log::error!("Failed to save companion config to {:?}: {}", companion_path, e);
+            }
         }
-    }
 
-    Ok(sheets)
+        Ok(sheets)
+    }
 }

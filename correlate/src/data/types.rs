@@ -1,4 +1,13 @@
-﻿use crate::data::Row;
+﻿use crate::data::{ColumnConfig, Row};
+
+pub trait Sheet {
+    fn name(&self) -> &str;
+    fn custom_name(&self) -> Option<&str>;
+    fn display_name(&self) -> Option<&str>;
+    fn column_configs(&self) -> &[ColumnConfig];
+    fn rows(self: Box<Self>) -> Vec<Row>;
+    fn cloned_rows(&self) -> Vec<Row>;
+}
 
 #[derive(Clone)]
 pub struct DataSheet {

@@ -1,5 +1,19 @@
-﻿use crate::data::{Config, Row};
-use crate::data::{DataSheet, DataSource, RenamingTarget};
+﻿use crate::data::{Config, Row, Sheet, DataSheet, DataSource, RenamingTarget};
+
+impl DataSheet {
+    pub fn from_sheet<S: Sheet + ?Sized>(sheet: &S) -> Self {
+        let name = sheet.name().to_string();
+        let display_name = sheet.display_name().map(|s| s.to_string());
+        let column_configs = sheet.column_configs().to_vec();
+        let table = sheet.cloned_rows().into_iter().collect();
+        Self {
+            name,
+            display_name,
+            column_configs,
+            table,
+        }
+    }
+}
 use crate::view::RowView;
 
 pub struct RootViewModel {
@@ -88,36 +102,15 @@ impl RootViewModel {
                 .unwrap_or("");
 
             let loaded = if extension == "csv" {
-                match crate::data::load_csv(source) {
-                    Ok(csv_sheet) => {
-                        let sheets = vec![DataSheet {
-                            name: csv_sheet.name,
-                            display_name: csv_sheet.display_name,
-                            column_configs: csv_sheet.column_configs,
-                            table: csv_sheet.rows.into_iter().collect(),
-                        }];
-                        Ok((csv_sheet.custom_name, sheets))
-                    }
-                    Err(e) => Err(e),
-                }
+                crate::data::CsvSheet::load(source)
             } else {
-                match crate::data::load_xlsx(source) {
-                    Ok(excel_sheets) => {
-                        let custom_name = excel_sheets.first().and_then(|s| s.custom_name.clone());
-                        let sheets = excel_sheets.into_iter().map(|s| DataSheet {
-                            name: s.name,
-                            display_name: s.display_name,
-                            column_configs: s.column_configs,
-                            table: s.rows.into_iter().collect(),
-                        }).collect();
-                        Ok((custom_name, sheets))
-                    }
-                    Err(e) => Err(e),
-                }
+                crate::data::ExcelSheet::load(source)
             };
 
             match loaded {
-                Ok((custom_name, sheets)) => {
+                Ok(loaded_sheets) => {
+                    let custom_name = loaded_sheets.first().and_then(|s| s.custom_name().map(|n| n.to_string()));
+                    let sheets = loaded_sheets.iter().map(|s| DataSheet::from_sheet(s.as_ref())).collect();
                     data_sources.push(DataSource {
                         path: source.to_string(),
                         name: custom_name,
@@ -187,39 +180,22 @@ impl RootViewModel {
             let path_str = path.to_string_lossy().to_string();
             let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
 
-            let loaded_sheets = if extension == "csv" {
-                match crate::data::load_csv(&path_str) {
-                    Ok(csv_sheet) => Ok((csv_sheet.custom_name, vec![DataSheet {
-                        name: csv_sheet.name,
-                        display_name: csv_sheet.display_name,
-                        column_configs: csv_sheet.column_configs,
-                        table: csv_sheet.rows.into_iter().collect(),
-                    }])),
-                    Err(e) => Err(e),
-                }
+            let loaded_result = if extension == "csv" {
+                crate::data::CsvSheet::load(&path_str)
             } else {
-                match crate::data::load_xlsx(&path_str) {
-                    Ok(excel_sheets) => {
-                        let custom_name = excel_sheets.first().and_then(|s| s.custom_name.clone());
-                        Ok((custom_name, excel_sheets.into_iter().map(|s| DataSheet {
-                            name: s.name,
-                            display_name: s.display_name,
-                            column_configs: s.column_configs,
-                            table: s.rows.into_iter().collect(),
-                        }).collect()))
-                    },
-                    Err(e) => Err(e),
-                }
+                crate::data::ExcelSheet::load(&path_str)
             };
 
-            match loaded_sheets {
-                Ok((custom_name, sheets)) => {
+            match loaded_result {
+                Ok(sheets) => {
+                    let custom_name = sheets.first().and_then(|s| s.custom_name().map(|n| n.to_string()));
+                    let data_sheets = sheets.iter().map(|s| DataSheet::from_sheet(s.as_ref())).collect();
                     let new_index = self.data_sources.len();
 
                     self.data_sources.push(DataSource {
                         path: path_str.clone(),
                         name: custom_name,
-                        sheets,
+                        sheets: data_sheets,
                         selected_sheet_index: 0,
                     });
 
