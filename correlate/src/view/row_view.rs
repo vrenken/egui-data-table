@@ -1,5 +1,5 @@
 ﻿use std::borrow::Cow;
-use egui::{Response, Key};
+use egui::{Key, Response};
 use egui_data_table::RowViewer;
 use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
 use crate::data::*;

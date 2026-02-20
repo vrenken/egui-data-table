@@ -1,5 +1,6 @@
 ﻿use umya_spreadsheet::*;
-use crate::data::{ColumnConfig, Row, SheetConfig, SourceConfig, infer_column_type, DataSheet, Loader};
+use crate::data::{infer_column_type, ColumnConfig, Row, SheetConfig, SourceConfig};
+use crate::data::*;
 
 pub struct ExcelSheet;
 

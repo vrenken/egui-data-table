@@ -13,12 +13,6 @@ pub use editors::*;
 pub mod column_config;
 pub use column_config::*;
 
-pub mod excel;
-pub use excel::*;
-
-pub mod csv;
-pub use csv::*;
-
 pub mod config;
 pub use config::*;
 
@@ -28,7 +22,17 @@ pub use source_config::*;
 pub mod value_mapping;
 pub use value_mapping::*;
 
-pub mod types;
-pub use types::*;
+pub mod renaming_target;
+pub use renaming_target::*;
 
+pub mod data_source;
+pub use data_source::*;
 
+mod data_sheet;
+pub use data_sheet::*;
+
+pub mod excel_sheet;
+pub use excel_sheet::*;
+
+pub mod csv_sheet;
+pub use csv_sheet::*;

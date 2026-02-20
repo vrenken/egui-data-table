@@ -1,6 +1,6 @@
-﻿use crate::data::{Config, Row, DataSource, RenamingTarget, Loader};
-
-use crate::view::RowView;
+﻿use crate::data::{Config, RenamingTarget, Row};
+use crate::data::*;
+use crate::view::*;
 
 pub struct RootViewModel {
     pub(crate) config: Config,
@@ -16,8 +16,6 @@ pub struct RootViewModel {
 impl RootViewModel {
     pub fn save_source_config(&mut self, index: usize) {
         if let Some(ds) = self.data_sources.get_mut(index) {
-            let companion_path = crate::data::SourceConfig::get_companion_path(&ds.path);
-            
             // If the data source being saved is the currently selected one, 
             // update its internal state from the viewer and table first.
             if Some(index) == self.selected_index {
@@ -25,54 +23,7 @@ impl RootViewModel {
                 ds.sheets[ds.selected_sheet_index].table = self.table.clone();
             }
 
-            let mut sheet_configs = Vec::new();
-            for sheet in &mut ds.sheets {
-                for (i, config) in sheet.column_configs.iter_mut().enumerate() {
-                    config.order = i;
-                }
-
-                let key_col_idx = sheet.column_configs.iter().position(|c| c.is_key);
-                let virtual_cols: Vec<usize> = sheet.column_configs.iter().enumerate()
-                    .filter(|(_, c)| c.is_virtual)
-                    .map(|(i, _)| i)
-                    .collect();
-
-                let mut cell_values = Vec::new();
-                if let Some(key_idx) = key_col_idx {
-                    let rows: &Vec<Row> = &sheet.table;
-                    for row in rows {
-                        let key = row.cells[key_idx].0.clone();
-                        if key.is_empty() {
-                            continue;
-                        }
-
-                        for &v_idx in &virtual_cols {
-                            let value = row.cells[v_idx].0.clone();
-                            if !value.is_empty() {
-                                cell_values.push(crate::data::CellValueConfig {
-                                    key: key.clone(),
-                                    column_name: sheet.column_configs[v_idx].name.clone(),
-                                    value,
-                                });
-                            }
-                        }
-                    }
-                }
-
-                sheet_configs.push(crate::data::SheetConfig {
-                    name: sheet.name.clone(),
-                    display_name: sheet.display_name.clone(),
-                    column_configs: sheet.column_configs.clone(),
-                    sort_config: None,
-                    cell_values,
-                });
-            }
-
-            let source_config = crate::data::SourceConfig {
-                name: ds.name.clone(),
-                sheets: sheet_configs,
-            };
-            if let Err(e) = source_config.save(companion_path) {
+            if let Err(e) = ds.save() {
                 log::error!("Failed to save companion config for {}: {}", ds.path, e);
             }
         }

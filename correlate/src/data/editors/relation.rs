@@ -1,4 +1,4 @@
-﻿use egui::{Response, Ui, Popup};
+﻿use egui::{Popup, Response, Ui};
 use crate::data::*;
 use crate::view::*;
 use super::ColumnTypeEditor;
