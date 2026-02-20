@@ -20,7 +20,7 @@ impl CentralPanelViewModel {
 
         let column_count_changed = view_model.table.is_empty() || RowViewer::num_columns(&mut view_model.viewer) != view_model.table[0].cells.len();
         if column_count_changed {
-            // Update all rows in the table if needed (e.g. loading from the file with virtual columns)
+            // Update all rows in the table if needed (e.g., loading from the file with virtual columns)
             let mut rows = view_model.table.take();
             for row in &mut rows {
                 while row.cells.len() < view_model.viewer.column_configs.len() {
@@ -69,7 +69,7 @@ impl CentralPanelViewModel {
                 }
                 view_model.viewer.column_configs = new_configs;
 
-                // Update all rows in the table if needed (e.g. loading from the file with virtual columns)
+                // Update all rows in the table if needed (e.g., loading from the file with virtual columns)
                 let mut rows = view_model.table.take();
                 for row in &mut rows {
                     let mut new_cells = Vec::with_capacity(row.cells.len());
