@@ -59,4 +59,4 @@ pub mod project_configuration;
 pub use project_configuration::*;
 
 pub mod project_hierarchy;
-//pub use project_hierarchy::*;
+pub use project_hierarchy::*;
