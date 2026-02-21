@@ -11,7 +11,7 @@ pub struct Configuration {
 
     pub data_sources: Vec<String>,
     pub selected_index: Option<usize>,
-    pub projects: Vec<ProjectConfiguration>
+    pub projects: Option<Vec<ProjectConfiguration>>
 }
 
 impl Configuration {
@@ -22,7 +22,7 @@ impl Configuration {
             path: source_path.as_ref().to_path_buf(),
             data_sources: vec![],
             selected_index: Some(0),
-            projects: vec![]
+            projects: Some(vec![])
         }
     }
 }
