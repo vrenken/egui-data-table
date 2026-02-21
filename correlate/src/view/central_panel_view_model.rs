@@ -1,12 +1,12 @@
 ﻿use egui_data_table::RowViewer;
-use crate::data::Config;
+use crate::data::Configuration;
 use crate::view::RootViewModel;
 
 pub struct CentralPanelViewModel {
 }
 
 impl CentralPanelViewModel {
-    pub fn default(_: &Config) -> Self {
+    pub fn default(_: &Configuration) -> Self {
         Self {
         }
     }

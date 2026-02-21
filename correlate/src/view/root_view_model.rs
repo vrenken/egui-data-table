@@ -1,9 +1,9 @@
-﻿use crate::data::{Config, RenamingTarget, Row};
+﻿use crate::data::{Configuration, RenamingTarget, Row};
 use crate::data::*;
 use crate::view::*;
 
 pub struct RootViewModel {
-    pub(crate) config: Config,
+    pub(crate) config: Configuration,
     pub(crate) table: egui_data_table::DataTable<Row>,
     pub(crate) viewer: RowView,
     pub(crate) data_sources: Vec<DataSource>,
@@ -29,7 +29,7 @@ impl RootViewModel {
         }
     }
 
-    pub fn default(config: Config) -> Self {
+    pub fn default(config: Configuration) -> Self {
 
         let mut data_sources = Vec::new();
         for source in &config.data_sources {

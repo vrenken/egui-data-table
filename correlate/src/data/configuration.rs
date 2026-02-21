@@ -2,16 +2,19 @@
 use std::fs;
 use std::path::Path;
 
+use crate::data::*;
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Config {
+pub struct Configuration {
     #[serde(skip)]
     pub path: std::path::PathBuf,
 
     pub data_sources: Vec<String>,
     pub selected_index: Option<usize>,
+    pub projects: Vec<ProjectConfiguration>
 }
 
-impl Config {
+impl Configuration {
     pub fn new<P: AsRef<Path>>(
         source_path: P,
     ) -> Self {
@@ -19,11 +22,12 @@ impl Config {
             path: source_path.as_ref().to_path_buf(),
             data_sources: vec![],
             selected_index: Some(0),
+            projects: vec![]
         }
     }
 }
 
-impl Config {
+impl Configuration {
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, String> {
         if !path.as_ref().exists() {
             let config = Self::new(path);

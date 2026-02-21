@@ -13,8 +13,8 @@ pub use editors::*;
 pub mod column_configuration;
 pub use column_configuration::*;
 
-pub mod config;
-pub use config::*;
+pub mod configuration;
+pub use configuration::*;
 
 pub mod sort_configuration;
 pub use sort_configuration::*;
@@ -51,3 +51,9 @@ pub mod data_sheet_grid;
 
 pub mod cell_value_configuration;
 pub use cell_value_configuration::*;
+
+pub mod project;
+pub use project::*;
+
+pub mod project_configuration;
+pub use project_configuration::*;

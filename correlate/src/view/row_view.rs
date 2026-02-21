@@ -10,7 +10,7 @@ pub struct RowView {
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
     pub column_configs: Vec<ColumnConfiguration>,
-    pub config: Config,
+    pub config: Configuration,
     pub data_sources: Vec<DataSource>,
     pub visible_columns: Option<Vec<usize>>,
 }
