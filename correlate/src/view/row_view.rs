@@ -66,6 +66,9 @@ impl RowViewer<Row> for RowView {
 
         // allow editing of the locked flag, but prevent editing other columns when locked.
         if let Some(config) = self.column_configs.get(column) {
+            if !config.is_virtual {
+                return false;
+            }
             if config.name == "Row locked" {
                 return true;
             }
