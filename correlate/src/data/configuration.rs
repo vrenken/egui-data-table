@@ -29,18 +29,23 @@ impl Configuration {
 
 impl Configuration {
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, String> {
-        if !path.as_ref().exists() {
-            let config = Self::new(path);
+        let path_ref = path.as_ref();
+        if !path_ref.exists() {
+            let config = Self::new(path_ref);
             config.save()?;
             return Ok(config);
         }
 
-        let content = fs::read_to_string(path).map_err(|e| e.to_string())?;
-        let config = serde_json::from_str(&content).map_err(|e| e.to_string())?;
+        let content = fs::read_to_string(path_ref).map_err(|e| e.to_string())?;
+        let mut config: Configuration = serde_json::from_str(&content).map_err(|e| e.to_string())?;
+        config.path = path_ref.to_path_buf();
         Ok(config)
     }
 
     pub fn save(&self) -> Result<(), String> {
+        if let Some(parent) = self.path.parent() {
+            fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        }
         let content = serde_json::to_string_pretty(self).map_err(|e| e.to_string())?;
         fs::write(self.path.as_path(), content).map_err(|e| e.to_string())?;
         Ok(())
