@@ -1,6 +1,6 @@
 ﻿use egui::{Sense, Widget};
-use crate::view::root_view_model::RootViewModel;
-use crate::data::RenamingTarget;
+use crate::view::*;
+use crate::data::*;
 
 #[derive(Default)]
 pub struct HierarchyPanel {}
