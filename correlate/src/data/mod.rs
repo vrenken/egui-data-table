@@ -10,8 +10,8 @@ pub use column_type::*;
 pub mod editors;
 pub use editors::*;
 
-pub mod column_config;
-pub use column_config::*;
+pub mod column_configuration;
+pub use column_configuration::*;
 
 pub mod config;
 pub use config::*;
@@ -44,7 +44,7 @@ pub mod data_sheet_configuration;
 pub use data_sheet_configuration::*;
 
 pub mod data_sheet_hierarchy;
-pub use data_sheet_hierarchy::*;
+//pub use data_sheet_hierarchy::*;
 
 pub mod data_sheet_grid;
 //pub use data_sheet_grid::*;

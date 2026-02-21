@@ -5,16 +5,16 @@ use crate::data::*;
 use crate::view::*;
 
 pub struct ColumnHeader<'a> {
-    pub column_configs: &'a mut Vec<ColumnConfig>,
+    pub column_configs: &'a mut Vec<ColumnConfiguration>,
     pub visible_columns: Option<Vec<usize>>, // indices of visible columns in order
 }
 
 impl<'a> ColumnHeader<'a> {
-    pub fn new(column_configs: &'a mut Vec<ColumnConfig>) -> Self {
+    pub fn new(column_configs: &'a mut Vec<ColumnConfiguration>) -> Self {
         Self { column_configs, visible_columns: None }
     }
 
-    pub fn new_with_visibility(column_configs: &'a mut Vec<ColumnConfig>, visible_columns: Option<Vec<usize>>) -> Self {
+    pub fn new_with_visibility(column_configs: &'a mut Vec<ColumnConfiguration>, visible_columns: Option<Vec<usize>>) -> Self {
         Self { column_configs, visible_columns }
     }
 

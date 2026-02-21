@@ -1,6 +1,7 @@
 ﻿use serde::{Deserialize, Serialize};
 use egui::{Response, Ui};
 use crate::data::*;
+use crate::data::editors::column_type_editor::ColumnTypeEditor;
 use crate::view::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -43,7 +44,7 @@ impl ColumnType {
         &self,
         ui: &mut Ui,
         cell_value: &mut CellValue,
-        column_config: &mut ColumnConfig,
+        column_config: &mut ColumnConfiguration,
         view_model: &mut RootViewModel
 
     ) -> Option<Response> {
@@ -57,7 +58,7 @@ impl ColumnType {
     pub fn load(
         &self,
         physical_value: Option<&str>,
-        config: &ColumnConfig,
+        config: &ColumnConfiguration,
         row_key: Option<&str>,
         stored_values: Option<&[CellValueConfig]>
     ) -> CellValue {

@@ -1,7 +1,6 @@
 ﻿use egui::{Response, Ui};
 use crate::data::*;
 use crate::view::*;
-use super::ColumnTypeEditor;
 
 pub struct NumberEditor;
 impl ColumnTypeEditor for NumberEditor {
@@ -9,7 +8,7 @@ impl ColumnTypeEditor for NumberEditor {
         &self,
         ui: &mut Ui,
         cell_value: &mut CellValue,
-        _column_config: &mut ColumnConfig,
+        _column_config: &mut ColumnConfiguration,
         _view_model: &mut RootViewModel
     ) -> Option<Response> {
         let mut n: f64 = cell_value.0.parse().unwrap_or(0.0);

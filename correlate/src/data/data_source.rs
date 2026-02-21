@@ -28,7 +28,7 @@ impl DataSource {
 
     pub fn save(
         &mut self,
-        column_configs: Vec<ColumnConfig>,
+        column_configs: Vec<ColumnConfiguration>,
         table: egui_data_table::DataTable<Row>,
     ) -> Result<(), String> {
         self.sheets[self.selected_sheet_index].column_configs = column_configs;

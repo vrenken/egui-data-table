@@ -1,7 +1,6 @@
 ﻿use egui::{Popup, Response, Ui};
 use crate::data::*;
 use crate::view::*;
-use super::ColumnTypeEditor;
 
 pub struct RelationEditor;
 
@@ -10,7 +9,7 @@ impl ColumnTypeEditor for RelationEditor {
         &self,
         ui: &mut Ui,
         cell_value: &mut CellValue,
-        column_config: &mut ColumnConfig,
+        column_config: &mut ColumnConfiguration,
         view_model: &mut RootViewModel
     ) -> Option<Response> {
         // Determine the related sheet from ColumnConfig.related_source (format: "Source > Sheet")
@@ -47,7 +46,7 @@ impl ColumnTypeEditor for RelationEditor {
 
         // Find key and name columns in the related sheet
         let key_col_idx = rel_sheet.column_configs.iter().position(|c| c.is_key).unwrap_or(0);
-        let name_col_idx = ColumnConfig::find_name_column_index(&rel_sheet.column_configs);
+        let name_col_idx = ColumnConfiguration::find_name_column_index(&rel_sheet.column_configs);
 
         // Prepare the current display text
         let mut current_key = cell_value.0.clone();

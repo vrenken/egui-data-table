@@ -1,7 +1,6 @@
 ﻿use egui::{Response, Ui};
 use crate::data::*;
 use crate::view::*;
-use super::ColumnTypeEditor;
 
 pub struct BoolEditor;
 impl ColumnTypeEditor for BoolEditor {
@@ -9,7 +8,7 @@ impl ColumnTypeEditor for BoolEditor {
         &self,
         ui: &mut Ui,
         cell_value: &mut CellValue,
-        _column_config: &mut ColumnConfig,
+        _column_config: &mut ColumnConfiguration,
         _view_model: &mut RootViewModel
     ) -> Option<Response> {
         let mut b: bool = cell_value.0.parse().unwrap_or(false);

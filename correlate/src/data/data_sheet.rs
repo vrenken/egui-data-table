@@ -10,7 +10,7 @@ pub struct DataSheet {
     pub custom_name: Option<String>,
     pub display_name: Option<String>,
     pub icon: &'static str,
-    pub column_configs: Vec<ColumnConfig>,
+    pub column_configs: Vec<ColumnConfiguration>,
     pub table: egui_data_table::DataTable<Row>,
 }
 impl DataSheet {
@@ -33,7 +33,7 @@ impl DataSheet {
             for (i, header) in raw_headers.iter().enumerate() {
                 let sample_value = raw_rows.first().and_then(|r| r.get(i)).map(|s| s.as_str()).unwrap_or("");
                 let column_type = ColumnType::infer(header, sample_value);
-                column_configs.push(ColumnConfig {
+                column_configs.push(ColumnConfiguration {
                     name: header.to_string(),
                     display_name: None,
                     column_type,
@@ -101,7 +101,7 @@ impl DataSheet {
         )
     }
 
-    fn get_row_key(column_configs: &Vec<ColumnConfig>, row_data: &Vec<String>) -> Option<String> {
+    fn get_row_key(column_configs: &Vec<ColumnConfiguration>, row_data: &Vec<String>) -> Option<String> {
         let mut row_key = None;
         let mut phys_idx = 0;
         for config in column_configs {

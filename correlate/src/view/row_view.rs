@@ -9,7 +9,7 @@ pub struct RowView {
     pub name_filter: String,
     pub row_protection: bool,
     pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
-    pub column_configs: Vec<ColumnConfig>,
+    pub column_configs: Vec<ColumnConfiguration>,
     pub config: Config,
     pub data_sources: Vec<DataSource>,
     pub visible_columns: Option<Vec<usize>>,
@@ -90,7 +90,7 @@ impl RowViewer<Row> for RowView {
     }
 
     fn filter_row(&mut self, row: &Row) -> bool {
-        let name_idx = ColumnConfig::find_name_column_index(&self.column_configs);
+        let name_idx = ColumnConfiguration::find_name_column_index(&self.column_configs);
 
         if let Some(cell) = row.cells.get(name_idx) {
             cell.to_string().contains(&self.name_filter)
@@ -271,7 +271,7 @@ impl RowViewer<Row> for RowView {
         if let Some(renaming_target) = renaming_target {
             match renaming_target {
                 RenamingTarget::Row(row_idx) => {
-                    let name_col_idx = ColumnConfig::find_name_column_index(&self.column_configs);
+                    let name_col_idx = ColumnConfiguration::find_name_column_index(&self.column_configs);
 
                     if let Some(row) = table.get_mut(row_idx) {
                         row.cells[name_col_idx] = CellValue::from(new_name);
@@ -329,7 +329,7 @@ impl RowViewer<Row> for RowView {
     }
 
     fn on_column_inserted(&mut self, table: &mut egui_data_table::DataTable<Row>, at: usize) {
-        let new_column = ColumnConfig {
+        let new_column = ColumnConfiguration {
             name: format!("New Column {}", self.column_configs.len() + 1),
             display_name: None,
             column_type: ColumnType::Text,
@@ -377,7 +377,7 @@ impl RowViewer<Row> for RowView {
         let mut committed = None;
 
         if renaming_this_row {
-            let name_col_idx = ColumnConfig::find_name_column_index(&self.column_configs);
+            let name_col_idx = ColumnConfiguration::find_name_column_index(&self.column_configs);
 
             let initial_name = row.cells[name_col_idx].0.clone();
 

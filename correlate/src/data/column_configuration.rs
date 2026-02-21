@@ -8,7 +8,7 @@ pub struct AllowedValue {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ColumnConfig {
+pub struct ColumnConfiguration {
     pub name: String,
     #[serde(default)]
     pub display_name: Option<String>,
@@ -35,8 +35,8 @@ fn default_true() -> bool {
     true
 }
 
-impl ColumnConfig {
-    pub fn find_name_column_index(configs: &[ColumnConfig]) -> usize {
+impl ColumnConfiguration {
+    pub fn find_name_column_index(configs: &[ColumnConfiguration]) -> usize {
         configs.iter().position(|c| c.is_name)
             .or_else(|| configs.iter().position(|c| c.name.to_lowercase().contains("name")))
             .or_else(|| configs.iter().position(|c| c.column_type == ColumnType::Text))

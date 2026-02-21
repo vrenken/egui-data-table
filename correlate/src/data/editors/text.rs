@@ -1,7 +1,6 @@
 ﻿use egui::{Response, Ui};
 use crate::data::*;
 use crate::view::*;
-use super::ColumnTypeEditor;
 
 pub struct TextEditor;
 impl ColumnTypeEditor for TextEditor {
@@ -9,7 +8,7 @@ impl ColumnTypeEditor for TextEditor {
         &self,
         ui: &mut Ui,
         cell_value: &mut CellValue,
-        _column_config: &mut ColumnConfig,
+        _column_config: &mut ColumnConfiguration,
         _view_model: &mut RootViewModel
     ) -> Option<Response> {
         Some(egui::TextEdit::multiline(&mut cell_value.0)
