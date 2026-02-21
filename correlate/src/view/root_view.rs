@@ -15,7 +15,7 @@ impl Default for RootView {
     fn default() -> Self {
 
         let config_path = "config.json";
-        let config = crate::data::Config::load(config_path).unwrap_or_default();
+        let config = crate::data::Config::load(config_path).unwrap();
 
         Self {
             hierarchy_view_model: HierarchyViewModel::default(&config),
