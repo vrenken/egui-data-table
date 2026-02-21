@@ -16,14 +16,14 @@ pub struct RootViewModel {
 impl RootViewModel {
     pub fn save_source_config(&mut self, index: usize) {
         if let Some(ds) = self.data_sources.get_mut(index) {
-            // If the data source being saved is the currently selected one, 
-            // update its internal state from the viewer and table first.
-            if Some(index) == self.selected_index {
-                ds.sheets[ds.selected_sheet_index].column_configs = self.viewer.column_configs.clone();
-                ds.sheets[ds.selected_sheet_index].table = self.table.clone();
-            }
+            let (configs, table) = if Some(index) == self.selected_index {
+                (self.viewer.column_configs.clone(), self.table.clone())
+            } else {
+                let sheet = &ds.sheets[ds.selected_sheet_index];
+                (sheet.column_configs.clone(), sheet.table.clone())
+            };
 
-            if let Err(e) = ds.save() {
+            if let Err(e) = ds.save(configs, table) {
                 log::error!("Failed to save companion config for {}: {}", ds.path, e);
             }
         }
@@ -178,14 +178,6 @@ impl RootViewModel {
 
     pub fn save_datasource_configuration(&mut self) {
         if let Some(idx) = self.selected_index {
-            let ds = &mut self.data_sources[idx];
-            let sheet = &mut ds.sheets[ds.selected_sheet_index];
-            sheet.column_configs = self.viewer.column_configs.clone();
-            for (i, config) in sheet.column_configs.iter_mut().enumerate() {
-                config.order = i;
-            }
-            sheet.table = self.table.clone();
-
             self.save_source_config(idx);
         }
     }

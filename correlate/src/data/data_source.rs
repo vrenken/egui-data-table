@@ -9,8 +9,15 @@ pub struct DataSource {
 }
 
 impl DataSource {
-    pub fn save(&mut self) -> Result<(), String> {
-        let companion_path = crate::data::SourceConfig::get_companion_path(&self.path);
+    pub fn save(
+        &mut self,
+        column_configs: Vec<ColumnConfig>,
+        table: egui_data_table::DataTable<Row>,
+    ) -> Result<(), String> {
+        self.sheets[self.selected_sheet_index].column_configs = column_configs;
+        self.sheets[self.selected_sheet_index].table = table;
+
+        let companion_path = SourceConfig::get_companion_path(&self.path);
 
         let mut sheet_configs = Vec::new();
         for sheet in &mut self.sheets {
