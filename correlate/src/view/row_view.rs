@@ -150,7 +150,7 @@ impl RowViewer<Row> for RowView {
         }
 
         resp.context_menu(|ui| {
-            crate::view::central_panel::CentralPanel::ui_row_context_menu(self, ui, column);
+            CentralPanel::ui_row_context_menu(self, ui, column);
         });
     }
 
@@ -329,10 +329,10 @@ impl RowViewer<Row> for RowView {
     }
 
     fn on_column_inserted(&mut self, table: &mut egui_data_table::DataTable<Row>, at: usize) {
-        let new_column = crate::data::ColumnConfig {
+        let new_column = ColumnConfig {
             name: format!("New Column {}", self.column_configs.len() + 1),
             display_name: None,
-            column_type: crate::data::ColumnType::Text,
+            column_type: ColumnType::Text,
             is_key: false,
             is_name: false,
             is_virtual: true,

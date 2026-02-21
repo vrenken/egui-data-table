@@ -85,7 +85,7 @@ impl ColumnType {
         if sample_value.parse::<f64>().is_ok() {
             return ColumnType::Number;
         }
-        // Check for DateTime (simple heuristic for common formats)
+        // Check for DateTime (a simple heuristic for common formats)
         if is_datetime(sample_value) {
             return ColumnType::DateTime;
         }
