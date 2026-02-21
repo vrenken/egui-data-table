@@ -55,7 +55,7 @@ impl Loader for CsvSheet {
                     .and_then(|r| r.get(i))
                     .unwrap_or("");
                 
-                let column_type = infer_column_type(header, sample_value);
+                let column_type = ColumnType::infer(header, sample_value);
                 column_configs.push(ColumnConfig {
                     name: header.to_string(),
                     display_name: None,

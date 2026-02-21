@@ -1,5 +1,5 @@
 ﻿use umya_spreadsheet::*;
-use crate::data::{infer_column_type, ColumnConfig, Row, SheetConfig, SourceConfig};
+use crate::data::{Row};
 use crate::data::*;
 
 pub struct ExcelSheet;
@@ -44,7 +44,7 @@ impl Loader for ExcelSheet {
                     
                     // Infer type from the second row (first data row)
                     let first_data_value = sheet.get_formatted_value((col_idx, 2));
-                    let column_type = infer_column_type(&col_name, &first_data_value);
+                    let column_type = ColumnType::infer(&col_name, &first_data_value);
 
                     column_configs.push(ColumnConfig {
                         name: col_name,
