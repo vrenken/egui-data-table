@@ -37,11 +37,7 @@ impl Rename
             }
             Rename::DataSource(ds_idx) => {
                 if let Some(ds) = data_sources.get_mut(ds_idx) {
-                    ds.name = if new_name.is_empty() {
-                        None
-                    } else {
-                        Some(new_name)
-                    };
+                    ds.rename(new_name);
                 }
             }
             Rename::Sheet(ds_idx, sheet_idx) => {
