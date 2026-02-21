@@ -32,19 +32,6 @@
           "related_source": null
         },
         {
-          "name": "nationality",
-          "display_name": null,
-          "column_type": "Text",
-          "is_key": false,
-          "is_name": false,
-          "is_virtual": false,
-          "is_visible": true,
-          "order": 2,
-          "width": 224.0,
-          "allowed_values": null,
-          "related_source": null
-        },
-        {
           "name": "city",
           "display_name": null,
           "column_type": "Text",
@@ -52,7 +39,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 3,
+          "order": 2,
           "width": 140.0,
           "allowed_values": null,
           "related_source": null
@@ -65,7 +52,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 4,
+          "order": 3,
           "width": 92.125,
           "allowed_values": null,
           "related_source": null
@@ -78,7 +65,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 5,
+          "order": 4,
           "width": 103.125,
           "allowed_values": null,
           "related_source": null
@@ -91,7 +78,7 @@
           "is_name": false,
           "is_virtual": true,
           "is_visible": true,
-          "order": 6,
+          "order": 5,
           "width": 155.375,
           "allowed_values": null,
           "related_source": "Netherlands > Netherlands"
@@ -104,7 +91,7 @@
           "is_name": false,
           "is_virtual": true,
           "is_visible": true,
-          "order": 7,
+          "order": 6,
           "width": 163.375,
           "allowed_values": [
             {
@@ -130,6 +117,14 @@
                 215,
                 170
               ]
+            },
+            {
+              "value": "Awesome!",
+              "color": [
+                171,
+                170,
+                231
+              ]
             }
           ],
           "related_source": null
@@ -142,7 +137,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 8,
+          "order": 7,
           "width": 88.875,
           "allowed_values": null,
           "related_source": null
@@ -155,7 +150,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 9,
+          "order": 8,
           "width": 120.59375,
           "allowed_values": null,
           "related_source": null
@@ -168,7 +163,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 10,
+          "order": 9,
           "width": 125.125,
           "allowed_values": null,
           "related_source": null
@@ -181,7 +176,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 11,
+          "order": 10,
           "width": 125.125,
           "allowed_values": null,
           "related_source": null
@@ -194,7 +189,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 12,
+          "order": 11,
           "width": 131.125,
           "allowed_values": null,
           "related_source": null
@@ -207,7 +202,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 13,
+          "order": 12,
           "width": 137.125,
           "allowed_values": null,
           "related_source": null
@@ -220,7 +215,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 14,
+          "order": 13,
           "width": 137.125,
           "allowed_values": null,
           "related_source": null
@@ -233,7 +228,7 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 15,
+          "order": 14,
           "width": 148.4375,
           "allowed_values": null,
           "related_source": null
@@ -246,8 +241,21 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 16,
+          "order": 15,
           "width": 148.4375,
+          "allowed_values": null,
+          "related_source": null
+        },
+        {
+          "name": "nationality",
+          "display_name": null,
+          "column_type": "Text",
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "is_visible": false,
+          "order": 16,
+          "width": 224.0,
           "allowed_values": null,
           "related_source": null
         },
@@ -268,74 +276,104 @@
       "sort_config": null,
       "cell_values": [
         {
-          "key": "1",
+          "key": "2",
           "column_name": "Gideon showcase",
           "value": "Gaaf"
         },
         {
-          "key": "5",
+          "key": "7",
           "column_name": "New Column 17",
           "value": "relation://Netherlands > Netherlands/Arnhem/Arnhem"
         },
         {
-          "key": "7",
+          "key": "11",
+          "column_name": "New Column 17",
+          "value": "relation://Netherlands > Netherlands/Deventer/Deventer"
+        },
+        {
+          "key": "13",
           "column_name": "Gideon showcase",
-          "value": "Niet gaaf"
-        },
-        {
-          "key": "9",
-          "column_name": "New Column 17",
-          "value": "relation://Netherlands > Netherlands/Amersfoort/Amersfoort"
-        },
-        {
-          "key": "12",
-          "column_name": "New Column 17",
-          "value": "relation://Netherlands > Netherlands/Enschede/Enschede"
+          "value": "Gaaf"
         },
         {
           "key": "14",
           "column_name": "New Column 17",
-          "value": "relation://Netherlands > Netherlands/Delft/Delft"
+          "value": "relation://Netherlands > Netherlands/’s-Hertogenbosch/’s-Hertogenbosch"
         },
         {
-          "key": "16",
+          "key": "18",
           "column_name": "Gideon showcase",
           "value": "Niet gaaf"
         },
         {
-          "key": "18",
-          "column_name": "New Column 17",
-          "value": "relation://Netherlands > Netherlands/Lelystad/Lelystad"
-        },
-        {
-          "key": "24",
-          "column_name": "Gideon showcase",
-          "value": "Cool"
-        },
-        {
-          "key": "25",
-          "column_name": "New Column 17",
-          "value": "relation://Netherlands > Netherlands/Arnhem/Arnhem"
-        },
-        {
-          "key": "34",
+          "key": "19",
           "column_name": "Gideon showcase",
           "value": "Gaaf"
         },
         {
-          "key": "36",
+          "key": "20",
           "column_name": "New Column 17",
-          "value": "relation://Netherlands > Netherlands/Breda/Breda"
+          "value": "relation://Netherlands > Netherlands/Heerlen/Heerlen"
         },
         {
-          "key": "165",
-          "column_name": "New Column 17",
-          "value": "relation://Netherlands > Netherlands/Eindhoven/Eindhoven"
+          "key": "22",
+          "column_name": "Gideon showcase",
+          "value": "Gaaf"
         },
         {
-          "key": "175",
+          "key": "23",
+          "column_name": "Gideon showcase",
+          "value": "Niet gaaf"
+        },
+        {
+          "key": "28",
+          "column_name": "Gideon showcase",
+          "value": "Cool"
+        },
+        {
+          "key": "29",
+          "column_name": "Gideon showcase",
+          "value": "Awesome!"
+        },
+        {
+          "key": "30",
           "column_name": "New Column 17",
-          "value": "relation://Netherlands > Netherlands/Enschede/Enschede"
+          "value": "relation://Netherlands > Netherlands/Purmerend/Purmerend"
+        },
+        {
+          "key": "30",
+          "column_name": "Gideon showcase",
+          "value": "Gaaf"
+        },
+        {
+          "key": "31",
+          "column_name": "New Column 17",
+          "value": "relation://Netherlands > Netherlands/Emmen/Emmen"
+        },
+        {
+          "key": "39",
+          "column_name": "Gideon showcase",
+          "value": "Awesome!"
+        },
+        {
+          "key": "43",
+          "column_name": "New Column 17",
+          "value": "relation://Netherlands > Netherlands/Nieuwegein/Nieuwegein"
+        },
+        {
+          "key": "49",
+          "column_name": "Gideon showcase",
+          "value": "Gaaf"
+        },
+        {
+          "key": "51",
+          "column_name": "Gideon showcase",
+          "value": "Cool"
+        },
+        {
+          "key": "54",
+          "column_name": "Gideon showcase",
+          "value": "Gaaf"
         }
       ]
     }
