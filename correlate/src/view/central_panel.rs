@@ -2,7 +2,6 @@
 use egui::Layout;
 use egui::scroll_area::ScrollBarVisibility;
 use egui_data_table::RowViewer;
-use crate::view::root_view_model::RootViewModel;
 use crate::view::*;
 
 #[derive(Default)]
