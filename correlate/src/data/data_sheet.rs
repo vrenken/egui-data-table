@@ -1,7 +1,7 @@
 ﻿use crate::data::*;
 
 pub trait SheetLoader {
-    fn load(&self, path: String) -> Result<Vec<DataSheet>, String>;
+    fn load(&self, path: String) -> Result<(Vec<DataSheet>, SourceConfig), String>;
 }
 
 #[derive(Clone)]

@@ -11,7 +11,7 @@ impl Default for CsvSheet {
 }
 
 impl SheetLoader for CsvSheet {
-    fn load(&self, path: String) -> Result<Vec<DataSheet>, String> {
+    fn load(&self, path: String) -> Result<(Vec<DataSheet>, SourceConfig), String> {
         let file_name = std::path::Path::new(&path)
             .file_name()
             .and_then(|n| n.to_str())
@@ -60,6 +60,6 @@ impl SheetLoader for CsvSheet {
         if let Err(e) = source_config.save() {
             log::error!("Failed to save config for {}: {}", path, e);
         }
-        Ok(data_sheets)
+        Ok((data_sheets, source_config))
     }
 }

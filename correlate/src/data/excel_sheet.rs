@@ -11,7 +11,7 @@ impl Default for ExcelSheet {
 }
 
 impl SheetLoader for ExcelSheet {
-    fn load(&self, path: String) -> Result<Vec<DataSheet>, String> {
+    fn load(&self, path: String) -> Result<(Vec<DataSheet>, SourceConfig), String> {
         let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
 
         let mut source_config = SourceConfig::load(&path);
@@ -59,6 +59,6 @@ impl SheetLoader for ExcelSheet {
         if let Err(e) = source_config.save() {
             log::error!("Failed to save config for {}: {}", path, e);
         }
-        Ok(data_sheets)
+        Ok((data_sheets, source_config))
     }
 }
