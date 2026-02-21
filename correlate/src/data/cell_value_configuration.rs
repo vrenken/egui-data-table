@@ -1,9 +1,8 @@
 ﻿use serde::{Deserialize, Serialize};
-use crate::data::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct SortConfig {
+pub struct CellValueConfiguration {
+    pub key: String,
     pub column_name: String,
-    pub is_ascending: bool,
+    pub value: String,
 }
-

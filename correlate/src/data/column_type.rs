@@ -59,7 +59,7 @@ impl ColumnType {
         physical_value: Option<&str>,
         config: &ColumnConfiguration,
         row_key: Option<&str>,
-        stored_values: Option<&[CellValueConfig]>
+        stored_values: Option<&[CellValueConfiguration]>
     ) -> CellValue {
         if config.is_virtual {
             let mut val = "".to_string();

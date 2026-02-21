@@ -9,7 +9,7 @@ pub struct DataSheetConfiguration {
     pub column_configs: Vec<ColumnConfiguration>,
     pub sort_config: Option<SortConfig>,
     #[serde(default)]
-    pub cell_values: Vec<CellValueConfig>,
+    pub cell_values: Vec<CellValueConfiguration>,
 }
 
 impl DataSheetConfiguration {

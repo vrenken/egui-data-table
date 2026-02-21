@@ -58,7 +58,7 @@ impl DataSource {
                     for &v_idx in &virtual_cols {
                         let value = row.cells[v_idx].0.clone();
                         if !value.is_empty() {
-                            cell_values.push(CellValueConfig {
+                            cell_values.push(CellValueConfiguration {
                                 key: key.clone(),
                                 column_name: sheet.column_configs[v_idx].name.clone(),
                                 value,
