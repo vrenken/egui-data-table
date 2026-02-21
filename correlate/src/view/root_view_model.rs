@@ -211,8 +211,7 @@ impl RootViewModel {
                     .unwrap_or(0);
 
                 if let Some(row) = self.table.get_mut(row_idx) {
-                    let column_type = self.viewer.column_configs[name_col_idx].column_type;
-                    row.cells[name_col_idx] = crate::data::map_cell_value(&new_name, column_type);
+                    row.cells[name_col_idx] = CellValue::from(new_name);
                 }
             }
             RenamingTarget::Column(col_idx) => {

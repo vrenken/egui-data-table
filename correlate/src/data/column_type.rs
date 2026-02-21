@@ -71,7 +71,7 @@ impl ColumnType {
             CellValue(val)
         } else {
             let value = physical_value.unwrap_or("");
-            map_cell_value(value, *self)
+            CellValue::from(value)
         }
     }
 

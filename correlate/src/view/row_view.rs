@@ -274,8 +274,7 @@ impl RowViewer<Row> for RowView {
                     let name_col_idx = ColumnConfig::find_name_column_index(&self.column_configs);
 
                     if let Some(row) = table.get_mut(row_idx) {
-                        let column_type = self.column_configs[name_col_idx].column_type;
-                        row.cells[name_col_idx] = map_cell_value(&new_name, column_type);
+                        row.cells[name_col_idx] = CellValue::from(new_name);
                         table.mark_as_modified();
                     }
                 }

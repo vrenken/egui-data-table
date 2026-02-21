@@ -19,9 +19,6 @@ pub use config::*;
 pub mod source_config;
 pub use source_config::*;
 
-pub mod value_mapping;
-pub use value_mapping::*;
-
 pub mod renaming_target;
 pub use renaming_target::*;
 
