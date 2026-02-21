@@ -1,10 +1,8 @@
-﻿use std::path::{Path, PathBuf};
-use crate::data::*;
+﻿use crate::data::*;
 
 #[derive(Clone)]
 pub struct DataSource {
     pub path: String,
-    pub companion_path: PathBuf,
     pub name: Option<String>,
     pub sheets: Vec<DataSheet>,
     pub selected_sheet_index: usize,
@@ -17,27 +15,12 @@ impl DataSource {
         sheets: Vec<DataSheet>,
         selected_sheet_index: usize,
     ) -> Self {
-        let companion_path = Self::get_companion_path(&path);
-
         Self {
             path,
-            companion_path,
             name,
             sheets,
             selected_sheet_index,
         }
-    }
-
-    pub fn get_companion_path<P: AsRef<Path>>(path: P) -> PathBuf {
-        let mut p = path.as_ref().to_path_buf();
-        let ext = p.extension().and_then(|e| e.to_str()).unwrap_or("");
-        let new_ext = if ext.is_empty() {
-            "correlate".to_string()
-        } else {
-            format!("{}.correlate", ext)
-        };
-        p.set_extension(new_ext);
-        p
     }
 
     pub fn save(
