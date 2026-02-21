@@ -6,5 +6,19 @@
     "correlate/test/data/sheets/test-multiple-sheets.xlsx",
     "correlate/test/data/students/student-dataset.csv"
   ],
-  "selected_index": 4
+  "selected_index": 4,
+  "projects": [
+    {
+      "name": "Private Metaverse Research",
+      "data_sources": []
+    },
+    {
+      "name": "Private Simulation Research",
+      "data_sources": []
+    },
+    {
+      "name": "Integration Project",
+      "data_sources": []
+    }
+  ]
 }
