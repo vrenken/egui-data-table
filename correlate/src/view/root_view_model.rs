@@ -5,6 +5,7 @@ use crate::view::*;
 pub struct RootViewModel {
     pub(crate) config: Configuration,
     pub(crate) table: egui_data_table::DataTable<Row>,
+    pub(crate) projects: Vec<ProjectConfiguration>,
     pub(crate) viewer: RowView,
     pub(crate) data_sources: Vec<DataSource>,
     pub(crate) selected_index: Option<usize>,
@@ -79,6 +80,7 @@ impl RootViewModel {
 
             return Self {
                 config,
+                projects: Vec::new(),
                 table,
                 viewer,
                 data_sources,
@@ -105,6 +107,7 @@ impl RootViewModel {
 
         Self {
             config,
+            projects: Vec::new(),
             table,
             viewer,
             data_sources,

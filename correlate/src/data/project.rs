@@ -1,6 +1,4 @@
 ﻿use crate::data::*;
-use crate::view::*;
-use egui::*;
 
 pub struct Project {
     pub configuration: ProjectConfiguration,
@@ -16,7 +14,10 @@ impl Project {
         }
     }
 
-    pub fn rename(&mut self, new_name: String) {
+    pub fn rename(&mut self, new_name: String, config: &mut Configuration) {
         self.configuration.name = new_name;
+        if let Err(e) = config.save() {
+            log::error!("Failed to save config after project rename: {}", e);
+        }
     }
 }

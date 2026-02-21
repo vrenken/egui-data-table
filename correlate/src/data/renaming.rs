@@ -95,17 +95,13 @@ impl Rename
                         let mut project = Project {
                             configuration: project_config.clone(),
                         };
-                        project.rename(new_name);
-                        *project_config = project.configuration;
-                        if let Err(e) = config.save() {
-                            log::error!("Failed to save config after project rename: {}", e);
-                        }
+                        project.rename(new_name, config);
                     }
                 }
             }
             Rename::DataSource(ds_idx) => {
                 if let Some(ds) = data_sources.get_mut(ds_idx) {
-                    ds.rename(new_name);
+                    ds.rename(new_name, config);
                 }
             }
             Rename::Sheet(ds_idx, sheet_idx) => {

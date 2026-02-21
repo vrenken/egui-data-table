@@ -10,12 +10,16 @@ pub struct DataSource {
 }
 
 impl DataSource {
-    pub fn rename(&mut self, new_name: String) {
+    pub fn rename(&mut self, new_name: String, config: &mut Configuration) {
         self.name = if new_name.is_empty() {
             None
-        } else {
+        }
+        else {
             Some(new_name)
         };
+        if let Err(e) = config.save() {
+            log::error!("Failed to save config after project rename: {}", e);
+        }
     }
 
     pub fn new(
