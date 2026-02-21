@@ -16,7 +16,7 @@ pub struct SourceConfig {
     pub path: std::path::PathBuf,
     #[serde(default)]
     pub name: Option<String>,
-    pub sheets: Vec<SheetConfig>,
+    pub sheets: Vec<DataSheetConfiguration>,
 }
 
 impl SourceConfig {
@@ -35,7 +35,7 @@ impl SourceConfig {
     pub fn new<P: AsRef<Path>>(
         source_path: P,
         name: Option<String>,
-        sheets: Vec<SheetConfig>,
+        sheets: Vec<DataSheetConfiguration>,
     ) -> Self {
         Self {
             path: Self::calculate_path(source_path),

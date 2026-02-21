@@ -21,8 +21,8 @@ impl DataSheet {
         icon: &'static str,
         raw_headers: &[String],
         raw_rows: &[Vec<String>],
-        config_sheet: Option<&SheetConfig>,
-    ) -> (Self, SheetConfig) {
+        config_sheet: Option<&DataSheetConfiguration>,
+    ) -> (Self, DataSheetConfiguration) {
         let mut column_configs = config_sheet
             .map(|s| s.column_configs.clone())
             .unwrap_or_default();
@@ -81,7 +81,7 @@ impl DataSheet {
             rows.push(Row { cells });
         }
 
-        let sheet_config = SheetConfig {
+        let sheet_config = DataSheetConfiguration {
             name: name.clone(),
             display_name: display_name.clone(),
             column_configs: column_configs.clone(),

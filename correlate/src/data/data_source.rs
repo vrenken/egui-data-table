@@ -68,7 +68,7 @@ impl DataSource {
                 }
             }
 
-            sheet_configs.push(SheetConfig {
+            sheet_configs.push(DataSheetConfiguration {
                 name: sheet.name.clone(),
                 display_name: sheet.display_name.clone(),
                 column_configs: sheet.column_configs.clone(),
