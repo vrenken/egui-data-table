@@ -6,19 +6,27 @@
     "correlate/test/data/sheets/test-multiple-sheets.xlsx",
     "correlate/test/data/students/student-dataset.csv"
   ],
-  "selected_index": 4,
+  "selected_index": 6,
   "projects": [
     {
       "name": "Private Metaverse Research",
-      "data_sources": []
+      "data_sources": [
+        "correlate/test/data/students/student-dataset.csv"
+      ]
     },
     {
       "name": "Private Simulation Research",
-      "data_sources": []
+      "data_sources": [
+        "correlate/test/data/cities/de.xlsx",
+        "correlate/test/data/cities/nl.xlsx"
+      ]
     },
     {
       "name": "Integration Project",
-      "data_sources": []
+      "data_sources": [
+        "correlate/test/data/sheets/test-multiple-sheets.xlsx",
+        "correlate/test/data/sheets/test.xlsx"
+      ]
     }
   ]
 }

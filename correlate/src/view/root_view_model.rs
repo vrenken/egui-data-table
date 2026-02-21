@@ -5,13 +5,12 @@ use crate::view::*;
 pub struct RootViewModel {
     pub(crate) config: Configuration,
     pub(crate) table: egui_data_table::DataTable<Row>,
-    pub(crate) projects: Vec<ProjectConfiguration>,
     pub(crate) viewer: RowView,
     pub(crate) data_sources: Vec<DataSource>,
     pub(crate) selected_index: Option<usize>,
     pub(crate) style_override: egui_data_table::Style,
     pub(crate) scroll_bar_always_visible: bool,
-    pub(crate) pending_file_to_add: Option<std::path::PathBuf>,
+    pub(crate) pending_file_to_add: Option<(std::path::PathBuf, Option<usize>)>,
 }
 
 impl RootViewModel {
@@ -80,7 +79,6 @@ impl RootViewModel {
 
             return Self {
                 config,
-                projects: Vec::new(),
                 table,
                 viewer,
                 data_sources,
@@ -107,7 +105,6 @@ impl RootViewModel {
 
         Self {
             config,
-            projects: Vec::new(),
             table,
             viewer,
             data_sources,
@@ -119,7 +116,7 @@ impl RootViewModel {
     }
 
     pub fn handle_pending_file_add(&mut self) {
-        if let Some(path) = self.pending_file_to_add.take() {
+        if let Some((path, project_idx)) = self.pending_file_to_add.take() {
             let path_str = path.to_string_lossy().to_string();
             let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
 
@@ -145,7 +142,16 @@ impl RootViewModel {
                     self.switch_to_source(new_index, 0);
 
                     // Persist to config
-                    self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
+                    if let Some(p_idx) = project_idx {
+                        if let Some(projects) = self.config.projects.as_mut() {
+                            if let Some(project) = projects.get_mut(p_idx) {
+                                project.data_sources.push(path_str);
+                            }
+                        }
+                    } else {
+                        self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
+                    }
+                    
                     self.config.selected_index = self.selected_index;
                     if let Err(e) = self.config.save() {
                         log::error!("Failed to save config: {}", e);
@@ -180,6 +186,7 @@ impl RootViewModel {
 
     pub fn remove_data_source(&mut self, index: usize) {
         if index < self.data_sources.len() {
+            let path_to_remove = self.data_sources[index].path.clone();
             self.data_sources.remove(index);
 
             // Update selected index if necessary
@@ -190,6 +197,7 @@ impl RootViewModel {
                         self.selected_index = None;
                         self.table = egui_data_table::DataTable::new();
                         self.viewer.column_configs = Vec::new();
+                        self.viewer.data_sources = Vec::new();
                     } else {
                         let new_idx = index.min(self.data_sources.len() - 1);
                         self.switch_to_source(new_idx, self.data_sources[new_idx].selected_sheet_index);
@@ -198,9 +206,16 @@ impl RootViewModel {
                     self.selected_index = Some(selected - 1);
                 }
             }
-            
+        
             // Sync with config
             self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
+            // Also remove from any project that might contain it
+            if let Some(projects) = self.config.projects.as_mut() {
+                for project in projects {
+                    project.data_sources.retain(|p| p != &path_to_remove);
+                }
+            }
+
             if let Err(e) = self.config.save() {
                 log::error!("Failed to save config after removing data source: {}", e);
             }

@@ -29,26 +29,34 @@ impl HierarchyPanel {
                                     let project = Project {
                                         configuration: project_configs[project_idx].clone(),
                                     };
-                                    project.ui(ui, project_idx, renaming_target_opt, view_model);
+                                    project.ui(ui, project_idx, renaming_target_opt, view_model, &mut newly_selected_index, &mut newly_selected_sheet_index);
                                 }
                             }
 
                             ui.add_space(10.0);
                             ui.label("Data sources:");
 
+                            let assigned_data_sources: std::collections::HashSet<String> = view_model.config.projects.as_ref()
+                                .map(|projects| projects.iter().flat_map(|p| p.data_sources.clone()).collect())
+                                .unwrap_or_default();
+
+                            let mut any_general_ds = false;
                             for index in 0..view_model.data_sources.len() {
-                                view_model.data_sources[index].clone().ui(
-                                    ui,
-                                    index,
-                                    renaming_target_opt,
-                                    view_model,
-                                    &mut newly_selected_index,
-                                    &mut newly_selected_sheet_index
-                                );
+                                if !assigned_data_sources.contains(&view_model.data_sources[index].path) {
+                                    any_general_ds = true;
+                                    view_model.data_sources[index].clone().ui(
+                                        ui,
+                                        index,
+                                        renaming_target_opt,
+                                        view_model,
+                                        &mut newly_selected_index,
+                                        &mut newly_selected_sheet_index
+                                    );
+                                }
                             }
 
-                            if view_model.data_sources.is_empty() {
-                                ui.label("No files loaded");
+                            if !any_general_ds {
+                                ui.label("No unassigned data sources");
                             }
                         });
 
@@ -59,7 +67,7 @@ impl HierarchyPanel {
                         }
                         ui.separator();
                         if let Some(path) = Self::ui_hierarchy_panel_context_menu(ui) {
-                            view_model.pending_file_to_add = Some(path);
+                            view_model.pending_file_to_add = Some((path, None));
                         }
                     });
 

@@ -1,9 +1,9 @@
 {
-  "name": null,
+  "name": "Multiple",
   "sheets": [
     {
       "name": "Sheet1",
-      "display_name": null,
+      "display_name": "First Sheet",
       "column_configs": [
         {
           "name": "Text",
@@ -102,7 +102,7 @@
     },
     {
       "name": "Additional Sheet",
-      "display_name": null,
+      "display_name": "Second Sheet",
       "column_configs": [
         {
           "name": "Text",

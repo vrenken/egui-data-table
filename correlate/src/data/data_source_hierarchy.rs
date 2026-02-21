@@ -64,7 +64,7 @@ impl DataSource {
                             &sheet_display_name,
                         );
                     } else {
-                        Rename::ui_item_as_selectable(
+                        let res = Rename::ui_item_as_selectable(
                             ui,
                             Rename::Sheet(ds_idx, sheet_idx),
                             selected,
@@ -80,6 +80,10 @@ impl DataSource {
                                 }
                             },
                         );
+
+                        res.context_menu(|ui| {
+                            Rename::ui_item_context_menu(ui, Rename::Sheet(ds_idx, sheet_idx));
+                        });
                     }
                 }
             });
@@ -130,7 +134,7 @@ impl DataSource {
                     &ds_display_name,
                 );
             } else {
-                Rename::ui_item_as_selectable(
+                let res = Rename::ui_item_as_selectable(
                     ui,
                     Rename::DataSource(ds_idx),
                     selected,
@@ -144,6 +148,10 @@ impl DataSource {
                         }
                     },
                 );
+
+                res.context_menu(|ui| {
+                    Rename::ui_item_context_menu(ui, Rename::DataSource(ds_idx));
+                });
             }
         }
     }

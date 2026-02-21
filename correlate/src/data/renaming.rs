@@ -58,7 +58,7 @@ impl Rename
         display_name: &str,
         hover_text: Option<&str>,
         on_click: impl FnOnce(),
-    ) {
+    ) -> Response {
         let renaming_target_id = Id::new("renaming_target");
         let res = ui.selectable_label(selected, format!("{} {}", icon, display_name));
         let res = if let Some(hover) = hover_text {
@@ -67,10 +67,6 @@ impl Rename
             res
         };
 
-        res.context_menu(|ui| {
-            Self::ui_item_context_menu(ui, target);
-        });
-
         if res.clicked() {
             on_click();
         }
@@ -78,6 +74,7 @@ impl Rename
         if res.double_clicked() {
             ui.data_mut(|d| d.insert_temp(renaming_target_id, target));
         }
+        res
     }
 
     pub fn apply(
