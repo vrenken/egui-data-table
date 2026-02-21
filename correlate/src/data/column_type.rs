@@ -1,7 +1,6 @@
 ﻿use serde::{Deserialize, Serialize};
 use egui::{Response, Ui};
 use crate::data::*;
-use crate::data::editors::column_type_editor::ColumnTypeEditor;
 use crate::view::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

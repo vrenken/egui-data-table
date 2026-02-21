@@ -1,8 +1,8 @@
 ﻿pub mod relation;
 pub use relation::*;
 
-pub mod row;
-pub use row::*;
+pub mod cell_value;
+pub use cell_value::*;
 
 pub mod column_type;
 pub use column_type::*;
