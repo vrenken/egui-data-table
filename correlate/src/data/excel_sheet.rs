@@ -11,7 +11,7 @@ impl Default for ExcelSheet {
     }   
 }
 
-impl Loader for ExcelSheet {
+impl SheetLoader for ExcelSheet {
     fn load(&self, path: String) -> Result<Vec<DataSheet>, String> {
         let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
         

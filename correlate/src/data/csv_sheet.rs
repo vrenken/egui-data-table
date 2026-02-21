@@ -10,7 +10,7 @@ impl Default for CsvSheet {
     }
 }
 
-impl Loader for CsvSheet {
+impl SheetLoader for CsvSheet {
     fn load(&self, path: String) -> Result<Vec<DataSheet>, String> {
         let file_name = std::path::Path::new(&path)
             .file_name()

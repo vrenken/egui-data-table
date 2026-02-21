@@ -39,7 +39,7 @@ impl RootViewModel {
                 .unwrap_or("");
 
 
-            let loader: Box<dyn Loader> = if extension == "csv" {
+            let loader: Box<dyn SheetLoader> = if extension == "csv" {
                 Box::new(CsvSheet)
             } else {
                 Box::new(ExcelSheet)

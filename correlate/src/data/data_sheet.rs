@@ -1,6 +1,6 @@
 ﻿use crate::data::*;
 
-pub trait Loader {
+pub trait SheetLoader {
     fn load(&self, path: String) -> Result<Vec<DataSheet>, String>;
 }
 
