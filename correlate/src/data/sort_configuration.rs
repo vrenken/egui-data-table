@@ -2,7 +2,7 @@
 use crate::data::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct SortConfig {
+pub struct SortConfiguration {
     pub column_name: String,
     pub is_ascending: bool,
 }

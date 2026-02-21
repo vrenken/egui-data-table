@@ -16,8 +16,8 @@ pub use column_configuration::*;
 pub mod config;
 pub use config::*;
 
-pub mod source_config;
-pub use source_config::*;
+pub mod sort_configuration;
+pub use sort_configuration::*;
 
 pub mod renaming_target;
 pub use renaming_target::*;

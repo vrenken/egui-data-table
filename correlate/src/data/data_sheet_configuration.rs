@@ -7,7 +7,7 @@ pub struct DataSheetConfiguration {
     #[serde(default, rename = "display_name")]
     pub display_name: Option<String>,
     pub column_configs: Vec<ColumnConfiguration>,
-    pub sort_config: Option<SortConfig>,
+    pub sort_config: Option<SortConfiguration>,
     #[serde(default)]
     pub cell_values: Vec<CellValueConfiguration>,
 }
