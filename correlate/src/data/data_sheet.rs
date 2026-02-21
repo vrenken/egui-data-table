@@ -2,24 +2,6 @@
 
 pub trait SheetLoader {
     fn load(&self, path: String) -> Result<Vec<DataSheet>, String>;
-
-    fn load_companion_config(&self, path: &str) -> (std::path::PathBuf, Option<SourceConfig>) {
-        let companion_path = DataSource::get_companion_path(path);
-        let source_config = SourceConfig::load(&companion_path).ok();
-        (companion_path, source_config)
-    }
-
-    fn save_initial_config(&self, companion_path: &std::path::Path, source_config: &Option<SourceConfig>, custom_name: Option<String>, sheet_configs: Vec<SheetConfig>) {
-        if source_config.is_none() {
-            let new_config = SourceConfig {
-                name: custom_name,
-                sheets: sheet_configs,
-            };
-            if let Err(e) = new_config.save(companion_path) {
-                log::error!("Failed to save companion config to {:?}: {}", companion_path, e);
-            }
-        }
-    }
 }
 
 #[derive(Clone)]

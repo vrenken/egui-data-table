@@ -14,8 +14,8 @@ impl SheetLoader for ExcelSheet {
     fn load(&self, path: String) -> Result<Vec<DataSheet>, String> {
         let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
 
-        let (companion_path, source_config) = self.load_companion_config(&path);
-        let custom_name = source_config.as_ref().and_then(|sc| sc.name.clone());
+        let mut source_config = SourceConfig::load(&path);
+        let custom_name = source_config.name.clone();
 
         let mut data_sheets = Vec::new();
         let mut sheet_configs = Vec::new();
@@ -40,8 +40,7 @@ impl SheetLoader for ExcelSheet {
                 raw_rows.push(row);
             }
 
-            let config_sheet = source_config.as_ref()
-                .and_then(|sc| sc.sheets.iter().find(|s| s.name == sheet_name));
+            let config_sheet = source_config.sheets.iter().find(|s| s.name == sheet_name);
 
             let (data_sheet, sheet_config) = DataSheet::new_from_raw_data(
                 sheet_name,
@@ -56,8 +55,10 @@ impl SheetLoader for ExcelSheet {
             sheet_configs.push(sheet_config);
         }
 
-        self.save_initial_config(&companion_path, &source_config, None, sheet_configs);
-
+        source_config.sheets = sheet_configs;
+        if let Err(e) = source_config.save() {
+            log::error!("Failed to save config for {}: {}", path, e);
+        }
         Ok(data_sheets)
     }
 }
