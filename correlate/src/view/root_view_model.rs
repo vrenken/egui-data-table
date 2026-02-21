@@ -199,7 +199,7 @@ impl RootViewModel {
             RenamingTarget::Row(row_idx) => {
                 let name_col_idx = self.viewer.column_configs.iter().position(|c| c.is_name)
                     .or_else(|| self.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
-                    .or_else(|| self.viewer.column_configs.iter().position(|c| c.column_type == crate::data::ColumnType::Text))
+                    .or_else(|| self.viewer.column_configs.iter().position(|c| c.column_type == ColumnType::Text))
                     .unwrap_or(0);
 
                 if let Some(row) = self.table.get_mut(row_idx) {
