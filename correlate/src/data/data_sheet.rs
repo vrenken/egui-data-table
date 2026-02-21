@@ -1,4 +1,5 @@
 ﻿use crate::data::*;
+use crate::data::data_source_configuration::SourceConfig;
 
 pub trait SheetLoader {
     fn load(&self, path: String) -> Result<(Vec<DataSheet>, SourceConfig), String>;
