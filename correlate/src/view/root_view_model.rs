@@ -40,9 +40,9 @@ impl RootViewModel {
 
 
             let loader: Box<dyn Loader> = if extension == "csv" {
-                Box::new(crate::data::CsvSheet)
+                Box::new(CsvSheet)
             } else {
-                Box::new(crate::data::ExcelSheet)
+                Box::new(ExcelSheet)
             };
 
             let loaded = loader.load(source.clone());
