@@ -15,7 +15,7 @@ impl SheetLoader for ExcelSheet {
     fn load(&self, path: String) -> Result<Vec<DataSheet>, String> {
         let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
         
-        let companion_path = SourceConfig::get_companion_path(&path);
+        let companion_path = DataSource::get_companion_path(&path);
         let source_config = SourceConfig::load(&companion_path).ok();
         
         let custom_name = source_config.as_ref().and_then(|sc| sc.name.clone());

@@ -50,12 +50,12 @@ impl RootViewModel {
             match loaded {
                 Ok(loaded_sheets) => {
                     let custom_name = loaded_sheets.first().and_then(|s| s.custom_name.clone());
-                    data_sources.push(DataSource {
-                        path: source.to_string(),
-                        name: custom_name,
-                        sheets: loaded_sheets,
-                        selected_sheet_index: 0,
-                    });
+                    data_sources.push(DataSource::new(
+                        source.to_string(),
+                        custom_name,
+                        loaded_sheets,
+                        0,
+                    ));
                 }
                 Err(e) => {
                     log::error!("Failed to load {}: {}", source, e);
@@ -130,12 +130,12 @@ impl RootViewModel {
                     let custom_name = sheets.first().and_then(|s| s.custom_name.clone());
                     let new_index = self.data_sources.len();
 
-                    self.data_sources.push(DataSource {
-                        path: path_str.clone(),
-                        name: custom_name,
+                    self.data_sources.push(DataSource::new(
+                        path_str.clone(),
+                        custom_name,
                         sheets,
-                        selected_sheet_index: 0,
-                    });
+                        0,
+                    ));
 
                     self.switch_to_source(new_index, 0);
 

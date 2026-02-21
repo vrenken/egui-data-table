@@ -18,7 +18,7 @@ impl SheetLoader for CsvSheet {
             .unwrap_or("CSV Data")
             .to_string();
 
-        let companion_path = SourceConfig::get_companion_path(&path);
+        let companion_path = DataSource::get_companion_path(&path);
         let source_config = SourceConfig::load(&companion_path).ok();
         
         let custom_name = source_config.as_ref().and_then(|sc| sc.name.clone());

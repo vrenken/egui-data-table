@@ -1,14 +1,45 @@
-﻿use crate::data::*;
+﻿use std::path::{Path, PathBuf};
+use crate::data::*;
 
 #[derive(Clone)]
 pub struct DataSource {
     pub path: String,
+    pub companion_path: PathBuf,
     pub name: Option<String>,
     pub sheets: Vec<DataSheet>,
     pub selected_sheet_index: usize,
 }
 
 impl DataSource {
+    pub fn new(
+        path: String,
+        name: Option<String>,
+        sheets: Vec<DataSheet>,
+        selected_sheet_index: usize,
+    ) -> Self {
+        let companion_path = Self::get_companion_path(&path);
+
+        Self {
+            path,
+            companion_path,
+            name,
+            sheets,
+            selected_sheet_index,
+        }
+    }
+
+    pub fn get_companion_path<P: AsRef<Path>>(path: P) -> PathBuf {
+        let mut p = path.as_ref().to_path_buf();
+        let ext = p.extension().and_then(|e| e.to_str()).unwrap_or("");
+        let new_ext = if ext.is_empty() {
+            "correlate".to_string()
+        } else {
+            format!("{}.correlate", ext)
+        };
+        p.set_extension(new_ext);
+        p
+    }
+
     pub fn save(
         &mut self,
         column_configs: Vec<ColumnConfig>,
@@ -16,8 +47,6 @@ impl DataSource {
     ) -> Result<(), String> {
         self.sheets[self.selected_sheet_index].column_configs = column_configs;
         self.sheets[self.selected_sheet_index].table = table;
-
-        let companion_path = SourceConfig::get_companion_path(&self.path);
 
         let mut sheet_configs = Vec::new();
         for sheet in &mut self.sheets {
@@ -66,6 +95,6 @@ impl DataSource {
             name: self.name.clone(),
             sheets: sheet_configs,
         };
-        source_config.save(companion_path)
+        source_config.save(&self.companion_path)
     }
 }

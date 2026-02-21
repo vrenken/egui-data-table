@@ -1,6 +1,6 @@
 ﻿use serde::{Deserialize, Serialize};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use crate::data::ColumnConfig;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -45,17 +45,5 @@ impl SourceConfig {
         let content = serde_json::to_string_pretty(self).map_err(|e| e.to_string())?;
         fs::write(path, content).map_err(|e| e.to_string())?;
         Ok(())
-    }
-
-    pub fn get_companion_path<P: AsRef<Path>>(path: P) -> PathBuf {
-        let mut p = path.as_ref().to_path_buf();
-        let ext = p.extension().and_then(|e| e.to_str()).unwrap_or("");
-        let new_ext = if ext.is_empty() {
-            "correlate".to_string()
-        } else {
-            format!("{}.correlate", ext)
-        };
-        p.set_extension(new_ext);
-        p
     }
 }
