@@ -4,7 +4,7 @@
 pub struct DataSource {
     pub path: String,
     pub name: Option<String>,
-    pub config: SourceConfig,
+    pub config: DataSourceConfiguration,
     pub sheets: Vec<DataSheet>,
     pub selected_sheet_index: usize,
 }
@@ -13,7 +13,7 @@ impl DataSource {
     pub fn new(
         path: String,
         name: Option<String>,
-        config: SourceConfig,
+        config: DataSourceConfiguration,
         sheets: Vec<DataSheet>,
         selected_sheet_index: usize,
     ) -> Self {

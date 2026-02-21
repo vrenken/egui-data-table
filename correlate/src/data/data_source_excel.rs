@@ -11,10 +11,10 @@ impl Default for ExcelSheet {
 }
 
 impl SheetLoader for ExcelSheet {
-    fn load(&self, path: String) -> Result<(Vec<DataSheet>, SourceConfig), String> {
+    fn load(&self, path: String) -> Result<(Vec<DataSheet>, DataSourceConfiguration), String> {
         let book = reader::xlsx::read(&path).map_err(|e| e.to_string())?;
 
-        let mut source_config = SourceConfig::load(&path);
+        let mut source_config = DataSourceConfiguration::load(&path);
         let custom_name = source_config.name.clone();
 
         let mut data_sheets = Vec::new();

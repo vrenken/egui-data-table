@@ -11,14 +11,14 @@ impl Default for CsvSheet {
 }
 
 impl SheetLoader for CsvSheet {
-    fn load(&self, path: String) -> Result<(Vec<DataSheet>, SourceConfig), String> {
+    fn load(&self, path: String) -> Result<(Vec<DataSheet>, DataSourceConfiguration), String> {
         let file_name = std::path::Path::new(&path)
             .file_name()
             .and_then(|n| n.to_str())
             .unwrap_or("CSV Data")
             .to_string();
 
-        let mut source_config = SourceConfig::load(&path);
+        let mut source_config = DataSourceConfiguration::load(&path);
         let custom_name = source_config.name.clone();
 
         let mut data_sheets = Vec::new();

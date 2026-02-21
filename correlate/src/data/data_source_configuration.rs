@@ -3,15 +3,8 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 use crate::data::*;
 
-pub struct DataSourceConfiguration {
-    pub sheets: Vec<DataSheetConfiguration>,
-}
-
-impl DataSourceConfiguration {
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct SourceConfig {
+pub struct DataSourceConfiguration {
     #[serde(skip)]
     pub path: std::path::PathBuf,
     #[serde(default)]
@@ -19,7 +12,7 @@ pub struct SourceConfig {
     pub sheets: Vec<DataSheetConfiguration>,
 }
 
-impl SourceConfig {
+impl DataSourceConfiguration {
     fn calculate_path<P: AsRef<Path>>(source_path: P) -> std::path::PathBuf {
         let mut p = source_path.as_ref().to_path_buf();
         let ext = p.extension().and_then(|e| e.to_str()).unwrap_or("");
