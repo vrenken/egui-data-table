@@ -40,19 +40,22 @@ impl SheetLoader for ExcelSheet {
                 raw_rows.push(row);
             }
 
-            let config_sheet = source_config.sheets.iter().find(|s| s.name == sheet_name);
+            let sheet_config = source_config.sheets
+                .iter()
+                .find(|s| s.name == sheet_name)
+                .unwrap();
 
-            let (data_sheet, sheet_config) = DataSheet::new_from_raw_data(
+            let data_sheet = DataSheet::new_from_raw_data(
                 sheet_name,
                 custom_name.clone(),
                 egui_material_icons::icons::ICON_TABLE_CHART,
                 &headers,
                 &raw_rows,
-                config_sheet,
+                sheet_config,
             );
 
             data_sheets.push(data_sheet);
-            sheet_configs.push(sheet_config);
+            sheet_configs.push(sheet_config.clone());
         }
 
         source_config.sheets = sheet_configs;

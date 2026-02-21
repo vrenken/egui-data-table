@@ -42,19 +42,22 @@ impl SheetLoader for CsvSheet {
             raw_rows.push(row);
         }
 
-        let config_sheet = source_config.sheets.iter().find(|s| s.name == file_name);
+        let sheet_config = source_config.sheets
+            .iter()
+            .find(|s| s.name == file_name)
+            .unwrap();
 
-        let (data_sheet, sheet_config) = DataSheet::new_from_raw_data(
+        let data_sheet = DataSheet::new_from_raw_data(
             file_name,
             custom_name,
             egui_material_icons::icons::ICON_CSV,
             &headers,
             &raw_rows,
-            config_sheet,
+            &sheet_config,
         );
 
         data_sheets.push(data_sheet);
-        sheet_configs.push(sheet_config);
+        sheet_configs.push(sheet_config.clone());
 
         source_config.sheets = sheet_configs;
         if let Err(e) = source_config.save() {

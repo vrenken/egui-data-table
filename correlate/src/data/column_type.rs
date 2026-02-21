@@ -59,12 +59,12 @@ impl ColumnType {
         physical_value: Option<&str>,
         config: &ColumnConfiguration,
         row_key: Option<&str>,
-        stored_values: Option<&[CellValueConfiguration]>
+        stored_values: Vec<CellValueConfiguration>
     ) -> CellValue {
         if config.is_virtual {
             let mut val = "".to_string();
-            if let (Some(key), Some(stored)) = (row_key, stored_values) {
-                if let Some(cv) = stored.iter().find(|cv| cv.key == key && cv.column_name == config.name) {
+            if let Some(key) = row_key {
+                if let Some(cv) = stored_values.iter().find(|cv| cv.key == key && cv.column_name == config.name) {
                     val = cv.value.clone();
                 }
             }

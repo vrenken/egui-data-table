@@ -7,6 +7,7 @@ pub trait SheetLoader {
 #[derive(Clone)]
 pub struct DataSheet {
     pub name: String,
+    pub configuration: DataSheetConfiguration,
     pub custom_name: Option<String>,
     pub display_name: Option<String>,
     pub icon: &'static str,
@@ -20,13 +21,11 @@ impl DataSheet {
         icon: &'static str,
         raw_headers: &[String],
         raw_rows: &[Vec<String>],
-        config_sheet: Option<&DataSheetConfiguration>,
-    ) -> (Self, DataSheetConfiguration) {
-        let mut column_configs = config_sheet
-            .map(|s| s.column_configs.clone())
-            .unwrap_or_default();
+        config_sheet: &DataSheetConfiguration,
+    ) -> Self {
+        let mut column_configs = config_sheet.column_configs.clone();
 
-        let display_name = config_sheet.and_then(|s| s.display_name.clone());
+        let display_name = config_sheet.display_name.clone();
 
         // If not loaded from config, infer them
         if column_configs.is_empty() {
@@ -52,7 +51,7 @@ impl DataSheet {
         }
 
         let mut rows = Vec::new();
-        let cell_values = config_sheet.map(|s| &s.cell_values);
+        let cell_values = config_sheet.cell_values.clone();
 
         for row_data in raw_rows {
             // 1. First pass: get the physical key value if it exists
@@ -70,17 +69,19 @@ impl DataSheet {
                     None
                 };
 
-                cells.push(config.column_type.load(
+                let column_type = config.column_type.load(
                     physical_value,
                     config,
                     row_key.as_deref(),
-                    cell_values.map(|v| v.as_slice())
-                ));
+                    cell_values.clone(),
+                );
+                
+                cells.push(column_type);
             }
             rows.push(Row { cells });
         }
 
-        let sheet_config = DataSheetConfiguration {
+        let configuration = DataSheetConfiguration {
             name: name.clone(),
             display_name: display_name.clone(),
             column_configs: column_configs.clone(),
@@ -88,17 +89,15 @@ impl DataSheet {
             cell_values: Vec::new(),
         };
 
-        (
-            Self {
-                name,
-                custom_name,
-                display_name,
-                icon,
-                column_configs,
-                table: rows.into_iter().collect(),
-            },
-            sheet_config,
-        )
+        Self {
+            name,
+            configuration: configuration.clone(),
+            custom_name,
+            display_name,
+            icon,
+            column_configs,
+            table: rows.into_iter().collect(),
+        }
     }
 
     fn get_row_key(column_configs: &Vec<ColumnConfiguration>, row_data: &Vec<String>) -> Option<String> {
