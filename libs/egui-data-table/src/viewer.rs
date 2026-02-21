@@ -329,8 +329,8 @@ pub trait RowViewer<R>: 'static {
     }
 
     /// Return hotkeys for the current context.
-    fn hotkeys(&mut self, context: &UiActionContext) -> Vec<(egui::KeyboardShortcut, UiAction)> {
-        self::default_hotkeys(context)
+    fn hotkeys(&mut self, context: &UiActionContext) -> Vec<(KeyboardShortcut, UiAction)> {
+        default_hotkeys(context)
     }
 
     /// If you want to keep UI state on storage(i.e. persist over sessions), return true from this
@@ -468,10 +468,10 @@ pub enum MoveDirection {
 pub fn default_hotkeys(context: &UiActionContext) -> Vec<(KeyboardShortcut, UiAction)> {
     let c = context.cursor;
 
-    fn shortcut(actions: &[(Modifiers, Key, UiAction)]) -> Vec<(egui::KeyboardShortcut, UiAction)> {
+    fn shortcut(actions: &[(Modifiers, Key, UiAction)]) -> Vec<(KeyboardShortcut, UiAction)> {
         actions
             .iter()
-            .map(|(m, k, a)| (egui::KeyboardShortcut::new(*m, *k), *a))
+            .map(|(m, k, a)| (KeyboardShortcut::new(*m, *k), *a))
             .collect()
     }
 

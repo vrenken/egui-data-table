@@ -1636,7 +1636,7 @@ impl<R> UiState<R> {
         VisLinearIdx(nr * self.p.vis_cols.len() + nc)
     }
 
-    pub fn cci_take_selection(&mut self, mods: egui::Modifiers) -> Option<Vec<VisSelection>> {
+    pub fn cci_take_selection(&mut self, mods: Modifiers) -> Option<Vec<VisSelection>> {
         let ncol = self.p.vis_cols.len();
         let cci_sel = self
             .cci_selection

@@ -25,16 +25,16 @@ mod tsv;
 #[non_exhaustive]
 pub struct Style {
     /// Background color override for selection. Default uses `visuals.selection.bg_fill`.
-    pub bg_selected_cell: Option<egui::Color32>,
+    pub bg_selected_cell: Option<Color32>,
 
     /// Background color override for selected cell. Default uses `visuals.selection.bg_fill`.
-    pub bg_selected_highlight_cell: Option<egui::Color32>,
+    pub bg_selected_highlight_cell: Option<Color32>,
 
     /// Foreground color override for selected cell. Default uses `visuals.strong_text_colors`.
-    pub fg_selected_highlight_cell: Option<egui::Color32>,
+    pub fg_selected_highlight_cell: Option<Color32>,
 
     /// Foreground color for cells that are going to be selected when mouse is dropped.
-    pub fg_drag_selection: Option<egui::Color32>,
+    pub fg_drag_selection: Option<Color32>,
 
     /* ·························································································· */
     /// Maximum number of undo history. This is applied when actual action is performed.
@@ -50,11 +50,11 @@ pub struct Style {
     pub single_click_edit_mode: bool,
 
     /// How to align cell contents. Default is left-aligned.
-    pub cell_align: egui::Align,
+    pub cell_align: Align,
 
     /// Color to use for the stroke above/below focused row.
     /// If `None`, defaults to a darkened `warn_fg_color`.
-    pub focused_row_stroke: Option<egui::Color32>,
+    pub focused_row_stroke: Option<Color32>,
 
     /// See [`ScrollArea::auto_shrink`] for details.
     pub auto_shrink: Vec2b,
@@ -190,7 +190,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
             .columns(Column::auto(), s.num_columns() - s.vis_cols().len())
             .drag_to_scroll(false) // Drag is used for selection;
             .striped(true)
-            .cell_layout(egui::Layout::default().with_cross_align(self.style.cell_align))
+            .cell_layout(Layout::default().with_cross_align(self.style.cell_align))
             .max_scroll_height(f32::MAX)
             .auto_shrink(self.style.auto_shrink)
             .scroll_bar_visibility(self.style.scroll_bar_visibility)
@@ -442,7 +442,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                 let s_cci_has_focus = s.cci_has_focus;
                 let s_cci_has_selection = s.has_cci_selection();
 
-                move |rect: &Rect, resp: &egui::Response| {
+                move |rect: &Rect, resp: &Response| {
                     let cci_hovered: bool = s_cci_has_focus
                         && s_cci_has_selection
                         && rect
@@ -476,7 +476,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                     &table.rows[row_id.0],
                 );
 
-                let head_resp = ui.interact(ui.max_rect(), ui.id(), egui::Sense::click());
+                let head_resp = ui.interact(ui.max_rect(), ui.id(), Sense::click());
                 if head_resp.double_clicked() {
                     viewer.row_header_double_clicked(ui.ctx(), row_id.0, &table.rows[row_id.0]);
                 }
