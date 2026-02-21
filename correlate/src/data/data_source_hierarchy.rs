@@ -55,7 +55,7 @@ impl DataSource {
                         .clone();
 
                     if renaming_this_sheet {
-                        Project::ui_item_as_editable(
+                        Rename::ui_item_as_editable(
                             ui,
                             view_model,
                             Rename::Sheet(ds_idx, sheet_idx),
@@ -64,7 +64,7 @@ impl DataSource {
                             &sheet_display_name,
                         );
                     } else {
-                        Project::ui_item_as_selectable(
+                        Rename::ui_item_as_selectable(
                             ui,
                             Rename::Sheet(ds_idx, sheet_idx),
                             selected,
@@ -88,10 +88,10 @@ impl DataSource {
                 let mut rect = header_res.header_response.rect;
                 rect.min.x += 20.0; // Offset for icon
                 header_res.header_response.context_menu(|ui| {
-                    Project::ui_item_context_menu(ui, Rename::DataSource(ds_idx));
+                    Rename::ui_item_context_menu(ui, Rename::DataSource(ds_idx));
                 });
                 ui.scope_builder(egui::UiBuilder::new().max_rect(rect), |ui| {
-                    Project::ui_item_as_editable(
+                    Rename::ui_item_as_editable(
                         ui,
                         view_model,
                         Rename::DataSource(ds_idx),
@@ -102,7 +102,7 @@ impl DataSource {
                 });
             } else {
                 header_res.header_response.context_menu(|ui| {
-                    Project::ui_item_context_menu(ui, Rename::DataSource(ds_idx));
+                    Rename::ui_item_context_menu(ui, Rename::DataSource(ds_idx));
                 });
 
                 if header_res.header_response.clicked() {
@@ -121,7 +121,7 @@ impl DataSource {
                 renaming_target_opt.map_or(false, |t| t == Rename::DataSource(ds_idx));
 
             if renaming_this_ds {
-                Project::ui_item_as_editable(
+                Rename::ui_item_as_editable(
                     ui,
                     view_model,
                     Rename::DataSource(ds_idx),
@@ -130,7 +130,7 @@ impl DataSource {
                     &ds_display_name,
                 );
             } else {
-                Project::ui_item_as_selectable(
+                Rename::ui_item_as_selectable(
                     ui,
                     Rename::DataSource(ds_idx),
                     selected,
