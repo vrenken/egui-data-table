@@ -41,7 +41,7 @@ pub mod data_source_hierarchy;
 //pub use data_source_hierarchy::*;
 
 pub mod data_sheet_configuration;
-//pub use data_sheet_configuration::*;
+pub use data_sheet_configuration::*;
 
 pub mod data_sheet_hierarchy;
 //pub use data_sheet_hierarchy::*;
