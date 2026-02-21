@@ -19,8 +19,8 @@ pub use configuration::*;
 pub mod sort_configuration;
 pub use sort_configuration::*;
 
-pub mod renaming_target;
-pub use renaming_target::*;
+pub mod renaming;
+pub use renaming::*;
 
 pub mod data_source;
 pub use data_source::*;
