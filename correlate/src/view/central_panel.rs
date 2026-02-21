@@ -78,6 +78,32 @@ impl CentralPanel {
                 }
             });
         }
+
+        let trash_project_index = ctx.data(|d| d.get_temp::<Option<usize>>(egui::Id::new("trash_project_index"))).flatten();
+        if let Some(project_idx) = trash_project_index {
+            egui::Modal::new(egui::Id::new("confirm_trash_project_modal")).show(ctx, |ui| {
+                ui.set_width(300.0);
+                ui.heading("Confirm Delete Project");
+                let project_name = view_model.config.projects.as_ref()
+                    .and_then(|p| p.get(project_idx))
+                    .map(|p| p.name.clone())
+                    .unwrap_or_else(|| "Unknown Project".to_string());
+                ui.label(format!("Are you sure you want to delete the project '{}'?", project_name));
+                ui.add_space(10.0);
+                ui.horizontal(|ui| {
+                    if ui.button("Yes, Delete").clicked() {
+                        view_model.remove_project(project_idx);
+                        ctx.data_mut(|d| d.insert_temp(egui::Id::new("trash_project_index"), None::<usize>));
+                    }
+                    if ui.button("Cancel").clicked() {
+                        ctx.data_mut(|d| d.insert_temp(egui::Id::new("trash_project_index"), None::<usize>));
+                    }
+                });
+                if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                    ctx.data_mut(|d| d.insert_temp(egui::Id::new("trash_project_index"), None::<usize>));
+                }
+            });
+        }
     }
 
     pub fn ui_row_context_menu(viewer: &mut RowView, ui: &mut egui::Ui, column: usize) {

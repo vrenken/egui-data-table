@@ -1,4 +1,4 @@
-﻿use crate::data::{Configuration, RenamingTarget, Row};
+﻿use crate::data::{Configuration, Rename, Row};
 use crate::data::*;
 use crate::view::*;
 
@@ -155,6 +155,28 @@ impl RootViewModel {
         }
     }
 
+    pub fn add_project(&mut self) {
+        let projects = self.config.projects.get_or_insert_with(Vec::new);
+        projects.push(ProjectConfiguration {
+            name: format!("New Project {}", projects.len() + 1),
+            data_sources: Vec::new(),
+        });
+        if let Err(e) = self.config.save() {
+            log::error!("Failed to save config after adding project: {}", e);
+        }
+    }
+
+    pub fn remove_project(&mut self, index: usize) {
+        if let Some(projects) = self.config.projects.as_mut() {
+            if index < projects.len() {
+                projects.remove(index);
+                if let Err(e) = self.config.save() {
+                    log::error!("Failed to save config after removing project: {}", e);
+                }
+            }
+        }
+    }
+
     pub fn switch_to_source(&mut self, index: usize, sheet_idx: usize) {
         // Save current table state back to its source
         if let Some(old_idx) = self.selected_index {
@@ -183,39 +205,15 @@ impl RootViewModel {
         }
     }
 
-    pub fn apply_rename(&mut self, target: RenamingTarget, new_name: String) {
-        match target {
-            RenamingTarget::DataSource(ds_idx) => {
-                if let Some(ds) = self.data_sources.get_mut(ds_idx) {
-                    ds.name = if new_name.is_empty() { None } else { Some(new_name) };
-                }
-            }
-            RenamingTarget::Sheet(ds_idx, sheet_idx) => {
-                if let Some(ds) = self.data_sources.get_mut(ds_idx) {
-                    if let Some(sheet) = ds.sheets.get_mut(sheet_idx) {
-                        sheet.display_name = if new_name.is_empty() || new_name == sheet.name { None } else { Some(new_name) };
-                    }
-                }
-            }
-            RenamingTarget::Row(row_idx) => {
-                let name_col_idx = self.viewer.column_configs.iter().position(|c| c.is_name)
-                    .or_else(|| self.viewer.column_configs.iter().position(|c| c.name.contains("Name")))
-                    .or_else(|| self.viewer.column_configs.iter().position(|c| c.column_type == ColumnType::Text))
-                    .unwrap_or(0);
-
-                if let Some(row) = self.table.get_mut(row_idx) {
-                    row.cells[name_col_idx] = CellValue::from(new_name);
-                }
-            }
-            RenamingTarget::Column(col_idx) => {
-                if let Some(config) = self.viewer.column_configs.get_mut(col_idx) {
-                    config.display_name = if new_name.is_empty() || new_name == config.name { None } else { Some(new_name) };
-                    if config.is_virtual {
-                        config.name = config.display_name.clone().unwrap_or_else(|| config.name.clone());
-                    }
-                }
-            }
-        }
+    pub fn apply_rename(&mut self, target: Rename, new_name: String) {
+        Rename::apply(
+            target,
+            new_name,
+            &mut self.config,
+            &mut self.data_sources,
+            &mut self.table,
+            &mut self.viewer.column_configs,
+        );
         self.save_datasource_configuration();
     }
 }

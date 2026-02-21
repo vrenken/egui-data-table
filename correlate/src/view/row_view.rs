@@ -264,34 +264,28 @@ impl RowViewer<Row> for RowView {
         println!("row removed. row_id: {}, values: {:?}", row_index, row);
     }
 
-    fn on_rename_committed(&mut self, table: &mut egui_data_table::DataTable<Row>, target: egui_data_table::viewer::RenameTarget, new_name: String) {
+    fn on_rename_committed(
+        &mut self,
+        table: &mut egui_data_table::DataTable<Row>,
+        target: egui_data_table::viewer::RenameTarget,
+        new_name: String,
+    ) {
         let renaming_target = match target {
-            egui_data_table::viewer::RenameTarget::Row(idx) => Some(RenamingTarget::Row(idx)),
-            egui_data_table::viewer::RenameTarget::Column(idx) => Some(RenamingTarget::Column(idx)),
+            egui_data_table::viewer::RenameTarget::Row(idx) => Some(Rename::Row(idx)),
+            egui_data_table::viewer::RenameTarget::Column(idx) => Some(Rename::Column(idx)),
             _ => None,
         };
 
         if let Some(renaming_target) = renaming_target {
-            match renaming_target {
-                RenamingTarget::Row(row_idx) => {
-                    let name_col_idx = ColumnConfiguration::find_name_column_index(&self.column_configs);
-
-                    if let Some(row) = table.get_mut(row_idx) {
-                        row.cells[name_col_idx] = CellValue::from(new_name);
-                        table.mark_as_modified();
-                    }
-                }
-                RenamingTarget::Column(col_idx) => {
-                    if let Some(config) = self.column_configs.get_mut(col_idx) {
-                        config.display_name = if new_name.is_empty() || new_name == config.name { None } else { Some(new_name) };
-                        if config.is_virtual {
-                            config.name = config.display_name.clone().unwrap_or_else(|| config.name.clone());
-                        }
-                        table.mark_as_modified();
-                    }
-                }
-                _ => {}
-            }
+            Rename::apply(
+                renaming_target,
+                new_name,
+                &mut self.config,
+                &mut self.data_sources,
+                table,
+                &mut self.column_configs,
+            );
+            table.mark_as_modified();
         }
     }
 
@@ -363,11 +357,11 @@ impl RowViewer<Row> for RowView {
     }
 
     fn row_header_double_clicked(&mut self, ctx: &egui::Context, row_idx: usize, _row: &Row) {
-        ctx.data_mut(|d| d.insert_temp(egui::Id::new("renaming_target"), RenamingTarget::Row(row_idx)));
+        ctx.data_mut(|d| d.insert_temp(egui::Id::new("renaming_target"), Rename::Row(row_idx)));
     }
 
     fn column_header_double_clicked(&mut self, ctx: &egui::Context, column: usize) {
-        ctx.data_mut(|d| d.insert_temp(egui::Id::new("renaming_target"), RenamingTarget::Column(column)));
+        ctx.data_mut(|d| d.insert_temp(egui::Id::new("renaming_target"), Rename::Column(column)));
     }
 
     fn show_column_header(&mut self, ui: &mut egui::Ui, column: usize) {
@@ -375,8 +369,8 @@ impl RowViewer<Row> for RowView {
     }
 
     fn show_row_header(&mut self, ui: &mut egui::Ui, row_idx: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize, row: &Row) -> Option<(egui_data_table::viewer::RenameTarget, String)> {
-        let renaming_target = ui.data(|d| d.get_temp::<RenamingTarget>(egui::Id::new("renaming_target")));
-        let renaming_this_row = renaming_target.map_or(false, |t| t == RenamingTarget::Row(row_idx));
+        let renaming_target = ui.data(|d| d.get_temp::<Rename>(egui::Id::new("renaming_target")));
+        let renaming_this_row = renaming_target.map_or(false, |t| t == Rename::Row(row_idx));
         let mut committed = None;
 
         if renaming_this_row {
@@ -390,12 +384,12 @@ impl RowViewer<Row> for RowView {
             if res.lost_focus() || ui.input(|i| i.key_pressed(Key::Enter)) {
                 committed = Some((egui_data_table::viewer::RenameTarget::Row(row_idx), current_name.clone()));
                 ui.data_mut(|d| {
-                    d.remove::<RenamingTarget>(egui::Id::new("renaming_target"));
+                    d.remove::<Rename>(egui::Id::new("renaming_target"));
                     d.remove::<String>(ui.id().with("rename"));
                 });
             } else if ui.input(|i| i.key_pressed(Key::Escape)) {
                 ui.data_mut(|d| {
-                    d.remove::<RenamingTarget>(egui::Id::new("renaming_target"));
+                    d.remove::<Rename>(egui::Id::new("renaming_target"));
                     d.remove::<String>(ui.id().with("rename"));
                 });
             } else {

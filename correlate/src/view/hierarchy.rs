@@ -1,4 +1,4 @@
-﻿use egui::{Sense, Widget};
+﻿use egui::*;
 use crate::view::*;
 use crate::data::*;
 
@@ -17,12 +17,63 @@ impl HierarchyPanel {
                     ui.heading("Project");
                     ui.separator();
 
-                    let header_res = egui::collapsing_header::CollapsingHeader::new(format!("{} Data sources", egui_material_icons::icons::ICON_FOLDER))
+                    let header_res = CollapsingHeader::new(format!("{} Projects", egui_material_icons::icons::ICON_FOLDER))
                         .default_open(true)
                         .show(ui, |ui| {
                             
                             let renaming_target_id = egui::Id::new("renaming_target");
-                            let renaming_target_opt = ui.data(|d| d.get_temp::<RenamingTarget>(renaming_target_id));
+                            let renaming_target_opt = ui.data(|d| d.get_temp::<Rename>(renaming_target_id));
+
+                            if let Some(projects) = view_model.config.projects.clone() {
+                                for project_idx in 0..projects.len() {
+                                    let project = &projects[project_idx];
+                                    let renaming_this_project = renaming_target_opt.map_or(false, |t| t == Rename::Project(project_idx));
+
+                                    if renaming_this_project {
+                                        ui.horizontal(|ui| {
+                                            ui.label(format!("{} ", egui_material_icons::icons::ICON_ASSIGNMENT));
+                                            let rename_id = ui.id().with("rename_project");
+                                            let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(project.name.clone()));
+                                            let res = ui.text_edit_singleline(&mut current_name);
+                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                                view_model.apply_rename(Rename::Project(project_idx), current_name.clone());
+                                                ui.data_mut(|d| {
+                                                    d.remove::<Rename>(renaming_target_id);
+                                                    d.remove::<String>(rename_id);
+                                                });
+                                            } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                                ui.data_mut(|d| {
+                                                    d.remove::<Rename>(renaming_target_id);
+                                                    d.remove::<String>(rename_id);
+                                                });
+                                            } else {
+                                                ui.data_mut(|d| d.insert_temp(rename_id, current_name));
+                                            }
+                                            res.request_focus();
+                                        });
+                                    } else {
+                                        let res = ui.selectable_label(false, format!("{} {}", egui_material_icons::icons::ICON_ASSIGNMENT, project.name));
+                                        
+                                        res.context_menu(|ui| {
+                                            if ui.button("Rename").clicked() {
+                                                ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::Project(project_idx)));
+                                                ui.close();
+                                            }
+                                            if ui.button("Remove").clicked() {
+                                                ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_project_index"), Some(project_idx)));
+                                                ui.close();
+                                            }
+                                        });
+
+                                        if res.double_clicked() {
+                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::Project(project_idx)));
+                                        }
+                                    }
+                                }
+                            }
+
+                            ui.add_space(10.0);
+                            ui.label("Data sources:");
 
                             for index in 0..view_model.data_sources.len() {
                                 let ds = &view_model.data_sources[index];
@@ -40,7 +91,7 @@ impl HierarchyPanel {
                                     let mut header = egui::collapsing_header::CollapsingHeader::new(format!("{} {}", icon, ds_display_name))
                                         .default_open(true);
                                     
-                                    let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == RenamingTarget::DataSource(index));
+                                    let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == Rename::DataSource(index));
 
                                     if renaming_this_ds {
                                         header = egui::collapsing_header::CollapsingHeader::new(format!("{} ", icon));
@@ -50,8 +101,8 @@ impl HierarchyPanel {
                                             for sheet_idx in 0..view_model.data_sources[index].sheets.len() {
                                                 let selected = view_model.selected_index == Some(index) && view_model.data_sources[index].selected_sheet_index == sheet_idx;
                                                 let renaming_target_id = egui::Id::new("renaming_target");
-                                                let renaming_target_opt = ui.data(|d| d.get_temp::<RenamingTarget>(renaming_target_id));
-                                                let renaming_this_sheet = renaming_target_opt.map_or(false, |t| t == RenamingTarget::Sheet(index, sheet_idx));
+                                                let renaming_target_opt = ui.data(|d| d.get_temp::<Rename>(renaming_target_id));
+                                                let renaming_this_sheet = renaming_target_opt.map_or(false, |t| t == Rename::Sheet(index, sheet_idx));
 
                                                 let sheet_display_name = view_model.data_sources[index].sheets[sheet_idx].display_name.as_ref().unwrap_or(&view_model.data_sources[index].sheets[sheet_idx].name).clone();
 
@@ -64,14 +115,14 @@ impl HierarchyPanel {
 
                                                         let res = ui.text_edit_singleline(&mut current_name);
                                                         if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
-                                                            view_model.apply_rename(RenamingTarget::Sheet(index, sheet_idx), current_name.clone());
+                                                            view_model.apply_rename(Rename::Sheet(index, sheet_idx), current_name.clone());
                                                             ui.data_mut(|d| {
-                                                                d.remove::<RenamingTarget>(renaming_target_id);
+                                                                d.remove::<Rename>(renaming_target_id);
                                                                 d.remove::<String>(rename_id);
                                                             });
                                                         } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
                                                             ui.data_mut(|d| {
-                                                                d.remove::<RenamingTarget>(renaming_target_id);
+                                                                d.remove::<Rename>(renaming_target_id);
                                                                 d.remove::<String>(rename_id);
                                                             });
                                                         } else {
@@ -91,7 +142,7 @@ impl HierarchyPanel {
                                                     }
 
                                                     if res.double_clicked() {
-                                                        ui.data_mut(|d| d.insert_temp(renaming_target_id, RenamingTarget::Sheet(index, sheet_idx)));
+                                                        ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::Sheet(index, sheet_idx)));
                                                     }
                                                 }
                                             }
@@ -105,14 +156,14 @@ impl HierarchyPanel {
                                             let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
                                             let res = ui.text_edit_singleline(&mut current_name);
                                             if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
-                                                view_model.apply_rename(RenamingTarget::DataSource(index), current_name.clone());
+                                                view_model.apply_rename(Rename::DataSource(index), current_name.clone());
                                                 ui.data_mut(|d| {
-                                                    d.remove::<RenamingTarget>(renaming_target_id);
+                                                    d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
                                                 });
                                             } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
                                                 ui.data_mut(|d| {
-                                                    d.remove::<RenamingTarget>(renaming_target_id);
+                                                    d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
                                                 });
                                             } else {
@@ -128,14 +179,14 @@ impl HierarchyPanel {
                                             }
                                         }
                                         if header_res.header_response.double_clicked() {
-                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, RenamingTarget::DataSource(index)));
+                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
                                         }
                                     }
                                 } else {
                                     let selected = view_model.selected_index == Some(index);
                                     let renaming_target_id = egui::Id::new("renaming_target");
-                                    let renaming_target_opt = ui.data(|d| d.get_temp::<RenamingTarget>(renaming_target_id));
-                                    let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == RenamingTarget::DataSource(index));
+                                    let renaming_target_opt = ui.data(|d| d.get_temp::<Rename>(renaming_target_id));
+                                    let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == Rename::DataSource(index));
 
                                     if renaming_this_ds {
                                         ui.horizontal(|ui| {
@@ -144,14 +195,14 @@ impl HierarchyPanel {
                                             let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
                                             let res = ui.text_edit_singleline(&mut current_name);
                                             if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
-                                                view_model.apply_rename(RenamingTarget::DataSource(index), current_name.clone());
+                                                view_model.apply_rename(Rename::DataSource(index), current_name.clone());
                                                 ui.data_mut(|d| {
-                                                    d.remove::<RenamingTarget>(renaming_target_id);
+                                                    d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
                                                 });
                                             } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
                                                 ui.data_mut(|d| {
-                                                    d.remove::<RenamingTarget>(renaming_target_id);
+                                                    d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
                                                 });
                                             } else {
@@ -171,7 +222,7 @@ impl HierarchyPanel {
                                         }
 
                                         if res.double_clicked() {
-                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, RenamingTarget::DataSource(index)));
+                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
                                         }
                                     }
                                 }
@@ -183,6 +234,11 @@ impl HierarchyPanel {
                         });
 
                     header_res.header_response.context_menu(|ui| {
+                        if ui.button("Add project").clicked() {
+                            view_model.add_project();
+                            ui.close();
+                        }
+                        ui.separator();
                         if let Some(path) = Self::ui_hierarchy_panel_context_menu(ui) {
                             view_model.pending_file_to_add = Some(path);
                         }
