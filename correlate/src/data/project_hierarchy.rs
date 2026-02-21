@@ -10,8 +10,7 @@ impl Project {
         renaming_target_opt: Option<Rename>,
         view_model: &mut RootViewModel,
     ) {
-        let renaming_this_project =
-            renaming_target_opt.map_or(false, |t| t == Rename::Project(project_idx));
+        let renaming_this_project = renaming_target_opt.map_or(false, |t| t == Rename::Project(project_idx));
 
         if renaming_this_project {
             Rename::ui_item_as_editable(
