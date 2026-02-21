@@ -6,6 +6,96 @@ use crate::data::*;
 pub struct HierarchyPanel {}
 
 impl HierarchyPanel {
+    fn ui_item_context_menu(ui: &mut Ui, target: Rename) {
+        let renaming_target_id = Id::new("renaming_target");
+        if ui.button("Rename").clicked() {
+            ui.data_mut(|d| d.insert_temp(renaming_target_id, target));
+            ui.close();
+        }
+        match target {
+            Rename::Project(index) => {
+                if ui.button("Remove").clicked() {
+                    ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_project_index"), Some(index)));
+                    ui.close();
+                }
+            }
+            Rename::DataSource(index) => {
+                if ui.button("Remove").clicked() {
+                    ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
+                    ui.close();
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn ui_item_as_editable(
+        ui: &mut Ui,
+        view_model: &mut RootViewModel,
+        target: Rename,
+        rename_id: Id,
+        icon: &str,
+        current_name: &str,
+    ) {
+        let renaming_target_id = Id::new("renaming_target");
+        ui.horizontal(|ui| {
+            ui.label(format!("{} ", icon));
+            let mut name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or_else(|| current_name.to_string()));
+            let res = ui.text_edit_singleline(&mut name);
+
+            res.context_menu(|ui| {
+                Self::ui_item_context_menu(ui, target);
+            });
+
+            if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
+                view_model.apply_rename(target, name.clone());
+                ui.data_mut(|d| {
+                    d.remove::<Rename>(renaming_target_id);
+                    d.remove::<String>(rename_id);
+                });
+            } else if ui.input(|i| i.key_pressed(Key::Escape)) {
+                ui.data_mut(|d| {
+                    d.remove::<Rename>(renaming_target_id);
+                    d.remove::<String>(rename_id);
+                });
+            } else {
+                ui.data_mut(|d| d.insert_temp(rename_id, name));
+            }
+            res.request_focus();
+        });
+    }
+
+    fn ui_item_as_selectable(
+        &self,
+        ui: &mut Ui,
+        target: Rename,
+        selected: bool,
+        icon: &str,
+        display_name: &str,
+        hover_text: Option<&str>,
+        on_click: impl FnOnce(),
+    ) {
+        let renaming_target_id = Id::new("renaming_target");
+        let res = ui.selectable_label(selected, format!("{} {}", icon, display_name));
+        let res = if let Some(hover) = hover_text {
+            res.on_hover_text(hover)
+        } else {
+            res
+        };
+
+        res.context_menu(|ui| {
+            Self::ui_item_context_menu(ui, target);
+        });
+
+        if res.clicked() {
+            on_click();
+        }
+
+        if res.double_clicked() {
+            ui.data_mut(|d| d.insert_temp(renaming_target_id, target));
+        }
+    }
+
     pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &Context) -> (Option<usize>, Option<usize>) {
         let mut newly_selected_index = None;
         let mut newly_selected_sheet_index = None;
@@ -30,44 +120,9 @@ impl HierarchyPanel {
                                     let renaming_this_project = renaming_target_opt.map_or(false, |t| t == Rename::Project(project_idx));
 
                                     if renaming_this_project {
-                                        ui.horizontal(|ui| {
-                                            ui.label(format!("{} ", egui_material_icons::icons::ICON_ASSIGNMENT));
-                                            let rename_id = ui.id().with("rename_project");
-                                            let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(project.name.clone()));
-                                            let res = ui.text_edit_singleline(&mut current_name);
-                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
-                                                view_model.apply_rename(Rename::Project(project_idx), current_name.clone());
-                                                ui.data_mut(|d| {
-                                                    d.remove::<Rename>(renaming_target_id);
-                                                    d.remove::<String>(rename_id);
-                                                });
-                                            } else if ui.input(|i| i.key_pressed(Key::Escape)) {
-                                                ui.data_mut(|d| {
-                                                    d.remove::<Rename>(renaming_target_id);
-                                                    d.remove::<String>(rename_id);
-                                                });
-                                            } else {
-                                                ui.data_mut(|d| d.insert_temp(rename_id, current_name));
-                                            }
-                                            res.request_focus();
-                                        });
+                                        Self::ui_item_as_editable(ui, view_model, Rename::Project(project_idx), ui.id().with("rename_project"), egui_material_icons::icons::ICON_ASSIGNMENT, &project.name);
                                     } else {
-                                        let res = ui.selectable_label(false, format!("{} {}", egui_material_icons::icons::ICON_ASSIGNMENT, project.name));
-                                        
-                                        res.context_menu(|ui| {
-                                            if ui.button("Rename").clicked() {
-                                                ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::Project(project_idx)));
-                                                ui.close();
-                                            }
-                                            if ui.button("Remove").clicked() {
-                                                ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_project_index"), Some(project_idx)));
-                                                ui.close();
-                                            }
-                                        });
-
-                                        if res.double_clicked() {
-                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::Project(project_idx)));
-                                        }
+                                        self.ui_item_as_selectable(ui, Rename::Project(project_idx), false, egui_material_icons::icons::ICON_ASSIGNMENT, &project.name, None, || {});
                                     }
                                 }
                             }
@@ -107,43 +162,14 @@ impl HierarchyPanel {
                                                 let sheet_display_name = view_model.data_sources[index].sheets[sheet_idx].display_name.as_ref().unwrap_or(&view_model.data_sources[index].sheets[sheet_idx].name).clone();
 
                                                 if renaming_this_sheet {
-                                                    ui.horizontal(|ui| {
-                                                        ui.label("  📄 ");
-                                                        
-                                                        let rename_id = ui.id().with("rename_sheet");
-                                                        let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(sheet_display_name.clone()));
-
-                                                        let res = ui.text_edit_singleline(&mut current_name);
-                                                        if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
-                                                            view_model.apply_rename(Rename::Sheet(index, sheet_idx), current_name.clone());
-                                                            ui.data_mut(|d| {
-                                                                d.remove::<Rename>(renaming_target_id);
-                                                                d.remove::<String>(rename_id);
-                                                            });
-                                                        } else if ui.input(|i| i.key_pressed(Key::Escape)) {
-                                                            ui.data_mut(|d| {
-                                                                d.remove::<Rename>(renaming_target_id);
-                                                                d.remove::<String>(rename_id);
-                                                            });
-                                                        } else {
-                                                            ui.data_mut(|d| d.insert_temp(rename_id, current_name));
-                                                        }
-                                                        res.request_focus();
-                                                    });
+                                                    Self::ui_item_as_editable(ui, view_model, Rename::Sheet(index, sheet_idx), ui.id().with("rename_sheet"), "  📄", &sheet_display_name);
                                                 } else {
-                                                    let res = ui.selectable_label(selected, format!("  📄 {}", sheet_display_name))
-                                                        .on_hover_text(&view_model.data_sources[index].path);
-                                    
-                                                    if res.clicked() {
+                                                    self.ui_item_as_selectable(ui, Rename::Sheet(index, sheet_idx), selected, "  📄", &sheet_display_name, Some(&view_model.data_sources[index].path), || {
                                                         if view_model.selected_index != Some(index) || view_model.data_sources[index].selected_sheet_index != sheet_idx {
                                                             newly_selected_index = Some(index);
                                                             newly_selected_sheet_index = Some(sheet_idx);
                                                         }
-                                                    }
-
-                                                    if res.double_clicked() {
-                                                        ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::Sheet(index, sheet_idx)));
-                                                    }
+                                                    });
                                                 }
                                             }
                                         });
@@ -152,45 +178,14 @@ impl HierarchyPanel {
                                         let mut rect = header_res.header_response.rect;
                                         rect.min.x += 20.0; // Offset for icon
                                         header_res.header_response.context_menu(|ui| {
-                                            if ui.button("Rename").clicked() {
-                                                ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
-                                                ui.close();
-                                            }
-                                            if ui.button("Remove").clicked() {
-                                                ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
-                                                ui.close();
-                                            }
+                                            Self::ui_item_context_menu(ui, Rename::DataSource(index));
                                         });
                                         ui.scope_builder(UiBuilder::new().max_rect(rect), |ui| {
-                                            let rename_id = ui.id().with("rename_ds");
-                                            let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
-                                            let res = ui.text_edit_singleline(&mut current_name);
-                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
-                                                view_model.apply_rename(Rename::DataSource(index), current_name.clone());
-                                                ui.data_mut(|d| {
-                                                    d.remove::<Rename>(renaming_target_id);
-                                                    d.remove::<String>(rename_id);
-                                                });
-                                            } else if ui.input(|i| i.key_pressed(Key::Escape)) {
-                                                ui.data_mut(|d| {
-                                                    d.remove::<Rename>(renaming_target_id);
-                                                    d.remove::<String>(rename_id);
-                                                });
-                                            } else {
-                                                ui.data_mut(|d| d.insert_temp(rename_id, current_name));
-                                            }
-                                            res.request_focus();
+                                            Self::ui_item_as_editable(ui, view_model, Rename::DataSource(index), ui.id().with("rename_ds"), "", &ds_display_name);
                                         });
                                     } else {
                                         header_res.header_response.context_menu(|ui| {
-                                            if ui.button("Rename").clicked() {
-                                                ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
-                                                ui.close();
-                                            }
-                                            if ui.button("Remove").clicked() {
-                                                ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
-                                                ui.close();
-                                            }
+                                            Self::ui_item_context_menu(ui, Rename::DataSource(index));
                                         });
 
                                         if header_res.header_response.clicked() {
@@ -210,64 +205,14 @@ impl HierarchyPanel {
                                     let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == Rename::DataSource(index));
 
                                     if renaming_this_ds {
-                                        ui.horizontal(|ui| {
-                                            ui.label(format!("{} ", icon));
-                                            let rename_id = ui.id().with("rename_ds");
-                                            let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
-                                            let res = ui.text_edit_singleline(&mut current_name);
-
-                                            res.context_menu(|ui| {
-                                                if ui.button("Rename").clicked() {
-                                                    ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
-                                                    ui.close();
-                                                }
-                                                if ui.button("Remove").clicked() {
-                                                    ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
-                                                    ui.close();
-                                                }
-                                            });
-
-                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
-                                                view_model.apply_rename(Rename::DataSource(index), current_name.clone());
-                                                ui.data_mut(|d| {
-                                                    d.remove::<Rename>(renaming_target_id);
-                                                    d.remove::<String>(rename_id);
-                                                });
-                                            } else if ui.input(|i| i.key_pressed(Key::Escape)) {
-                                                ui.data_mut(|d| {
-                                                    d.remove::<Rename>(renaming_target_id);
-                                                    d.remove::<String>(rename_id);
-                                                });
-                                            } else {
-                                                ui.data_mut(|d| d.insert_temp(rename_id, current_name));
-                                            }
-                                            res.request_focus();
-                                        });
+                                        Self::ui_item_as_editable(ui, view_model, Rename::DataSource(index), ui.id().with("rename_ds"), icon, &ds_display_name);
                                     } else {
-                                        let res = ui.selectable_label(selected, format!("{} {}", icon, ds_display_name))
-                                            .on_hover_text(&ds.path);
-
-                                        res.context_menu(|ui| {
-                                            if ui.button("Rename").clicked() {
-                                                ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
-                                                ui.close();
-                                            }
-                                            if ui.button("Remove").clicked() {
-                                                ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
-                                                ui.close();
-                                            }
-                                        });
-
-                                        if res.clicked() {
+                                        self.ui_item_as_selectable(ui, Rename::DataSource(index), selected, icon, &ds_display_name, Some(&ds.path), || {
                                             if view_model.selected_index != Some(index) {
                                                 newly_selected_index = Some(index);
                                                 newly_selected_sheet_index = Some(0);
                                             }
-                                        }
-
-                                        if res.double_clicked() {
-                                            ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
-                                        }
+                                        });
                                     }
                                 }
                             }
