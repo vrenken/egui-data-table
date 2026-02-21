@@ -1,11 +1,4 @@
 {
-  "data_sources": [
-    "correlate/test/data/cities/de.xlsx",
-    "correlate/test/data/cities/nl.xlsx",
-    "correlate/test/data/sheets/test.xlsx",
-    "correlate/test/data/sheets/test-multiple-sheets.xlsx",
-    "correlate/test/data/students/student-dataset.csv"
-  ],
   "selected_index": 6,
   "projects": [
     {

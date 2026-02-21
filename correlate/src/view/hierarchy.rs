@@ -32,32 +32,6 @@ impl HierarchyPanel {
                                     project.ui(ui, project_idx, renaming_target_opt, view_model, &mut newly_selected_index, &mut newly_selected_sheet_index);
                                 }
                             }
-
-                            ui.add_space(10.0);
-                            ui.label("Data sources:");
-
-                            let assigned_data_sources: std::collections::HashSet<String> = view_model.config.projects.as_ref()
-                                .map(|projects| projects.iter().flat_map(|p| p.data_sources.clone()).collect())
-                                .unwrap_or_default();
-
-                            let mut any_general_ds = false;
-                            for index in 0..view_model.data_sources.len() {
-                                if !assigned_data_sources.contains(&view_model.data_sources[index].path) {
-                                    any_general_ds = true;
-                                    view_model.data_sources[index].clone().ui(
-                                        ui,
-                                        index,
-                                        renaming_target_opt,
-                                        view_model,
-                                        &mut newly_selected_index,
-                                        &mut newly_selected_sheet_index
-                                    );
-                                }
-                            }
-
-                            if !any_general_ds {
-                                ui.label("No unassigned data sources");
-                            }
                         });
 
                     header_res.header_response.context_menu(|ui| {
@@ -71,35 +45,36 @@ impl HierarchyPanel {
                         }
                     });
 
-                    ui.add_space(20.);
+                    // ui.add_space(20.);
+                    //
+                    // ui.heading("Configuration");
+                    // ui.separator();
+                    //
+                    // if ui.button("💾 Save as default").clicked() {
+                    //     view_model.config.selected_index = view_model.selected_index;
+                    //     if let Err(e) = view_model.config.save() {
+                    //         log::error!("Failed to save config: {}", e);
+                    //     }
+                    //     // Also save .correlate files for all data sources
+                    //     for i in 0..view_model.data_sources.len() {
+                    //         view_model.save_source_config(i);
+                    //     }
+                    // }
 
-                    ui.heading("Configuration");
-                    ui.separator();
 
-                    if ui.button("💾 Save as default").clicked() {
-                        view_model.config.data_sources = view_model.data_sources.iter().map(|ds| ds.path.clone()).collect();
-                        view_model.config.selected_index = view_model.selected_index;
-                        if let Err(e) = view_model.config.save() {
-                            log::error!("Failed to save config: {}", e);
-                        }
-                        // Also save .correlate files for all data sources
-                        for i in 0..view_model.data_sources.len() {
-                            view_model.save_source_config(i);
-                        }
-                    }
 
-                    ui.add_space(20.);
-
-                    ui.heading("Hotkeys");
-                    ui.separator();
-                    ui.add_space(0.);
-                    for (k, a) in &view_model.viewer.hotkeys {
-                        Button::new(format!("{a:?}"))
-                            .shortcut_text(ctx.format_shortcut(k))
-                            .wrap_mode(TextWrapMode::Wrap)
-                            .sense(Sense::hover())
-                            .ui(ui);
-                    }
+                    // ui.add_space(20.);
+                    //
+                    // ui.heading("Hotkeys");
+                    // ui.separator();
+                    // ui.add_space(0.);
+                    // for (k, a) in &view_model.viewer.hotkeys {
+                    //     Button::new(format!("{a:?}"))
+                    //         .shortcut_text(ctx.format_shortcut(k))
+                    //         .wrap_mode(TextWrapMode::Wrap)
+                    //         .sense(Sense::hover())
+                    //         .ui(ui);
+                    // }
                 });
             });
 
@@ -108,7 +83,7 @@ impl HierarchyPanel {
 
     pub fn ui_hierarchy_panel_context_menu(ui: &mut Ui) -> Option<std::path::PathBuf> {
         let mut result = None;
-        if ui.button("Add data source").clicked() {
+        if ui.button("Add existing data source").clicked() {
             if let Some(path) = rfd::FileDialog::new()
                 .add_filter("Excel Files", &["xlsx"])
                 .add_filter("CSV Files", &["csv"])

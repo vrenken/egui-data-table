@@ -9,7 +9,6 @@ pub struct Configuration {
     #[serde(skip)]
     pub path: std::path::PathBuf,
 
-    pub data_sources: Vec<String>,
     pub selected_index: Option<usize>,
     pub projects: Option<Vec<ProjectConfiguration>>
 }
@@ -20,7 +19,6 @@ impl Configuration {
     ) -> Self {
         Self {
             path: source_path.as_ref().to_path_buf(),
-            data_sources: vec![],
             selected_index: Some(0),
             projects: Some(vec![])
         }

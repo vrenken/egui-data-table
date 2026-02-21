@@ -32,34 +32,36 @@ impl RootViewModel {
     pub fn default(config: Configuration) -> Self {
 
         let mut data_sources = Vec::new();
-        for source in &config.data_sources {
-            let extension = std::path::Path::new(source)
-                .extension()
-                .and_then(|e| e.to_str())
-                .unwrap_or("");
+        for project in config.projects.as_ref().unwrap_or(&Vec::new()) {
+            for source in &project.data_sources {
+                let extension = std::path::Path::new(source)
+                    .extension()
+                    .and_then(|e| e.to_str())
+                    .unwrap_or("");
 
 
-            let loader: Box<dyn SheetLoader> = if extension == "csv" {
-                Box::new(CsvSheet)
-            } else {
-                Box::new(ExcelSheet)
-            };
+                let loader: Box<dyn SheetLoader> = if extension == "csv" {
+                    Box::new(CsvSheet)
+                } else {
+                    Box::new(ExcelSheet)
+                };
 
-            let loaded = loader.load(source.clone());
+                let loaded = loader.load(source.clone());
 
-            match loaded {
-                Ok((loaded_sheets, source_config)) => {
-                    let custom_name = loaded_sheets.first().and_then(|s| s.custom_name.clone());
-                    data_sources.push(DataSource::new(
-                        source.to_string(),
-                        custom_name,
-                        source_config,
-                        loaded_sheets,
-                        0,
-                    ));
-                }
-                Err(e) => {
-                    log::error!("Failed to load {}: {}", source, e);
+                match loaded {
+                    Ok((loaded_sheets, source_config)) => {
+                        let custom_name = loaded_sheets.first().and_then(|s| s.custom_name.clone());
+                        data_sources.push(DataSource::new(
+                            source.to_string(),
+                            custom_name,
+                            source_config,
+                            loaded_sheets,
+                            0,
+                        ));
+                    }
+                    Err(e) => {
+                        log::error!("Failed to load {}: {}", source, e);
+                    }
                 }
             }
         }
@@ -148,8 +150,6 @@ impl RootViewModel {
                                 project.data_sources.push(path_str);
                             }
                         }
-                    } else {
-                        self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
                     }
                     
                     self.config.selected_index = self.selected_index;
@@ -207,8 +207,6 @@ impl RootViewModel {
                 }
             }
         
-            // Sync with config
-            self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
             // Also remove from any project that might contain it
             if let Some(projects) = self.config.projects.as_mut() {
                 for project in projects {
