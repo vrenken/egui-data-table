@@ -6,7 +6,7 @@ use crate::data::*;
 pub struct HierarchyPanel {}
 
 impl HierarchyPanel {
-    pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &egui::Context) -> (Option<usize>, Option<usize>) {
+    pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &Context) -> (Option<usize>, Option<usize>) {
         let mut newly_selected_index = None;
         let mut newly_selected_sheet_index = None;
 
@@ -35,13 +35,13 @@ impl HierarchyPanel {
                                             let rename_id = ui.id().with("rename_project");
                                             let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(project.name.clone()));
                                             let res = ui.text_edit_singleline(&mut current_name);
-                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
                                                 view_model.apply_rename(Rename::Project(project_idx), current_name.clone());
                                                 ui.data_mut(|d| {
                                                     d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
                                                 });
-                                            } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                            } else if ui.input(|i| i.key_pressed(Key::Escape)) {
                                                 ui.data_mut(|d| {
                                                     d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
@@ -60,7 +60,7 @@ impl HierarchyPanel {
                                                 ui.close();
                                             }
                                             if ui.button("Remove").clicked() {
-                                                ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_project_index"), Some(project_idx)));
+                                                ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_project_index"), Some(project_idx)));
                                                 ui.close();
                                             }
                                         });
@@ -114,13 +114,13 @@ impl HierarchyPanel {
                                                         let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(sheet_display_name.clone()));
 
                                                         let res = ui.text_edit_singleline(&mut current_name);
-                                                        if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                                        if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
                                                             view_model.apply_rename(Rename::Sheet(index, sheet_idx), current_name.clone());
                                                             ui.data_mut(|d| {
                                                                 d.remove::<Rename>(renaming_target_id);
                                                                 d.remove::<String>(rename_id);
                                                             });
-                                                        } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                                        } else if ui.input(|i| i.key_pressed(Key::Escape)) {
                                                             ui.data_mut(|d| {
                                                                 d.remove::<Rename>(renaming_target_id);
                                                                 d.remove::<String>(rename_id);
@@ -157,21 +157,21 @@ impl HierarchyPanel {
                                                 ui.close();
                                             }
                                             if ui.button("Remove").clicked() {
-                                                ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_datasource_index"), Some(index)));
+                                                ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
                                                 ui.close();
                                             }
                                         });
-                                        ui.scope_builder(egui::UiBuilder::new().max_rect(rect), |ui| {
+                                        ui.scope_builder(UiBuilder::new().max_rect(rect), |ui| {
                                             let rename_id = ui.id().with("rename_ds");
                                             let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
                                             let res = ui.text_edit_singleline(&mut current_name);
-                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
                                                 view_model.apply_rename(Rename::DataSource(index), current_name.clone());
                                                 ui.data_mut(|d| {
                                                     d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
                                                 });
-                                            } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                            } else if ui.input(|i| i.key_pressed(Key::Escape)) {
                                                 ui.data_mut(|d| {
                                                     d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
@@ -188,7 +188,7 @@ impl HierarchyPanel {
                                                 ui.close();
                                             }
                                             if ui.button("Remove").clicked() {
-                                                ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_datasource_index"), Some(index)));
+                                                ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
                                                 ui.close();
                                             }
                                         });
@@ -222,18 +222,18 @@ impl HierarchyPanel {
                                                     ui.close();
                                                 }
                                                 if ui.button("Remove").clicked() {
-                                                    ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_datasource_index"), Some(index)));
+                                                    ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
                                                     ui.close();
                                                 }
                                             });
 
-                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                                            if res.lost_focus() || (ui.input(|i| i.key_pressed(Key::Enter))) {
                                                 view_model.apply_rename(Rename::DataSource(index), current_name.clone());
                                                 ui.data_mut(|d| {
                                                     d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
                                                 });
-                                            } else if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+                                            } else if ui.input(|i| i.key_pressed(Key::Escape)) {
                                                 ui.data_mut(|d| {
                                                     d.remove::<Rename>(renaming_target_id);
                                                     d.remove::<String>(rename_id);
@@ -253,7 +253,7 @@ impl HierarchyPanel {
                                                 ui.close();
                                             }
                                             if ui.button("Remove").clicked() {
-                                                ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_datasource_index"), Some(index)));
+                                                ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
                                                 ui.close();
                                             }
                                         });
@@ -313,7 +313,7 @@ impl HierarchyPanel {
                     for (k, a) in &view_model.viewer.hotkeys {
                         Button::new(format!("{a:?}"))
                             .shortcut_text(ctx.format_shortcut(k))
-                            .wrap_mode(egui::TextWrapMode::Wrap)
+                            .wrap_mode(TextWrapMode::Wrap)
                             .sense(Sense::hover())
                             .ui(ui);
                     }
