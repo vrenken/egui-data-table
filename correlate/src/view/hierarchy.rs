@@ -10,7 +10,7 @@ impl HierarchyPanel {
         let mut newly_selected_index = None;
         let mut newly_selected_sheet_index = None;
 
-        egui::SidePanel::left("hierarchy_panel")
+        SidePanel::left("hierarchy_panel")
             .resizable(true)
             .show(ctx, |ui| {
                 ui.vertical(|ui| {
@@ -21,7 +21,7 @@ impl HierarchyPanel {
                         .default_open(true)
                         .show(ui, |ui| {
                             
-                            let renaming_target_id = egui::Id::new("renaming_target");
+                            let renaming_target_id = Id::new("renaming_target");
                             let renaming_target_opt = ui.data(|d| d.get_temp::<Rename>(renaming_target_id));
 
                             if let Some(projects) = view_model.config.projects.clone() {
@@ -88,19 +88,19 @@ impl HierarchyPanel {
                                 let icon = ds.sheets.first().map(|s| s.icon).unwrap_or(egui_material_icons::icons::ICON_TABLE_CHART);
 
                                 if ds.sheets.len() > 1 {
-                                    let mut header = egui::collapsing_header::CollapsingHeader::new(format!("{} {}", icon, ds_display_name))
+                                    let mut header = CollapsingHeader::new(format!("{} {}", icon, ds_display_name))
                                         .default_open(true);
-                                    
+
                                     let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == Rename::DataSource(index));
 
                                     if renaming_this_ds {
-                                        header = egui::collapsing_header::CollapsingHeader::new(format!("{} ", icon));
+                                        header = CollapsingHeader::new(format!("{} ", icon));
                                     }
 
                                     let header_res = header.show(ui, |ui| {
                                             for sheet_idx in 0..view_model.data_sources[index].sheets.len() {
                                                 let selected = view_model.selected_index == Some(index) && view_model.data_sources[index].selected_sheet_index == sheet_idx;
-                                                let renaming_target_id = egui::Id::new("renaming_target");
+                                                let renaming_target_id = Id::new("renaming_target");
                                                 let renaming_target_opt = ui.data(|d| d.get_temp::<Rename>(renaming_target_id));
                                                 let renaming_this_sheet = renaming_target_opt.map_or(false, |t| t == Rename::Sheet(index, sheet_idx));
 
@@ -151,6 +151,16 @@ impl HierarchyPanel {
                                     if renaming_this_ds {
                                         let mut rect = header_res.header_response.rect;
                                         rect.min.x += 20.0; // Offset for icon
+                                        header_res.header_response.context_menu(|ui| {
+                                            if ui.button("Rename").clicked() {
+                                                ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
+                                                ui.close();
+                                            }
+                                            if ui.button("Remove").clicked() {
+                                                ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_datasource_index"), Some(index)));
+                                                ui.close();
+                                            }
+                                        });
                                         ui.scope_builder(egui::UiBuilder::new().max_rect(rect), |ui| {
                                             let rename_id = ui.id().with("rename_ds");
                                             let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
@@ -172,6 +182,17 @@ impl HierarchyPanel {
                                             res.request_focus();
                                         });
                                     } else {
+                                        header_res.header_response.context_menu(|ui| {
+                                            if ui.button("Rename").clicked() {
+                                                ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
+                                                ui.close();
+                                            }
+                                            if ui.button("Remove").clicked() {
+                                                ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_datasource_index"), Some(index)));
+                                                ui.close();
+                                            }
+                                        });
+
                                         if header_res.header_response.clicked() {
                                             if view_model.selected_index != Some(index) {
                                                 newly_selected_index = Some(index);
@@ -184,7 +205,7 @@ impl HierarchyPanel {
                                     }
                                 } else {
                                     let selected = view_model.selected_index == Some(index);
-                                    let renaming_target_id = egui::Id::new("renaming_target");
+                                    let renaming_target_id = Id::new("renaming_target");
                                     let renaming_target_opt = ui.data(|d| d.get_temp::<Rename>(renaming_target_id));
                                     let renaming_this_ds = renaming_target_opt.map_or(false, |t| t == Rename::DataSource(index));
 
@@ -194,6 +215,18 @@ impl HierarchyPanel {
                                             let rename_id = ui.id().with("rename_ds");
                                             let mut current_name = ui.data_mut(|d| d.get_temp::<String>(rename_id).unwrap_or(ds_display_name.clone()));
                                             let res = ui.text_edit_singleline(&mut current_name);
+
+                                            res.context_menu(|ui| {
+                                                if ui.button("Rename").clicked() {
+                                                    ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
+                                                    ui.close();
+                                                }
+                                                if ui.button("Remove").clicked() {
+                                                    ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_datasource_index"), Some(index)));
+                                                    ui.close();
+                                                }
+                                            });
+
                                             if res.lost_focus() || (ui.input(|i| i.key_pressed(egui::Key::Enter))) {
                                                 view_model.apply_rename(Rename::DataSource(index), current_name.clone());
                                                 ui.data_mut(|d| {
@@ -213,7 +246,18 @@ impl HierarchyPanel {
                                     } else {
                                         let res = ui.selectable_label(selected, format!("{} {}", icon, ds_display_name))
                                             .on_hover_text(&ds.path);
-                                        
+
+                                        res.context_menu(|ui| {
+                                            if ui.button("Rename").clicked() {
+                                                ui.data_mut(|d| d.insert_temp(renaming_target_id, Rename::DataSource(index)));
+                                                ui.close();
+                                            }
+                                            if ui.button("Remove").clicked() {
+                                                ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("trash_datasource_index"), Some(index)));
+                                                ui.close();
+                                            }
+                                        });
+
                                         if res.clicked() {
                                             if view_model.selected_index != Some(index) {
                                                 newly_selected_index = Some(index);
@@ -267,7 +311,7 @@ impl HierarchyPanel {
                     ui.separator();
                     ui.add_space(0.);
                     for (k, a) in &view_model.viewer.hotkeys {
-                        egui::Button::new(format!("{a:?}"))
+                        Button::new(format!("{a:?}"))
                             .shortcut_text(ctx.format_shortcut(k))
                             .wrap_mode(egui::TextWrapMode::Wrap)
                             .sense(Sense::hover())
@@ -279,7 +323,7 @@ impl HierarchyPanel {
         (newly_selected_index, newly_selected_sheet_index)
     }
 
-    pub fn ui_hierarchy_panel_context_menu(ui: &mut egui::Ui) -> Option<std::path::PathBuf> {
+    pub fn ui_hierarchy_panel_context_menu(ui: &mut Ui) -> Option<std::path::PathBuf> {
         let mut result = None;
         if ui.button("Add data source").clicked() {
             if let Some(path) = rfd::FileDialog::new()
