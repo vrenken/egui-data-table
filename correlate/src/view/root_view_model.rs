@@ -48,11 +48,12 @@ impl RootViewModel {
             let loaded = loader.load(source.clone());
 
             match loaded {
-                Ok(loaded_sheets) => {
+                Ok((loaded_sheets, source_config)) => {
                     let custom_name = loaded_sheets.first().and_then(|s| s.custom_name.clone());
                     data_sources.push(DataSource::new(
                         source.to_string(),
                         custom_name,
+                        source_config,
                         loaded_sheets,
                         0,
                     ));
@@ -120,19 +121,20 @@ impl RootViewModel {
             let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
 
             let loaded_result = if extension == "csv" {
-                crate::data::CsvSheet.load(path_str.clone())
+                CsvSheet.load(path_str.clone())
             } else {
-                crate::data::ExcelSheet.load(path_str.clone())
+                ExcelSheet.load(path_str.clone())
             };
 
             match loaded_result {
-                Ok(sheets) => {
+                Ok((sheets, source_config)) => {
                     let custom_name = sheets.first().and_then(|s| s.custom_name.clone());
                     let new_index = self.data_sources.len();
 
                     self.data_sources.push(DataSource::new(
                         path_str.clone(),
                         custom_name,
+                        source_config,
                         sheets,
                         0,
                     ));
@@ -142,8 +144,7 @@ impl RootViewModel {
                     // Persist to config
                     self.config.data_sources = self.data_sources.iter().map(|ds| ds.path.clone()).collect();
                     self.config.selected_index = self.selected_index;
-                    let config_path = "config.json";
-                    if let Err(e) = self.config.save(config_path) {
+                    if let Err(e) = self.config.save() {
                         log::error!("Failed to save config: {}", e);
                     }
                 }

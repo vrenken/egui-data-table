@@ -56,16 +56,7 @@ impl DataSheet {
 
         for row_data in raw_rows {
             // 1. First pass: get the physical key value if it exists
-            let mut row_key = None;
-            let mut phys_idx = 0;
-            for config in &column_configs {
-                if !config.is_virtual {
-                    if config.is_key {
-                        row_key = row_data.get(phys_idx).cloned();
-                    }
-                    phys_idx += 1;
-                }
-            }
+            let row_key = DataSheet::get_row_key(&column_configs, row_data);
 
             // 2. Second pass: build the row
             let mut cells = Vec::new();
@@ -108,5 +99,19 @@ impl DataSheet {
             },
             sheet_config,
         )
+    }
+
+    fn get_row_key(column_configs: &Vec<ColumnConfig>, row_data: &Vec<String>) -> Option<String> {
+        let mut row_key = None;
+        let mut phys_idx = 0;
+        for config in column_configs {
+            if !config.is_virtual {
+                if config.is_key {
+                    row_key = row_data.get(phys_idx).cloned();
+                }
+                phys_idx += 1;
+            }
+        }
+        row_key
     }
 }

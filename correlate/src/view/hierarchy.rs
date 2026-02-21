@@ -194,10 +194,9 @@ impl HierarchyPanel {
                     ui.separator();
 
                     if ui.button("💾 Save as default").clicked() {
-                        let config_path = "config.json";
                         view_model.config.data_sources = view_model.data_sources.iter().map(|ds| ds.path.clone()).collect();
                         view_model.config.selected_index = view_model.selected_index;
-                        if let Err(e) = view_model.config.save(config_path) {
+                        if let Err(e) = view_model.config.save() {
                             log::error!("Failed to save config: {}", e);
                         }
                         // Also save .correlate files for all data sources

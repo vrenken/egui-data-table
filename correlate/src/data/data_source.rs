@@ -4,6 +4,7 @@
 pub struct DataSource {
     pub path: String,
     pub name: Option<String>,
+    pub config: SourceConfig,
     pub sheets: Vec<DataSheet>,
     pub selected_sheet_index: usize,
 }
@@ -12,12 +13,14 @@ impl DataSource {
     pub fn new(
         path: String,
         name: Option<String>,
+        config: SourceConfig,
         sheets: Vec<DataSheet>,
         selected_sheet_index: usize,
     ) -> Self {
         Self {
             path,
             name,
+            config,
             sheets,
             selected_sheet_index,
         }
@@ -74,10 +77,8 @@ impl DataSource {
             });
         }
 
-        let source_config = SourceConfig {
-            name: self.name.clone(),
-            sheets: sheet_configs,
-        };
-        source_config.save(&self.companion_path)
+        self.config.name = self.name.clone();
+        self.config.sheets = sheet_configs;
+        self.config.save()
     }
 }
