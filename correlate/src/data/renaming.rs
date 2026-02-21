@@ -22,9 +22,13 @@ impl Rename
     ) {
         match target {
             Rename::Project(project_idx) => {
-                if let Some(projects) = config.projects.as_mut() {
-                    if let Some(project) = projects.get_mut(project_idx) {
-                        project.name = new_name;
+                if let Some(project_configs) = config.projects.as_mut() {
+                    if let Some(project_config) = project_configs.get_mut(project_idx) {
+                        let mut project = Project {
+                            configuration: project_config.clone(),
+                        };
+                        project.rename(new_name);
+                        *project_config = project.configuration;
                         if let Err(e) = config.save() {
                             log::error!("Failed to save config after project rename: {}", e);
                         }

@@ -157,10 +157,8 @@ impl RootViewModel {
 
     pub fn add_project(&mut self) {
         let projects = self.config.projects.get_or_insert_with(Vec::new);
-        projects.push(ProjectConfiguration {
-            name: format!("New Project {}", projects.len() + 1),
-            data_sources: Vec::new(),
-        });
+        let project = Project::new(format!("New Project {}", projects.len() + 1));
+        projects.push(project.configuration);
         if let Err(e) = self.config.save() {
             log::error!("Failed to save config after adding project: {}", e);
         }
