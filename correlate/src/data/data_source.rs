@@ -36,7 +36,7 @@ impl DataSource {
                     for &v_idx in &virtual_cols {
                         let value = row.cells[v_idx].0.clone();
                         if !value.is_empty() {
-                            cell_values.push(crate::data::CellValueConfig {
+                            cell_values.push(CellValueConfig {
                                 key: key.clone(),
                                 column_name: sheet.column_configs[v_idx].name.clone(),
                                 value,
@@ -46,7 +46,7 @@ impl DataSource {
                 }
             }
 
-            sheet_configs.push(crate::data::SheetConfig {
+            sheet_configs.push(SheetConfig {
                 name: sheet.name.clone(),
                 display_name: sheet.display_name.clone(),
                 column_configs: sheet.column_configs.clone(),
@@ -55,7 +55,7 @@ impl DataSource {
             });
         }
 
-        let source_config = crate::data::SourceConfig {
+        let source_config = SourceConfig {
             name: self.name.clone(),
             sheets: sheet_configs,
         };
