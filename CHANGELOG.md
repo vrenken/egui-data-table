@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## Future
+- Make sure that the correlate file can also be used as a data source for a complete data grid.
+- Add multi-relation support.
+- Add filtering for both single- and multi-relations.
+- Move display configuration from source .correlate to consuming .correlate file. Add the required context menu items for that.
+
 ## [Unreleased]
 
 ### Changed
