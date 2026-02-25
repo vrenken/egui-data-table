@@ -3,6 +3,7 @@ use view::RootView;
 mod data;
 mod view;
 mod codec;
+mod egui_data_table;
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {

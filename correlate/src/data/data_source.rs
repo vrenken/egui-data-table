@@ -1,4 +1,5 @@
-﻿use crate::data::*;
+use crate::data::*;
+use crate::egui_data_table::*;
 
 #[derive(Clone)]
 pub struct DataSource {
@@ -41,7 +42,7 @@ impl DataSource {
     pub fn save(
         &mut self,
         column_configs: Vec<ColumnConfiguration>,
-        table: egui_data_table::DataTable<Row>,
+        table: DataTable<Row>,
     ) -> Result<(), String> {
         self.sheets[self.selected_sheet_index].column_configs = column_configs;
         self.sheets[self.selected_sheet_index].table = table;

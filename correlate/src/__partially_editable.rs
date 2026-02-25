@@ -7,7 +7,7 @@
 //
 // use std::borrow::Cow;
 // use egui::{Response, Ui};
-// use egui_data_table::RowViewer;
+// use crate::egui_data_table::RowViewer;
 // use std::collections::HashMap;
 // use tap::Tap;
 //
@@ -38,7 +38,7 @@
 // }
 //
 // struct CorrelateApp {
-//     table: egui_data_table::DataTable<PartStatesRow>,
+//     table: crate::egui_data_table::DataTable<PartStatesRow>,
 //     viewer: Viewer,
 // }
 //
@@ -226,7 +226,7 @@
 //         });
 //
 //         egui::CentralPanel::default().show(ctx, |ui| {
-//             ui.add(egui_data_table::Renderer::new(
+//             ui.add(crate::egui_data_table::Renderer::new(
 //                 &mut self.table,
 //                 &mut self.viewer,
 //             ));
@@ -254,3 +254,4 @@
 //     )
 //     .unwrap();
 // }
+

@@ -1,5 +1,5 @@
-﻿use egui_data_table::viewer::{DecodeErrorBehavior, RowCodec};
 use crate::data::*;
+use crate::egui_data_table::viewer::*;
 
 pub struct Codec {
     pub column_configs: Vec<ColumnConfiguration>,

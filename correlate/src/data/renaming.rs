@@ -1,7 +1,7 @@
-﻿use crate::data::*;
+use crate::data::*;
 use crate::view::*;
 use egui::*;
-use egui_data_table::DataTable;
+use crate::egui_data_table::*;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Rename {
@@ -169,4 +169,5 @@ impl Rename
         }
     }
 }
+
 

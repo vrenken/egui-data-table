@@ -1,14 +1,14 @@
-﻿use crate::data::{Configuration, Rename, Row};
 use crate::data::*;
 use crate::view::*;
+use crate::egui_data_table::*;
 
 pub struct RootViewModel {
     pub config: Configuration,
-    pub table: egui_data_table::DataTable<Row>,
+    pub table: DataTable<Row>,
     pub viewer: RowView,
     pub data_sources: Vec<DataSource>,
     pub selected_index: Option<usize>,
-    pub style_override: egui_data_table::Style,
+    pub style_override: Style,
     pub scroll_bar_always_visible: bool,
 }
 
@@ -67,7 +67,7 @@ impl RootViewModel {
 
         if data_sources.is_empty() {
             let selected_index = None;
-            let table = egui_data_table::DataTable::new();
+            let table = DataTable::new();
             let viewer = RowView {
                 name_filter: String::new(),
                 row_protection: false,
@@ -197,7 +197,7 @@ impl RootViewModel {
                     // If we removed the selected one, pick a new one or set to None
                     if self.data_sources.is_empty() {
                         self.selected_index = None;
-                        self.table = egui_data_table::DataTable::new();
+                        self.table = DataTable::new();
                         self.viewer.column_configs = Vec::new();
                         self.viewer.data_sources = Vec::new();
                     } else {

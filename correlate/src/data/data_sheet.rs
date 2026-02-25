@@ -1,4 +1,5 @@
-﻿use crate::data::*;
+use crate::data::*;
+use crate::egui_data_table::*;
 
 pub trait SheetLoader {
     fn load(&self, path: String) -> Result<(Vec<DataSheet>, DataSourceConfiguration), String>;
@@ -12,7 +13,7 @@ pub struct DataSheet {
     pub display_name: Option<String>,
     pub icon: &'static str,
     pub column_configs: Vec<ColumnConfiguration>,
-    pub table: egui_data_table::DataTable<Row>,
+    pub table: DataTable<Row>,
 }
 impl DataSheet {
     pub fn new_from_raw_data(

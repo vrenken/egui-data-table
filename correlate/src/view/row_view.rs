@@ -1,14 +1,13 @@
-﻿use std::borrow::Cow;
-use egui::{Key, Response};
-use egui_data_table::RowViewer;
-use egui_data_table::viewer::{default_hotkeys, CellWriteContext, RowCodec, UiActionContext};
 use crate::data::*;
 use crate::view::*;
+use crate::egui_data_table::*;
+use std::borrow::Cow;
+use egui::{Key, Response};
 
 pub struct RowView {
     pub name_filter: String,
     pub row_protection: bool,
-    pub hotkeys: Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)>,
+    pub hotkeys: Vec<(egui::KeyboardShortcut, UiAction)>,
     pub column_configs: Vec<ColumnConfiguration>,
     pub config: Configuration,
     pub data_sources: Vec<DataSource>,
@@ -32,16 +31,16 @@ impl RowViewer<Row> for RowView {
         &mut self,
         column: usize,
         is_last_visible_column: bool,
-    ) -> egui_data_table::viewer::TableColumnConfig {
+    ) -> TableColumnConfig {
         let mut config = if is_last_visible_column {
-            egui_data_table::viewer::TableColumnConfig::remainder().at_least(24.0)
+            TableColumnConfig::remainder().at_least(24.0)
         } else {
-            egui_data_table::viewer::TableColumnConfig::auto().resizable(true)
+            TableColumnConfig::auto().resizable(true)
         };
 
         if let Some(col_config) = self.column_configs.get(column) {
             if let Some(width) = col_config.width {
-                config = egui_data_table::viewer::TableColumnConfig::initial(width).resizable(true);
+                config = TableColumnConfig::initial(width).resizable(true);
                 if is_last_visible_column {
                     config = config.at_least(24.0);
                 }
@@ -266,13 +265,13 @@ impl RowViewer<Row> for RowView {
 
     fn on_rename_committed(
         &mut self,
-        table: &mut egui_data_table::DataTable<Row>,
-        target: egui_data_table::viewer::RenameTarget,
+        table: &mut DataTable<Row>,
+        target: RenameTarget,
         new_name: String,
     ) {
         let renaming_target = match target {
-            egui_data_table::viewer::RenameTarget::Row(idx) => Some(Rename::Row(idx)),
-            egui_data_table::viewer::RenameTarget::Column(idx) => Some(Rename::Column(idx)),
+            RenameTarget::Row(idx) => Some(Rename::Row(idx)),
+            RenameTarget::Column(idx) => Some(Rename::Column(idx)),
             _ => None,
         };
 
@@ -289,7 +288,7 @@ impl RowViewer<Row> for RowView {
         }
     }
 
-    fn on_column_moved(&mut self, table: &mut egui_data_table::DataTable<Row>, from: usize, to: usize) {
+    fn on_column_moved(&mut self, table: &mut DataTable<Row>, from: usize, to: usize) {
         if from == to || from >= self.column_configs.len() || to >= self.column_configs.len() {
             return;
         }
@@ -306,26 +305,7 @@ impl RowViewer<Row> for RowView {
         table.mark_as_modified();
     }
 
-    fn on_column_removed(&mut self, table: &mut egui_data_table::DataTable<Row>, index: usize) {
-        if index >= self.column_configs.len() {
-            return;
-        }
-
-        // Remove column config
-        self.column_configs.remove(index);
-
-        // Update all rows in the table
-        let mut rows = table.take();
-        for row in &mut rows {
-            if index < row.cells.len() {
-                row.cells.remove(index);
-            }
-        }
-        table.replace(rows);
-        table.mark_as_modified();
-    }
-
-    fn on_column_inserted(&mut self, table: &mut egui_data_table::DataTable<Row>, at: usize) {
+    fn on_column_inserted(&mut self, table: &mut DataTable<Row>, at: usize) {
         let new_column = ColumnConfiguration {
             name: format!("New Column {}", self.column_configs.len() + 1),
             display_name: None,
@@ -349,7 +329,26 @@ impl RowViewer<Row> for RowView {
         table.mark_as_modified();
     }
 
-    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) -> egui_data_table::viewer::HeaderResult {
+    fn on_column_removed(&mut self, table: &mut DataTable<Row>, index: usize) {
+        if index >= self.column_configs.len() {
+            return;
+        }
+
+        // Remove column config
+        self.column_configs.remove(index);
+
+        // Update all rows in the table
+        let mut rows = table.take();
+        for row in &mut rows {
+            if index < row.cells.len() {
+                row.cells.remove(index);
+            }
+        }
+        table.replace(rows);
+        table.mark_as_modified();
+    }
+
+    fn column_header_context_menu(&mut self, ui: &mut egui::Ui, column: usize) -> HeaderResult {
         let view_model_ptr = ui.ctx().data(|d| d.get_temp::<usize>(egui::Id::new("root_view_model"))).expect("RootViewModel pointer not found in egui data");
         let view_model = unsafe { &mut *(view_model_ptr as *mut RootViewModel) };
         ColumnHeader::new_with_visibility(&mut self.column_configs, self.visible_columns.clone())
@@ -368,7 +367,7 @@ impl RowViewer<Row> for RowView {
         ColumnHeader::new(&mut self.column_configs).show(ui, column)
     }
 
-    fn show_row_header(&mut self, ui: &mut egui::Ui, row_idx: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize, row: &Row) -> Option<(egui_data_table::viewer::RenameTarget, String)> {
+    fn show_row_header(&mut self, ui: &mut egui::Ui, row_idx: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize, row: &Row) -> Option<(RenameTarget, String)> {
         let renaming_target = ui.data(|d| d.get_temp::<Rename>(egui::Id::new("renaming_target")));
         let renaming_this_row = renaming_target.map_or(false, |t| t == Rename::Row(row_idx));
         let mut committed = None;
@@ -382,7 +381,7 @@ impl RowViewer<Row> for RowView {
 
             let res = ui.text_edit_singleline(&mut current_name);
             if res.lost_focus() || ui.input(|i| i.key_pressed(Key::Enter)) {
-                committed = Some((egui_data_table::viewer::RenameTarget::Row(row_idx), current_name.clone()));
+                committed = Some((RenameTarget::Row(row_idx), current_name.clone()));
                 ui.data_mut(|d| {
                     d.remove::<Rename>(egui::Id::new("renaming_target"));
                     d.remove::<String>(ui.id().with("rename"));
@@ -432,13 +431,15 @@ impl RowViewer<Row> for RowView {
     fn hotkeys(
         &mut self,
         context: &UiActionContext,
-    ) -> Vec<(egui::KeyboardShortcut, egui_data_table::UiAction)> {
+    ) -> Vec<(egui::KeyboardShortcut, UiAction)> {
         let hotkeys = default_hotkeys(context);
         self.hotkeys.clone_from(&hotkeys);
         hotkeys
     }
 
+    #[cfg(feature = "persistency")]
     fn persist_ui_state(&self) -> bool {
         true
     }
 }
+

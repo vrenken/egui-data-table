@@ -1,8 +1,8 @@
-﻿use eframe::emath::Align;
+use crate::view::*;
+use crate::egui_data_table::*;
+use eframe::emath::Align;
 use egui::Layout;
 use egui::scroll_area::ScrollBarVisibility;
-use egui_data_table::RowViewer;
-use crate::view::*;
 
 #[derive(Default)]
 pub struct CentralPanel {}
@@ -48,7 +48,7 @@ impl CentralPanel {
 
                 ui.add(
                     //available,
-                    egui_data_table::Renderer::new(&mut view_model.table, &mut view_model.viewer).with_style(view_model.style_override),
+                    Renderer::new(&mut view_model.table, &mut view_model.viewer).with_style(view_model.style_override),
                 );
 
                 if view_model.table.has_user_modification() {

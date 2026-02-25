@@ -1,8 +1,8 @@
-﻿use std::borrow::Cow;
-use egui::Key;
-use egui_data_table::viewer::{HeaderAction, HeaderResult};
 use crate::data::*;
 use crate::view::*;
+use crate::egui_data_table::*;
+use std::borrow::Cow;
+use egui::Key;
 
 pub struct ColumnHeader<'a> {
     pub column_configs: &'a mut Vec<ColumnConfiguration>,

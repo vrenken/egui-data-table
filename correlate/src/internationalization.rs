@@ -6,11 +6,9 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
 use egui::{ComboBox, Response, Ui, Context};
-use egui_data_table::{RowViewer, DataTable};
-use egui_data_table::viewer::RenameTarget;
+use crate::egui_data_table::*;
 use std::iter::repeat_with;
 use std::sync::Arc;
-use egui_data_table::draw::{EnglishTranslator, Translator};
 use eframe::App;
 
 #[derive(Default)]
@@ -81,7 +79,7 @@ impl Translator for CustomEnglishTranslator {
 }
 
 struct CorrelateApp {
-    table: egui_data_table::DataTable<Row>,
+    table: crate::egui_data_table::DataTable<Row>,
     viewer: Viewer,
 
     selected_language_key: String,
@@ -236,7 +234,7 @@ impl eframe::App for CorrelateApp {
                 });
         });
         egui::CentralPanel::default().show(ctx, |ui| {
-            let renderer = egui_data_table::Renderer::new(
+            let renderer = crate::egui_data_table::Renderer::new(
                 &mut self.table,
                 &mut self.viewer,
             )
@@ -267,3 +265,4 @@ fn main() {
     )
     .unwrap();
 }
+

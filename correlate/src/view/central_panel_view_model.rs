@@ -1,6 +1,6 @@
-﻿use egui_data_table::RowViewer;
-use crate::data::Configuration;
-use crate::view::RootViewModel;
+use crate::data::*;
+use crate::view::*;
+use crate::egui_data_table::*;
 
 pub struct CentralPanelViewModel {
 }
@@ -104,6 +104,4 @@ impl CentralPanelViewModel {
             }
         }
     }
-
-
 }
