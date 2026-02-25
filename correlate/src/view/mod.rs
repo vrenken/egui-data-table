@@ -25,11 +25,22 @@ mod hierarchy_view_model;
 pub use hierarchy_view_model::*;
 
 mod central_panel_view_model;
-
-mod clear_user_modification_flag;
-pub use clear_user_modification_flag::*;
+pub use central_panel_view_model::*;
 
 mod toggle_scrollbar_visibility;
 pub use toggle_scrollbar_visibility::*;
 
-pub use central_panel_view_model::*;
+mod add_existing_data_source;
+pub use add_existing_data_source::*;
+
+mod clear_user_modification_flag;
+pub use clear_user_modification_flag::*;
+
+mod add_project;
+pub use add_project::*;
+
+mod switch_to_source;
+pub use switch_to_source::*;
+
+
+

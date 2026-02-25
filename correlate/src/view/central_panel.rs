@@ -2,36 +2,21 @@ use crate::view::*;
 use crate::egui_data_table::*;
 use eframe::emath::Align;
 use egui::Layout;
-use egui::scroll_area::ScrollBarVisibility;
 use crate::egui_data_table::renderer::Renderer;
-use crate::application_command::ApplicationCommand;
+use crate::application_command::{ApplicationCommand};
+
 
 #[derive(Default)]
 pub struct CentralPanel {}
 
 impl CentralPanel {
     pub fn update(&mut self,
-                  view_model: &mut RootViewModel,
+                  _view_model: &mut RootViewModel,
                   central_panel_view_model: &mut CentralPanelViewModel,
                   ctx: &egui::Context,
-                  commands: &Vec<Box<dyn ApplicationCommand>>) {
-        central_panel_view_model.handle_viewer_requests(view_model);
-        Self::show_trash_confirmation_modal(ctx, view_model);
-
-        for command in commands {
-            let any = command.as_any();
-            if any.downcast_ref::<ToggleScrollBarVisibility>().is_some() {
-                view_model.scroll_bar_always_visible = !view_model.scroll_bar_always_visible;
-                if view_model.scroll_bar_always_visible {
-                    view_model.style_override.scroll_bar_visibility = ScrollBarVisibility::AlwaysVisible;
-                } else {
-                    view_model.style_override.scroll_bar_visibility = ScrollBarVisibility::VisibleWhenNeeded;
-                }
-            } else if any.downcast_ref::<ClearUserModificationFlag>().is_some() {
-                view_model.table.clear_user_modification_flag();
-                view_model.save_datasource_configuration();
-            }
-        }
+                  _commands: &Vec<Box<dyn ApplicationCommand>>) {
+        central_panel_view_model.handle_viewer_requests(_view_model);
+        Self::show_trash_confirmation_modal(ctx, _view_model);
     }
 
     pub fn ui(&mut self,
@@ -51,7 +36,7 @@ impl CentralPanel {
                     if ui.button(egui_material_icons::icons::ICON_PAGE_INFO).clicked() {}
                     if ui.button(egui_material_icons::icons::ICON_SWAP_VERT).clicked() {}
                     if ui.button(egui_material_icons::icons::ICON_FILTER_LIST).clicked() {
-                        commands.push(Box::new(ToggleScrollBarVisibility));
+                        commands.push(Box::new(ToggleScrollBarVisibility { ctx: ctx.clone() }));
                     }
                 });
 
@@ -72,7 +57,7 @@ impl CentralPanel {
                 );
 
                 if view_model.table.has_user_modification() {
-                    commands.push(Box::new(ClearUserModificationFlag));
+                    commands.push(Box::new(ClearUserModificationFlag { ctx: ctx.clone() }));
                 }
             });
         });

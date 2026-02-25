@@ -13,18 +13,21 @@ pub struct RootView {
     pub hierarchy_panel: HierarchyPanel,
 
     pub pending_commands: Vec<Box<dyn ApplicationCommand>>,
-    pub command_dispatcher: ApplicationCommandDispatcher,
+    pub dispatcher: ApplicationCommandDispatcher,
 }
 
 impl Default for RootView {
 
     fn default() -> Self {
-
         let config_path = "config.json";
         let config = crate::data::Configuration::load(config_path).unwrap();
 
-        let dispatcher = ApplicationCommandDispatcher::new();
-        //dispatcher.register()
+        let mut dispatcher = ApplicationCommandDispatcher::new();
+        dispatcher.register::<ToggleScrollBarVisibility, _>(ToggleScrollBarVisibilityHandler);
+        dispatcher.register::<ClearUserModificationFlag, _>(ClearUserModificationFlagHandler);
+        dispatcher.register::<AddProject, _>(AddProjectHandler);
+        dispatcher.register::<AddExistingDataSource, _>(AddExistingDataSourceHandler);
+        dispatcher.register::<SwitchToSource, _>(SwitchToSourceHandler);
 
         Self {
             hierarchy_view_model: HierarchyViewModel::default(&config),
@@ -35,15 +38,18 @@ impl Default for RootView {
             menu_bar: MenuBar::default(),
             hierarchy_panel: HierarchyPanel::default(),
             pending_commands: Vec::new(),
-            command_dispatcher: dispatcher,
+            dispatcher,
         }
     }
 }
 
 impl eframe::App for RootView {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-
         let commands = self.pending_commands.drain(..).collect::<Vec<_>>();
+        for command in &commands {
+            self.dispatcher.dispatch(command.as_any());
+        }
+
         self.hierarchy_panel.update(&mut self.root_view_model, ctx, &commands);
         self.central_panel.update(
             &mut self.root_view_model,
