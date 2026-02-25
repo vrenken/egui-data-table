@@ -50,11 +50,11 @@ impl RowViewer<Row> for RowView {
         config
     }
 
-    fn is_sortable_column(&mut self, _: usize) -> bool {
+    fn is_sortable_column(&self, _: usize) -> bool {
         true
     }
 
-    fn is_editable_cell(&mut self, column: usize, _row: usize, row_value: &Row) -> bool {
+    fn is_editable_cell(&self, column: usize, _row: usize, row_value: &Row) -> bool {
         // We still need a way to identify the "Row locked" column if it exists.
         // For now, let's see if we can find it by name or type if it's special.
         // In the original it was ROW_LOCKED = 5.
