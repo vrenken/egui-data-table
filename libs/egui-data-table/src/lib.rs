@@ -7,7 +7,7 @@ pub use draw::state::ColumnIdx;
 pub use draw::{Renderer, Style};
 pub use viewer::{RowViewer, UiAction};
 
-/// You may want to sync egui version with this crate.
+/// You may want to sync the egui version with this crate.
 pub extern crate egui;
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -18,13 +18,13 @@ pub extern crate egui;
 pub struct DataTable<R> {
     /// Efficient row data storage
     ///
-    /// XXX: If we use `VecDeque` here, it'd be more efficient when inserting new element
+    /// XXX: If we use `VecDeque` here, it'd be more efficient when inserting a new element
     /// at the beginning of the list. However, it does not support `splice` method like
-    /// `Vec`, which results in extremely inefficient when there's multiple insertions.
+    /// `Vec`, which results in extremely inefficient when there are multiple insertions.
     ///
-    /// The efficiency order of general operations are only twice as slow when using
-    /// `Vec`, we're just ignoring it for now. Maybe we can utilize `IndexMap` for this
-    /// purpose, however, there are many trade-offs to consider, for now, we're just
+    /// The efficiency order of general operations is only twice as slow when using
+    /// `Vec`, we're just ignoring it for now. Maybe we can use `IndexMap` for this
+    /// purpose. However, there are many trade-offs to consider. For now, we're just
     /// using `Vec` for simplicity.
     rows: Vec<R>,
 
@@ -102,7 +102,7 @@ impl<R> DataTable<R> {
         note = "user-driven dirty flag clearance is redundant"
     )]
     pub fn clear_dirty_flag(&mut self) {
-        // This is intentionally became a no-op
+        // This intentionally became a no-op
     }
 
     fn mark_dirty(&mut self) {
@@ -113,12 +113,12 @@ impl<R> DataTable<R> {
         state.force_mark_dirty();
     }
 
-    /// Returns true if there were any user-driven(triggered by UI) modifications.
+    /// Returns true if there were any user-driven (triggered by UI) modifications.
     pub fn has_user_modification(&self) -> bool {
         self.dirty_flag
     }
 
-    /// Clears the user-driven(triggered by UI) modification flag.
+    /// Clears the user-driven (triggered by UI) modification flag.
     pub fn clear_user_modification_flag(&mut self) {
         self.dirty_flag = false;
     }

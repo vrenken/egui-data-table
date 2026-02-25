@@ -41,7 +41,7 @@ pub struct ParsedTsv {
     /// using tab character, the cell will be stored in this vector even if it is empty.
     cell_spans: Vec<Range<u32>>,
 
-    /// Index offsets for start of each row in the `cell_spans` vector.
+    /// Index offsets for the start of each row in the `cell_spans` vector.
     row_offsets: Vec<u32>,
 }
 
@@ -62,7 +62,7 @@ impl ParsedTsv {
         let mut state = ParseState::Empty;
         let mut cell_start_char = 0;
 
-        // Add initial row offset.
+        // Add the initial row offset.
         s.row_offsets.push(0);
 
         for char in data.chars() {
@@ -70,14 +70,14 @@ impl ParsedTsv {
                 ParseState::Empty => match char {
                     '\n' | '\t' => {
                         if char == '\t' || cell_start_char != s.data.len() as u32 {
-                            // For tab character, we don't care if it's empty cell. Otherwise,
+                            // For tab character, we don't care if it's an empty cell. Otherwise,
                             // we add the last cell only when it's not empty.
                             s.cell_spans.push(cell_start_char..s.data.len() as u32);
                             cell_start_char = s.data.len() as _;
                         }
 
                         if char == '\n' {
-                            // Add row offset and move to new row.
+                            // Add the row offset and move to the new row.
                             s.row_offsets.push(s.cell_spans.len() as _);
                         }
                     }

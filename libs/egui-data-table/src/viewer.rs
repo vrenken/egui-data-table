@@ -13,7 +13,7 @@ pub enum DecodeErrorBehavior {
     /// Skip the whole row
     SkipRow,
 
-    /// Stop decoding and return error.
+    /// Stop decoding and return an error.
     #[default]
     Abort,
 }
@@ -27,8 +27,8 @@ pub trait RowCodec<R> {
     /// Creates a new empty row for decoding
     fn create_empty_decoded_row(&mut self) -> R;
 
-    /// Tries encode column data of given row into a string. As the cell for CSV row is already
-    /// occupied, if any error or unsupported data is found for that column, just empty out the
+    /// Tries to encode column data of a given row into a string. As the cell for CSV row is already
+    /// occupied, if any error or unsupported data is found for that column, empty out the
     /// destination string buffer.
     fn encode_column(&mut self, src_row: &R, column: usize, dst: &mut String);
 
@@ -87,7 +87,7 @@ pub trait RowViewer<R>: 'static {
     /// mode or decoding mode.
     ///
     /// It is just okay to choose not to implement both encoding and decoding; returning `None`
-    /// conditionally based on `is_encoding` parameter is also valid. It is guaranteed that created
+    /// conditionally based on the `is_encoding` parameter is also valid. It is guaranteed that created
     /// codec will be used only for the same mode during its lifetime.
     fn try_create_codec(&mut self, is_encoding: bool) -> Option<impl RowCodec<R>> {
         let _ = is_encoding;
@@ -108,18 +108,17 @@ pub trait RowViewer<R>: 'static {
         }
     }
 
-    /// Returns if given column is 'sortable'
-    fn is_sortable_column(&mut self, column: usize) -> bool {
+    /// Returns if the given column is 'sortable'
+    fn is_sortable_column(&self, column: usize) -> bool {
         let _ = column;
         false
     }
 
     /// Returns if a given cell is 'editable'.
-    /// 
-    /// i.e.
+    /// I.e.
     /// * true to allow editing of a cell
     /// * false to disable editing of a cell
-    fn is_editable_cell(&mut self, column: usize, row: usize, row_value: &R) -> bool {
+    fn is_editable_cell(&self, column: usize, row: usize, row_value: &R) -> bool {
         let _ = column;
         let _ = row;
         let _ = row_value;
@@ -153,11 +152,11 @@ pub trait RowViewer<R>: 'static {
         true
     }
 
-    /// Display values of the cell. Any input will be consumed before table renderer;
-    /// therefore any widget rendered inside here is read-only.
+    /// Display values of the cell. Any input will be consumed before the table renderer.
+    /// Therefore, any widget rendered inside here is read-only.
     ///
-    /// To deal with input, use `cell_edit` method. If you need to deal with drag/drop,
-    /// see [`RowViewer::on_cell_view_response`] which delivers resulting response of
+    /// To deal with input, use the `cell_edit` method. If you need to deal with drag/drop,
+    /// see [`RowViewer::on_cell_view_response`] which delivers the resulting response of the
     /// containing cell.
     fn show_cell_view(&mut self, ui: &mut egui::Ui, row: &R, column: usize);
 

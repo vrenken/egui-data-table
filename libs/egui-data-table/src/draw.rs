@@ -33,11 +33,11 @@ pub struct Style {
     /// Foreground color override for selected cell. Default uses `visuals.strong_text_colors`.
     pub fg_selected_highlight_cell: Option<Color32>,
 
-    /// Foreground color for cells that are going to be selected when mouse is dropped.
+    /// Foreground color for cells that are going to be selected when the mouse is dropped.
     pub fg_drag_selection: Option<Color32>,
 
     /* ·························································································· */
-    /// Maximum number of undo history. This is applied when actual action is performed.
+    /// Maximum number of undo history. This is applied when the actual action is performed.
     ///
     /// Setting value '0' results in kinda appropriate default value.
     pub max_undo_history: usize,
@@ -160,9 +160,9 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
         let mut commands = Vec::<Command<R>>::new();
         let ui_layer_id = ui.layer_id();
 
-        // NOTE: unlike RED and YELLOW which can be acquirable through 'error_bg_color' and
-        // 'warn_bg_color', there's no 'green' color which can be acquired from inherent theme.
-        // Following logic simply gets 'green' color from current background's brightness.
+        // NOTE: unlike RED and YELLOW, which can be acquirable through 'error_bg_color' and
+        // 'warn_bg_color', there's no 'green' color that can be acquired from the inherent theme.
+        // Following the logic simply gets 'green' color from the current background's brightness.
         let green = if visual.window_fill.g() > 128 {
             Color32::DARK_GREEN
         } else {
@@ -306,7 +306,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                     });
                 }
 
-                // Account for header response to calculate total response.
+                // Account for the header response to calculate the total response.
                 resp_total = Some(h.response());
             })
             .tap_mut(|table| {
@@ -325,7 +325,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
     fn impl_show_body(
         &mut self,
         body: egui_extras::TableBody<'_>,
-        mut _painter: egui::Painter,
+        _painter: egui::Painter,
         mut commands: Vec<Command<R>>,
         ctx: &egui::Context,
         style: &egui::Style,
@@ -362,7 +362,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                             // with cells being pasted.
                             Event::Paste(clipboard) => {
                                 if !clipboard.is_empty() {
-                                    // If system clipboard is not empty, try to update the internal
+                                    // If the system clipboard is not empty, try to update the internal
                                     // clipboard with system clipboard content before applying
                                     // paste operation.
                                     s.try_update_clipboard_from_string(viewer, clipboard);
@@ -403,7 +403,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
         // called if the table area is out of the visible space.
         s.validate_cc(&mut table.rows, viewer);
 
-        // Checkout `cc_rows` to satisfy borrow checker. We need to access to
+        // Checkout `cc_rows` to satisfy the borrow checker. We need to access to
         // state mutably within row rendering; therefore, we can't simply borrow
         // `cc_rows` during the whole logic!
         let cc_row_heights = take(&mut s.cc_row_heights);
@@ -433,7 +433,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
 
             let mut row_elem_start = Default::default();
 
-            // Check if current row is edition target
+            // Check if the current row is the edition target
             let edit_state = s.row_editing_cell(row_id);
             let mut editing_cell_rect = Rect::NOTHING;
             let interactive_row = s.is_interactive_row(vis_row);
@@ -558,8 +558,8 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                     };
 
                     // FIXME: After egui 0.27, now the widgets spawned inside this closure
-                    // intercepts interactions, which is basically natural behavior(Upper layer
-                    // widgets). However, this change breaks current implementation which relies on
+                    // intercept interactions, which is basically natural behavior (Upper layer
+                    // widgets). However, this change breaks the current implementation which relies on
                     // the previous table behavior.
                     ui.add_enabled_ui(false, |ui| {
                         if !(is_editing && is_interactive_cell) {
@@ -798,7 +798,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                 resp_total = Some(row.response());
             }
 
-            // Update row height cache if necessary.
+            // Update the row height cache if necessary.
             if self.style.table_row_height.is_none() && prev_row_height != new_maximum_height {
                 row_height_updates.push((vis_row, new_maximum_height));
             }

@@ -53,19 +53,19 @@ int_ty!(
 );
 
 impl VisSelection {
-    pub fn contains(&self, ncol: usize, row: VisRowPos, col: VisColumnPos) -> bool {
-        let (top, left) = self.0.row_col(ncol);
-        let (bottom, right) = self.1.row_col(ncol);
+    pub fn contains(&self, column_index: usize, row: VisRowPos, col: VisColumnPos) -> bool {
+        let (top, left) = self.0.row_col(column_index);
+        let (bottom, right) = self.1.row_col(column_index);
 
         row.0 >= top.0 && row.0 <= bottom.0 && col.0 >= left.0 && col.0 <= right.0
     }
 
-    pub fn contains_rect(&self, ncol: usize, other: Self) -> bool {
-        let (top, left) = self.0.row_col(ncol);
-        let (bottom, right) = self.1.row_col(ncol);
+    pub fn contains_rect(&self, column_index: usize, other: Self) -> bool {
+        let (top, left) = self.0.row_col(column_index);
+        let (bottom, right) = self.1.row_col(column_index);
 
-        let (other_top, other_left) = other.0.row_col(ncol);
-        let (other_bottom, other_right) = other.1.row_col(ncol);
+        let (other_top, other_left) = other.0.row_col(column_index);
+        let (other_bottom, other_right) = other.1.row_col(column_index);
 
         other_top.0 >= top.0
             && other_bottom.0 <= bottom.0
@@ -73,9 +73,9 @@ impl VisSelection {
             && other_right.0 <= right.0
     }
 
-    pub fn from_points(ncol: usize, a: VisLinearIdx, b: VisLinearIdx) -> Self {
-        let (a_r, a_c) = a.row_col(ncol);
-        let (b_r, b_c) = b.row_col(ncol);
+    pub fn from_points(column_index: usize, a: VisLinearIdx, b: VisLinearIdx) -> Self {
+        let (a_r, a_c) = a.row_col(column_index);
+        let (b_r, b_c) = b.row_col(column_index);
 
         let top = a_r.0.min(b_r.0);
         let bottom = a_r.0.max(b_r.0);
@@ -83,8 +83,8 @@ impl VisSelection {
         let right = a_c.0.max(b_c.0);
 
         Self(
-            VisLinearIdx(top * ncol + left),
-            VisLinearIdx(bottom * ncol + right),
+            VisLinearIdx(top * column_index + left),
+            VisLinearIdx(bottom * column_index + right),
         )
     }
 
@@ -92,12 +92,12 @@ impl VisSelection {
         self.0 == self.1
     }
 
-    pub fn union(&self, ncol: usize, other: Self) -> Self {
-        let (top, left) = self.0.row_col(ncol);
-        let (bottom, right) = self.1.row_col(ncol);
+    pub fn union(&self, column_index: usize, other: Self) -> Self {
+        let (top, left) = self.0.row_col(column_index);
+        let (bottom, right) = self.1.row_col(column_index);
 
-        let (other_top, other_left) = other.0.row_col(ncol);
-        let (other_bottom, other_right) = other.1.row_col(ncol);
+        let (other_top, other_left) = other.0.row_col(column_index);
+        let (other_bottom, other_right) = other.1.row_col(column_index);
 
         let top = top.0.min(other_top.0);
         let left = left.0.min(other_left.0);
@@ -105,13 +105,13 @@ impl VisSelection {
         let right = right.0.max(other_right.0);
 
         Self(
-            VisLinearIdx(top * ncol + left),
-            VisLinearIdx(bottom * ncol + right),
+            VisLinearIdx(top * column_index + left),
+            VisLinearIdx(bottom * column_index + right),
         )
     }
 
-    pub fn _from_row_col(ncol: usize, r: VisRowPos, c: VisColumnPos) -> Self {
-        r.linear_index(ncol, c).pipe(|idx| Self(idx, idx))
+    pub fn _from_row_col(column_index: usize, r: VisRowPos, c: VisColumnPos) -> Self {
+        r.linear_index(column_index, c).pipe(|idx| Self(idx, idx))
     }
 }
 
@@ -122,15 +122,15 @@ impl From<VisLinearIdx> for VisSelection {
 }
 
 impl VisLinearIdx {
-    pub fn row_col(&self, ncol: usize) -> (VisRowPos, VisColumnPos) {
-        let (row, col) = (self.0 / ncol, self.0 % ncol);
+    pub fn row_col(&self, column_index: usize) -> (VisRowPos, VisColumnPos) {
+        let (row, col) = (self.0 / column_index, self.0 % column_index);
         (VisRowPos(row), VisColumnPos(col))
     }
 }
 
 impl VisRowPos {
-    pub fn linear_index(&self, ncol: usize, col: VisColumnPos) -> VisLinearIdx {
-        VisLinearIdx(self.0 * ncol + col.0)
+    pub fn linear_index(&self, column_index: usize, col: VisColumnPos) -> VisLinearIdx {
+        VisLinearIdx(self.0 * column_index + col.0)
     }
 }
 
@@ -175,18 +175,18 @@ pub(crate) struct UiState<R> {
 
     /// Cached row heights. Vector index is `VisRowPos`.
     ///
-    /// WARNING: DO NOT ACCESS THIS DURING RENDERING; as it's taken out for heterogenous
-    /// row height support, therefore invalid during table rendering.
+    /// WARNING: DO NOT ACCESS THIS DURING RENDERING; as it's taken out for heterogeneous
+    /// row height support. Therefore, invalid during table rendering.
     pub cc_row_heights: Vec<f32>,
 
-    /// Cached row id to visual row position table for quick lookup.
+    /// Cached row id to the visual row position table for a quick lookup.
     cc_row_id_to_vis: HashMap<RowIdx, VisRowPos>,
 
     /// Spreadsheet is modified during the last validation.
     cc_dirty: bool,
 
-    /// Row selections. First element's top-left corner is always 'highlight' row if
-    /// editing row isn't present.
+    /// Row selections. The first element's top-left corner is always the 'highlight' row if
+    /// the editing row isn't present.
     cc_cursor: CursorState<R>,
 
     /// Number of frames from the last edit. Used to validate sorting.
@@ -225,7 +225,7 @@ pub(crate) struct PersistData {
     /// Cached number of columns.
     pub num_columns: usize,
 
-    /// Visible columns selected by user.
+    /// Visible columns selected by the user.
     pub vis_cols: Vec<ColumnIdx>,
 
     /// Column sorting state.
@@ -310,13 +310,13 @@ impl<R> UiState<R> {
             // Check for trivial changes which does not require total reconstruction of
             // UiState.
 
-            // If viewer's filter is changed. It always invalidates current cache.
+            // If the viewer's filter is changed. It always invalidates the current cache.
             if self.viewer_filter_hash != vwr_hash {
                 self.viewer_filter_hash = vwr_hash;
                 self.cc_dirty = true;
             }
 
-            // Defer validation of cache if it's still editing. This is prevent annoying re-sort
+            // Defer validation of the cache if it's still editing. This is to prevent annoying re-sort
             // during editing multiple cells in-a-row without escape from insertion mode.
             {
                 if !self.is_editing() {
@@ -368,7 +368,7 @@ impl<R> UiState<R> {
                 ctx.memory_mut(|m| m.data.get_persisted(ui_id).unwrap_or_default());
 
             if p.num_columns == self.p.num_columns {
-                // Data should only be copied when column count matches. Otherwise, we regard
+                // Data should only be copied when the column count matches. Otherwise, we regard
                 // stored column differs from the current.
                 self.p = p;
 
@@ -412,7 +412,7 @@ impl<R> UiState<R> {
             });
         }
 
-        // Just refill with neat default height.
+        // Just refill with a neat default height.
         self.cc_row_heights.resize(self.cc_rows.len(), 20.0);
 
         self.cc_row_id_to_vis.clear();
@@ -426,7 +426,7 @@ impl<R> UiState<R> {
         if self.handle_desired_selection() {
             // no-op.
         } else if let CursorState::Select(cursor) = &mut self.cc_cursor {
-            // Validate cursor range if it's still in range.
+            // Validate the cursor range if it's still in range.
 
             let old_cols = self.cc_prev_n_columns;
             let new_rows = self.cc_rows.len();
@@ -506,7 +506,7 @@ impl<R> UiState<R> {
 
         if let CursorState::Select(selections) = &self.cc_cursor {
             let Some(first) = selections.first().map(|x| x.0) else {
-                // No selectgion present. Do nothing
+                // No selection present. Do nothing
                 return false;
             };
 
@@ -530,11 +530,11 @@ impl<R> UiState<R> {
         let table_width = view.calc_table_width();
 
         if table_width > self.p.vis_cols.len() {
-            // If the copied data has more columns than current table, we'll just ignore it.
+            // If the copied data has more columns than the current table, we'll just ignore it.
             return false;
         }
 
-        // If any cell is failed to be parsed, we'll just give up all parsing then use internal
+        // If any cell is failed to be parsed, we'll just give up all the parsing then use internal
         // clipboard instead.
 
         let mut slab = Vec::new();
@@ -544,7 +544,7 @@ impl<R> UiState<R> {
             let slab_id = slab.len();
             slab.push(codec.create_empty_decoded_row());
 
-            // The restoration point of pastes stack.
+            // The restoration point of the pastes stack.
             let pastes_restore = pastes.len();
 
             for (column, data) in row_data {
@@ -650,17 +650,17 @@ impl<R> UiState<R> {
             return false;
         };
 
-        // If there's any desired selections present for next validation, apply it.
+        // If there's any desired selection present for the next validation, apply it.
 
         sel.clear();
-        let ncol = self.p.vis_cols.len();
+        let column_index = self.p.vis_cols.len();
 
         for (row_id, columns) in next_sel {
             let vis_row = self.cc_row_id_to_vis[&row_id];
 
             if columns.is_empty() {
-                let p_left = vis_row.linear_index(ncol, VisColumnPos(0));
-                let p_right = vis_row.linear_index(ncol, VisColumnPos(ncol - 1));
+                let p_left = vis_row.linear_index(column_index, VisColumnPos(0));
+                let p_right = vis_row.linear_index(column_index, VisColumnPos(column_index - 1));
 
                 sel.push(VisSelection(p_left, p_right));
             } else {
@@ -669,7 +669,7 @@ impl<R> UiState<R> {
                         continue;
                     };
 
-                    let p = vis_row.linear_index(ncol, VisColumnPos(vis_c));
+                    let p = vis_row.linear_index(column_index, VisColumnPos(vis_c));
                     sel.push(VisSelection(p, p));
                 }
             }
@@ -884,8 +884,8 @@ impl<R> UiState<R> {
             }
             Command::CcReorderColumn { from, to } => {
                 if from == to || to.0 > self.p.vis_cols.len() {
-                    // Reorder may deliver invalid parameter if there's multiple data
-                    // tables present at the same time; as the drag drop payload are
+                    // Reorder may deliver invalid parameter if there are multiple data
+                    // tables present at the same time; as the drag drop payload is
                     // compatible between different tables...
                     return;
                 }
@@ -924,11 +924,11 @@ impl<R> UiState<R> {
                 };
 
                 if matches!(cmd, Command::CcCancelEdit) {
-                    // Cancellation does not affect to any state.
+                    // Cancellation does not affect any state.
                     return;
                 }
 
-                // Change command type of self.
+                // Change the command type of self.
                 self.push_new_command(
                     table,
                     vwr,
@@ -1022,7 +1022,7 @@ impl<R> UiState<R> {
             }
             Command::RemoveRow(ref indices) => {
                 if indices.is_empty() {
-                    // From various sources, it can be just 'empty' removal command
+                    // From various sources, it can be just the 'empty' removal command
                     return;
                 }
 
@@ -1070,19 +1070,19 @@ impl<R> UiState<R> {
                 vec![]
             }
             Command::CcUpdateSystemClipboard(..) => {
-                // This command MUST've be consumed before calling this.
+                // This command MUST have be consumed before calling this.
                 unreachable!()
             }
         };
 
-        // Discard all redos after this point.
+        // Discard all redo actions in the queue after this point.
         self.undo_queue.drain(0..self.undo_cursor);
 
-        // Discard all undos that exceed the capacity.
+        // Discard all undo actions in the queue that exceed the capacity.
         let new_len = capacity.saturating_sub(1).min(self.undo_queue.len());
         self.undo_queue.drain(new_len..);
 
-        // Now it's the foremost element of undo queue.
+        // Now it's the foremost element of the undo queue.
         self.undo_cursor = 0;
 
         // Apply the command.
@@ -1209,11 +1209,11 @@ impl<R> UiState<R> {
 
     fn validate_interactive_cell(&mut self, new_num_column: usize) {
         let (r, c) = self.cc_interactive_cell.row_col(self.p.vis_cols.len());
-        let rmax = self.cc_rows.len().saturating_sub(1);
+        let max_rows = self.cc_rows.len().saturating_sub(1);
         let clen = self.p.vis_cols.len();
 
         self.cc_interactive_cell =
-            VisLinearIdx(r.0.min(rmax) * clen + c.0.min(new_num_column.saturating_sub(1)));
+            VisLinearIdx(r.0.min(max_rows) * clen + c.0.min(new_num_column.saturating_sub(1)));
     }
 
     pub fn has_clipboard_contents(&self) -> bool {
@@ -1359,15 +1359,15 @@ impl<R> UiState<R> {
             UiAction::Undo => self.undo(table, vwr).pipe(empty),
             UiAction::Redo => self.redo(table, vwr).pipe(empty),
             UiAction::CopySelection | UiAction::CutSelection => {
-                let sels = self.collect_selection();
+                let selections = self.collect_selection();
                 self.clipboard = None;
 
-                if sels.is_empty() {
+                if selections.is_empty() {
                     return vec![]; // we do nothing.
                 }
 
                 // Copy contents to clipboard
-                let offset = sels.first().unwrap().0;
+                let offset = selections.first().unwrap().0;
                 let mut slab = Vec::with_capacity(10);
                 let mut vis_map = HashMap::with_capacity(10);
 
@@ -1378,7 +1378,7 @@ impl<R> UiState<R> {
 
                 let clipboard = Clipboard {
                     slab: slab.into_boxed_slice(),
-                    pastes: sels
+                    pastes: selections
                         .iter()
                         .map(|(v_r, v_c)| {
                             (
@@ -1400,7 +1400,7 @@ impl<R> UiState<R> {
                     vec![]
                 }
                 .tap_mut(|v| {
-                    // We only overwrite system clipboard when codec support is active.
+                    // We only overwrite the system clipboard when codec support is active.
                     if let Some(clip) = sys_clip {
                         v.push(Command::CcUpdateSystemClipboard(clip));
                     }
@@ -1408,11 +1408,11 @@ impl<R> UiState<R> {
             }
             UiAction::SelectionDuplicateValues => {
                 let pivot_row = vwr.clone_row_as_copied_base(&table.rows[self.cc_rows[ic_r.0].0]);
-                let sels = self.collect_selection();
+                let selections = self.collect_selection();
 
                 vec![Command::CcSetCells {
                     slab: [pivot_row].into(),
-                    values: sels
+                    values: selections
                         .into_iter()
                         .map(|(r, c)| (self.cc_rows[r.0], self.p.vis_cols[c.0], RowSlabIndex(0)))
                         .collect(),
@@ -1501,12 +1501,12 @@ impl<R> UiState<R> {
             }
             UiAction::DeleteSelection => {
                 let default = vwr.new_empty_row_for(EmptyRowCreateContext::DeletionDefault);
-                let sels = self.collect_selection();
+                let selections = self.collect_selection();
                 let slab = vec![default].into_boxed_slice();
 
                 vec![Command::CcSetCells {
                     slab,
-                    values: sels
+                    values: selections
                         .into_iter()
                         .map(|(r, c)| (self.cc_rows[r.0], self.p.vis_cols[c.0], RowSlabIndex(0)))
                         .collect(),
@@ -1545,7 +1545,7 @@ impl<R> UiState<R> {
             | UiAction::NavPageUp
             | UiAction::NavTop
             | UiAction::NavBottom) => {
-                let ofst = match action {
+                let offset = match action {
                     UiAction::NavPageDown => self.cci_page_row_count as isize,
                     UiAction::NavPageUp => -(self.cci_page_row_count as isize),
                     UiAction::NavTop => isize::MIN,
@@ -1554,7 +1554,7 @@ impl<R> UiState<R> {
                 };
 
                 let new_ic_r = (ic_r.0 as isize)
-                    .saturating_add(ofst)
+                    .saturating_add(offset)
                     .clamp(0, self.cc_rows.len().saturating_sub(1) as _);
                 self.cc_interactive_cell =
                     VisLinearIdx(new_ic_r as usize * self.p.vis_cols.len() + ic_c.0);
@@ -1607,7 +1607,7 @@ impl<R> UiState<R> {
     fn moved_position(&self, pos: VisLinearIdx, dir: MoveDirection) -> VisLinearIdx {
         let (VisRowPos(r), VisColumnPos(c)) = pos.row_col(self.p.vis_cols.len());
 
-        let (rmax, cmax) = (
+        let (max_rows, max_columns) = (
             self.cc_rows.len().saturating_sub(1),
             self.p.vis_cols.len().saturating_sub(1),
         );
@@ -1618,17 +1618,17 @@ impl<R> UiState<R> {
                 (r, c) => (r - 1, c),
             },
             MoveDirection::Down => match (r, c) {
-                (r, c) if r == rmax => (r, c),
+                (r, c) if r == max_rows => (r, c),
                 (r, c) => (r + 1, c),
             },
             MoveDirection::Left => match (r, c) {
                 (0, 0) => (0, 0),
-                (r, 0) => (r - 1, cmax),
+                (r, 0) => (r - 1, max_columns),
                 (r, c) => (r, c - 1),
             },
             MoveDirection::Right => match (r, c) {
-                (r, c) if r == rmax && c == cmax => (r, c),
-                (r, c) if c == cmax => (r + 1, 0),
+                (r, c) if r == max_rows && c == max_columns => (r, c),
+                (r, c) if c == max_columns => (r + 1, 0),
                 (r, c) => (r, c + 1),
             },
         };
@@ -1637,18 +1637,18 @@ impl<R> UiState<R> {
     }
 
     pub fn cci_take_selection(&mut self, mods: Modifiers) -> Option<Vec<VisSelection>> {
-        let ncol = self.p.vis_cols.len();
+        let column_index = self.p.vis_cols.len();
         let cci_sel = self
             .cci_selection
             .take()
-            .map(|(_0, _1)| VisSelection::from_points(ncol, _0, _1))?;
+            .map(|(_0, _1)| VisSelection::from_points(column_index, _0, _1))?;
 
         if mods.is_none() {
             return Some(vec![cci_sel]);
         }
 
         let mut sel = self.cursor_as_selection().unwrap_or_default().to_owned();
-        let idx_contains = sel.iter().position(|x| x.contains_rect(ncol, cci_sel));
+        let idx_contains = sel.iter().position(|x| x.contains_rect(column_index, cci_sel));
         if sel.is_empty() {
             sel.push(cci_sel);
             return Some(sel);
@@ -1665,7 +1665,7 @@ impl<R> UiState<R> {
         if mods.cmd_ctrl_matches(Modifiers::SHIFT) {
             let last = sel.last_mut().unwrap();
             if cci_sel.is_point() && last.is_point() {
-                *last = last.union(ncol, cci_sel);
+                *last = last.union(column_index, cci_sel);
             } else if idx_contains.is_none() {
                 sel.push(cci_sel);
             };
