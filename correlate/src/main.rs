@@ -4,7 +4,6 @@ mod data;
 mod view;
 mod codec;
 mod egui_data_table;
-mod application_command;
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {

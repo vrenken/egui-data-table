@@ -42,11 +42,4 @@ pub enum Command<R> {
     CcCommitEdit,
 
     CcUpdateSystemClipboard(String),
-
-    ToggleScrollBarVisibility,
-    ClearUserModificationFlag,
-
-    AddProject,
-    AddExistingDataSource(std::path::PathBuf),
-    SwitchToSource(usize, usize),
 }

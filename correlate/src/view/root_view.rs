@@ -1,6 +1,9 @@
 ﻿use crate::view::*;
-use crate::egui_data_table::command::Command;
-use crate::data::Row;
+use std::any::Any;
+
+pub trait ApplicationCommand: Any + Send + Sync {
+    fn as_any(&self) -> &dyn Any;
+}
 
 pub struct RootView {
     pub root_view_model: RootViewModel,
@@ -13,7 +16,7 @@ pub struct RootView {
     pub menu_bar: MenuBar,
     pub hierarchy_panel: HierarchyPanel,
 
-    pub pending_commands: Vec<Command<Row>>,
+    pub pending_commands: Vec<Box<dyn ApplicationCommand>>,
 }
 
 impl Default for RootView {
