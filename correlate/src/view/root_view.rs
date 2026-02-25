@@ -1,4 +1,6 @@
 ﻿use crate::view::*;
+use crate::egui_data_table::command::Command;
+use crate::data::Row;
 
 pub struct RootView {
     pub root_view_model: RootViewModel,
@@ -10,6 +12,8 @@ pub struct RootView {
     pub bottom_panel: BottomPanel,
     pub menu_bar: MenuBar,
     pub hierarchy_panel: HierarchyPanel,
+
+    pub pending_commands: Vec<Command<Row>>,
 }
 
 impl Default for RootView {
@@ -27,6 +31,7 @@ impl Default for RootView {
             bottom_panel: BottomPanel::default(),
             menu_bar: MenuBar::default(),
             hierarchy_panel: HierarchyPanel::default(),
+            pending_commands: Vec::new(),
         }
     }
 }
@@ -35,7 +40,12 @@ impl eframe::App for RootView {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 
         self.hierarchy_panel.update(&mut self.root_view_model, ctx);
-        self.central_panel.update(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
+        self.central_panel.update(
+            &mut self.root_view_model,
+            &mut self.central_panel_view_model,
+            ctx,
+            self.pending_commands.drain(..).collect()
+        );
 
         // Assert Send/Sync for DataTable as a compile-time check
         fn is_send<T: Send>(_: &T) {}
@@ -53,6 +63,6 @@ impl eframe::App for RootView {
             self.root_view_model.switch_to_source(index, sheet_idx);
         }
 
-        self.central_panel.ui(&mut self.root_view_model, ctx);
+        self.pending_commands = self.central_panel.ui(&mut self.root_view_model, ctx);
     }
 }

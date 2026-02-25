@@ -1,5 +1,7 @@
 use crate::view::*;
 use crate::egui_data_table::*;
+use crate::egui_data_table::command::Command;
+use crate::data::Row;
 use eframe::emath::Align;
 use egui::Layout;
 use egui::scroll_area::ScrollBarVisibility;
@@ -12,14 +14,35 @@ impl CentralPanel {
     pub fn update(&mut self,
                   view_model: &mut RootViewModel,
                   central_panel_view_model: &mut CentralPanelViewModel,
-                  ctx: &egui::Context) {
+                  ctx: &egui::Context,
+                  commands: Vec<Command<Row>>) {
         central_panel_view_model.handle_viewer_requests(view_model);
         Self::show_trash_confirmation_modal(ctx, view_model);
+
+        for command in commands {
+            match command {
+                Command::ToggleScrollBarVisibility => {
+                    view_model.scroll_bar_always_visible = !view_model.scroll_bar_always_visible;
+                    if view_model.scroll_bar_always_visible {
+                        view_model.style_override.scroll_bar_visibility = ScrollBarVisibility::AlwaysVisible;
+                    } else {
+                        view_model.style_override.scroll_bar_visibility = ScrollBarVisibility::VisibleWhenNeeded;
+                    }
+                }
+                Command::ClearUserModificationFlag => {
+                    view_model.table.clear_user_modification_flag();
+                    view_model.save_datasource_configuration();
+                }
+                _ => {}
+            }
+        }
     }
 
     pub fn ui(&mut self,
               view_model: &mut RootViewModel,
-              ctx: &egui::Context) {
+              ctx: &egui::Context) -> Vec<Command<Row>> {
+
+        let mut commands = Vec::new();
 
         ctx.data_mut(|d| d.insert_temp(egui::Id::new("root_view_model"), view_model as *mut RootViewModel as usize));
 
@@ -31,17 +54,17 @@ impl CentralPanel {
                 ui.with_layout(Layout::right_to_left(Align::TOP), |ui| {
                     if ui.button(egui_material_icons::icons::ICON_PAGE_INFO).clicked() {}
                     if ui.button(egui_material_icons::icons::ICON_SWAP_VERT).clicked() {}
-                    if ui.button(egui_material_icons::icons::ICON_FILTER_LIST).clicked() {}
+                    if ui.button(egui_material_icons::icons::ICON_FILTER_LIST).clicked() {
+                        commands.push(Command::ToggleScrollBarVisibility);
+                    }
                 });
 
                 match view_model.scroll_bar_always_visible {
                     true => {
                         ui.style_mut().spacing.scroll = egui::style::ScrollStyle::solid();
-                        view_model.style_override.scroll_bar_visibility = ScrollBarVisibility::AlwaysVisible;
                     },
                     false => {
                         ui.style_mut().spacing.scroll = egui::style::ScrollStyle::floating();
-                        view_model.style_override.scroll_bar_visibility = ScrollBarVisibility::VisibleWhenNeeded;
                     }
                 };
 
@@ -53,11 +76,12 @@ impl CentralPanel {
                 );
 
                 if view_model.table.has_user_modification() {
-                    view_model.table.clear_user_modification_flag();
-                    view_model.save_datasource_configuration();
+                    commands.push(Command::ClearUserModificationFlag);
                 }
             });
         });
+
+        commands
     }
 
     fn show_trash_confirmation_modal(ctx: &egui::Context, view_model: &mut RootViewModel) {

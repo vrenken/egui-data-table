@@ -42,4 +42,7 @@ pub enum Command<R> {
     CcCommitEdit,
 
     CcUpdateSystemClipboard(String),
+
+    ToggleScrollBarVisibility,
+    ClearUserModificationFlag,
 }

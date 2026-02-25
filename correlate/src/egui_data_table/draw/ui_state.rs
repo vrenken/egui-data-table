@@ -908,6 +908,9 @@ impl<R> UiState<R> {
                 // This command MUST have be consumed before calling this.
                 unreachable!()
             }
+            Command::ToggleScrollBarVisibility | Command::ClearUserModificationFlag => {
+                unreachable!("This command should be handled by the view update method")
+            }
         };
 
         // Discard all redo actions in the queue after this point.
@@ -1034,7 +1037,9 @@ impl<R> UiState<R> {
             | Command::CcCancelEdit
             | Command::CcSetSelection(..)
             | Command::CcSetCells { .. }
-            | Command::CcUpdateSystemClipboard(..) => unreachable!(),
+            | Command::CcUpdateSystemClipboard(..)
+            | Command::ToggleScrollBarVisibility
+            | Command::ClearUserModificationFlag => unreachable!(),
         }
     }
 
