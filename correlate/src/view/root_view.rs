@@ -8,7 +8,7 @@ pub struct RootView {
     pub central_panel: CentralPanel,
     pub bottom_panel: BottomPanel,
     pub menu_bar: MenuBar,
-    pub hierarchyPanel: HierarchyPanel,
+    pub hierarchy_panel: HierarchyPanel,
 }
 
 impl Default for RootView {
@@ -25,7 +25,7 @@ impl Default for RootView {
             central_panel: CentralPanel::default(),
             bottom_panel: BottomPanel::default(),
             menu_bar: MenuBar::default(),
-            hierarchyPanel: HierarchyPanel::default(),
+            hierarchy_panel: HierarchyPanel::default(),
         }
     }
 }
@@ -33,7 +33,7 @@ impl Default for RootView {
 impl eframe::App for RootView {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 
-        self.hierarchyPanel.update(&mut self.root_view_model, ctx);
+        self.hierarchy_panel.update(&mut self.root_view_model, ctx);
         self.central_panel.update(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
 
         // Assert Send/Sync for DataTable as a compile-time check
@@ -45,7 +45,7 @@ impl eframe::App for RootView {
         self.menu_bar.ui(&mut self.root_view_model, ctx);
         self.bottom_panel.ui(&mut self.root_view_model, ctx);
 
-        let (newly_selected_index, newly_selected_sheet_index): (Option<usize>, Option<usize>) = self.hierarchyPanel.ui(&mut self.root_view_model, ctx);
+        let (newly_selected_index, newly_selected_sheet_index): (Option<usize>, Option<usize>) = self.hierarchy_panel.ui(&mut self.root_view_model, ctx);
 
         if let Some(index) = newly_selected_index {
             let sheet_idx = newly_selected_sheet_index.unwrap_or(0);
