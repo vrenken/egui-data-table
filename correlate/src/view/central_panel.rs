@@ -3,6 +3,7 @@ use crate::egui_data_table::*;
 use eframe::emath::Align;
 use egui::Layout;
 use egui::scroll_area::ScrollBarVisibility;
+use crate::egui_data_table::renderer::Renderer;
 
 #[derive(Default)]
 pub struct CentralPanel {}

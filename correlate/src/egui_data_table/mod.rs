@@ -2,6 +2,7 @@
 
 pub mod draw;
 pub mod viewer;
+pub(crate) mod renderer;
 
 pub use draw::*;
 pub use draw::state::*;
@@ -31,7 +32,7 @@ pub struct DataTable<R> {
     dirty_flag: bool,
 
     /// Ui
-    ui: Option<Box<draw::state::UiState<R>>>,
+    ui: Option<Box<ui_state::UiState<R>>>,
 }
 
 impl<R: std::fmt::Debug> std::fmt::Debug for DataTable<R> {
