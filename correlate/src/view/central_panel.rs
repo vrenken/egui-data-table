@@ -147,9 +147,9 @@ impl CentralPanel {
             let mut is_key = config.is_key;
             if ui.checkbox(&mut is_key, "Is key").clicked() {
                 config.is_key = is_key;
-                // Reset the table to force a redraw with new header names
+                // Reset the table to force redrawing with new header names
                 ui.ctx().memory_mut(|_mem| {
-                    // This is a hacky way to force a full redraw of the table
+                    // This is a hacky way to force a full redrawing of the table
                     // by clearing its UI state cache if we had access to the ID.
                     // Since we don't easily have the ID here, we just hope the change
                     // is picked up on the next frame.

@@ -293,6 +293,7 @@ enum CursorState<R> {
 }
 
 impl<R> UiState<R> {
+    #[allow(dead_code)] // TODO: Validate
     pub fn cc_is_dirty(&self) -> bool {
         self.cc_dirty
     }

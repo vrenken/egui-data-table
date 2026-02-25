@@ -2,6 +2,7 @@
 
 pub struct RootView {
     pub root_view_model: RootViewModel,
+    #[allow(dead_code)] // TODO: Validate
     pub hierarchy_view_model: HierarchyViewModel,
     pub central_panel_view_model: CentralPanelViewModel,
 

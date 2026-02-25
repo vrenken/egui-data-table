@@ -97,13 +97,14 @@ impl ColumnTypeEditor for RelationEditor {
         }
         let mut response = placeholder_res.clone();
 
+        #[allow(warnings)] // TODO: Replace with proper popup.
         egui::popup_below_widget(ui, popup_id, &placeholder_res, egui::PopupCloseBehavior::CloseOnClickOutside, |ui| {
             ui.set_min_width(220.0);
 
             // Use the current key for the text edit query, but we need to handle the fact that it might be a serialized relation
             let mut query_buffer = current_key.clone();
             let text_edit_res = ui.text_edit_singleline(&mut query_buffer);
-            
+
             // Ensure the text box gets focus when the popup is first opened.
             if !was_open {
                 text_edit_res.request_focus();

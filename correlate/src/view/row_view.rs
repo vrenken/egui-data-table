@@ -272,7 +272,7 @@ impl RowViewer<Row> for RowView {
         let renaming_target = match target {
             RenameTarget::Row(idx) => Some(Rename::Row(idx)),
             RenameTarget::Column(idx) => Some(Rename::Column(idx)),
-            _ => None,
+            //_ => None,
         };
 
         if let Some(renaming_target) = renaming_target {

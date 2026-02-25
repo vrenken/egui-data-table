@@ -101,16 +101,19 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
         self
     }
 
+    #[allow(dead_code)] // TODO: Validate
     pub fn with_style_modify(mut self, f: impl FnOnce(&mut Style)) -> Self {
         f(&mut self.style);
         self
     }
 
+    #[allow(dead_code)] // TODO: Validate
     pub fn with_table_row_height(mut self, height: f32) -> Self {
         self.style.table_row_height = Some(height);
         self
     }
 
+    #[allow(dead_code)] // TODO: Validate
     pub fn with_max_undo_history(mut self, max_undo_history: usize) -> Self {
         self.style.max_undo_history = max_undo_history;
         self
@@ -136,6 +139,7 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
     ///     .with_translator(Arc::new(EsEsTranslator));
     /// ```
     #[cfg(not(doctest))]
+    #[allow(dead_code)] // TODO: Validate
     pub fn with_translator(mut self, translator: Arc<dyn Translator>) -> Self {
         self.translator = translator;
         self

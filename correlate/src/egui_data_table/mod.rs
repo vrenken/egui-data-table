@@ -79,6 +79,7 @@ impl<R> DataTable<R> {
 
     /// Insert a row at the specified index. This is a thin wrapper of `Vec::retain` which provides 
     /// additional dirty flag optimization.
+    #[allow(dead_code)] // TODO: Validate
     pub fn retain(&mut self, mut f: impl FnMut(&R) -> bool) {
         let mut removed_any = false;
         self.rows.retain(|row| {
@@ -93,16 +94,9 @@ impl<R> DataTable<R> {
     }
 
     /// Check if the UI is obsolete and needs to be re-rendered due to data changes.
+    #[allow(dead_code)] // TODO: Validate
     pub fn is_dirty(&self) -> bool {
         self.ui.as_ref().is_some_and(|ui| ui.cc_is_dirty())
-    }
-
-    #[deprecated(
-        since = "0.5.1",
-        note = "user-driven dirty flag clearance is redundant"
-    )]
-    pub fn clear_dirty_flag(&mut self) {
-        // This intentionally became a no-op
     }
 
     fn mark_dirty(&mut self) {
@@ -133,6 +127,7 @@ impl<R> DataTable<R> {
     }
 
     /// Resets the visual column order to match the data order.
+    #[allow(dead_code)] // TODO: Validate
     pub fn reset_visual_column_order(&mut self) {
         if let Some(ui) = self.ui.as_mut() {
             let num_columns = ui.num_columns();

@@ -117,7 +117,7 @@ impl RootViewModel {
     pub fn handle_pending_file_add(&mut self, path: std::path::PathBuf, index: usize) {
         let path_str = path.to_string_lossy().to_string();
 
-        // If file doesn't exist, create an empty one (with headers)
+        // If the file doesn't exist, create an empty one (with headers)
         if !path.exists() {
             if let Err(e) = std::fs::write(&path, "Name\n") {
                 log::error!("Failed to create new file {}: {}", path_str, e);
@@ -191,7 +191,7 @@ impl RootViewModel {
             let path_to_remove = self.data_sources[index].path.clone();
             self.data_sources.remove(index);
 
-            // Update selected index if necessary
+            // Update the selected index if necessary
             if let Some(selected) = self.selected_index {
                 if selected == index {
                     // If we removed the selected one, pick a new one or set to None
@@ -223,7 +223,7 @@ impl RootViewModel {
     }
 
     pub fn switch_to_source(&mut self, index: usize, sheet_idx: usize) {
-        // Save current table state back to its source
+        // Save the current table state back to its source
         if let Some(old_idx) = self.selected_index {
             let old_ds = &mut self.data_sources[old_idx];
             let old_sheet = &mut old_ds.sheets[old_ds.selected_sheet_index];
@@ -233,7 +233,7 @@ impl RootViewModel {
             self.save_source_config(old_idx);
         }
 
-        // Switch to new source
+        // Switch to the new source
         self.selected_index = Some(index);
         let ds = &mut self.data_sources[index];
         ds.selected_sheet_index = sheet_idx;

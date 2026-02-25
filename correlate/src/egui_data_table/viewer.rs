@@ -8,6 +8,7 @@ use tap::prelude::Pipe;
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DecodeErrorBehavior {
     /// Skip the cell and continue decoding.
+    #[allow(dead_code)] // TODO: Validate
     SkipCell,
 
     /// Skip the whole row
@@ -264,7 +265,10 @@ pub trait RowViewer<R>: 'static {
         let _ = (table, target, new_name);
     }
 
+    #[allow(dead_code)] // TODO: Validate
     fn on_rename_row(&mut self, _row_index: usize, _new_name: String) {}
+
+    #[allow(dead_code)] // TODO: Validate
     fn on_rename_column(&mut self, _column_index: usize, _new_name: String) {}
 
     /// Called when a column has been moved
@@ -354,6 +358,7 @@ pub enum HeaderAction {
     HideColumn(usize),
     ClearSort,
     ShowHidden(usize),
+    #[allow(dead_code)] // TODO: Validate
     RemoveColumn(usize),
 }
 
@@ -380,6 +385,7 @@ pub enum CellWriteContext {
 #[non_exhaustive]
 pub enum EmptyRowCreateContext {
     /// Row is created to be used as simple default template.
+    #[allow(dead_code)] // TODO: Validate
     Default,
 
     /// Row is created to be used as explicit `empty` value when deletion
@@ -407,6 +413,7 @@ pub enum UiCursorState {
 }
 
 impl UiCursorState {
+    #[allow(dead_code)] // TODO: Validate
     pub fn is_idle(&self) -> bool {
         matches!(self, Self::Idle)
     }
@@ -415,6 +422,7 @@ impl UiCursorState {
         matches!(self, Self::Editing)
     }
 
+    #[allow(dead_code)] // TODO: Validate
     pub fn is_selecting(&self) -> bool {
         matches!(self, Self::SelectOne | Self::SelectMany)
     }

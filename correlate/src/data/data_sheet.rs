@@ -8,6 +8,7 @@ pub trait SheetLoader {
 #[derive(Clone)]
 pub struct DataSheet {
     pub name: String,
+    #[allow(dead_code)] // TODO: Validate
     pub configuration: DataSheetConfiguration,
     pub custom_name: Option<String>,
     pub display_name: Option<String>,

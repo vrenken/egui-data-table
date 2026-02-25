@@ -44,6 +44,7 @@ impl ColumnTypeEditor for SelectEditor {
 
         let mut response = placeholder_res.clone();
 
+        #[allow(warnings)] // TODO: Replace with proper popup.
         egui::popup_below_widget(ui, popup_id, &placeholder_res, egui::PopupCloseBehavior::CloseOnClickOutside, |ui| {
             ui.set_min_width(150.0);
             
