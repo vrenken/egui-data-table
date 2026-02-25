@@ -13,8 +13,7 @@ impl CentralPanel {
     pub fn update(&mut self,
                   _view_model: &mut RootViewModel,
                   central_panel_view_model: &mut CentralPanelViewModel,
-                  ctx: &egui::Context,
-                  _commands: &Vec<Box<dyn ApplicationCommand>>) {
+                  ctx: &egui::Context) {
         central_panel_view_model.handle_viewer_requests(_view_model);
         Self::show_trash_confirmation_modal(ctx, _view_model);
     }

@@ -45,18 +45,10 @@ impl Default for RootView {
 
 impl eframe::App for RootView {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let commands = self.pending_commands.drain(..).collect::<Vec<_>>();
-        for command in &commands {
-            self.dispatcher.dispatch(command.as_any());
-        }
 
-        self.hierarchy_panel.update(&mut self.root_view_model, ctx, &commands);
-        self.central_panel.update(
-            &mut self.root_view_model,
-            &mut self.central_panel_view_model,
-            ctx,
-            &commands
-        );
+        self.dispatcher.dispatch(&mut self.pending_commands);
+
+        self.central_panel.update(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
 
         // Assert Send/Sync for DataTable as a compile-time check
         fn is_send<T: Send>(_: &T) {}

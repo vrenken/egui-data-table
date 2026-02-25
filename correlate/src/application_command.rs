@@ -19,13 +19,23 @@ impl ApplicationCommandDispatcher {
         Self { handlers: HashMap::new() }
     }
 
-    pub fn register<C: Any + Send + Sync, H: ApplicationCommandHandler + 'static>(&mut self, handler: H) {
+    pub fn register<C: ApplicationCommand + 'static, H: ApplicationCommandHandler + 'static>(&mut self, handler: H) {
         self.handlers.insert(TypeId::of::<C>(), Box::new(handler));
     }
 
-    pub fn dispatch(&self, cmd: &dyn Any) {
-        if let Some(handler) = self.handlers.get(&cmd.type_id()) {
-            handler.handle(cmd);
+    pub fn dispatch(&self, commands: &mut Vec<Box<dyn ApplicationCommand>>) {
+
+        let all_commands = commands.drain(..).collect::<Vec<_>>();
+        for command in all_commands {
+            self.dispatch_single(command.as_any());
+        }
+    }
+
+    pub fn dispatch_single(&self, command: &dyn Any) {
+        let type_id = command.type_id();
+
+        if let Some(handler) = self.handlers.get(&type_id) {
+            handler.handle(command);
         }
     }
 }

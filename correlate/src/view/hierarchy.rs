@@ -9,9 +9,6 @@ use crate::application_command::*;
 pub struct HierarchyPanel {}
 
 impl HierarchyPanel {
-    pub fn update(&mut self, _view_model: &mut RootViewModel, _ctx: &Context, _commands: &Vec<Box<dyn ApplicationCommand>>) {
-    }
-
     pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &Context) -> Vec<Box<dyn ApplicationCommand>> {
         let mut commands = Vec::<Box<dyn ApplicationCommand>>::new();
         let mut newly_selected_index = None;
