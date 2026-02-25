@@ -1,5 +1,5 @@
 use std::borrow::Cow;
-use crate::DataTable;
+use crate::egui_data_table::DataTable;
 
 use egui::{Key, KeyboardShortcut, Modifiers};
 pub use egui_extras::Column as TableColumnConfig;
@@ -519,3 +519,4 @@ pub fn default_hotkeys(context: &UiActionContext) -> Vec<(KeyboardShortcut, UiAc
         ])
     }
 }
+

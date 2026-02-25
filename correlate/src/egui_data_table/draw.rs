@@ -4,7 +4,7 @@ use egui::{Align, Color32, Event, Label, Layout, PointerButton, PopupAnchor, Rec
 use egui_extras::Column;
 use tap::prelude::{Pipe, Tap};
 
-use crate::{
+use crate::egui_data_table::{
     viewer::{EmptyRowCreateContext, RowViewer},
     DataTable, UiAction,
 };
@@ -293,14 +293,14 @@ impl<'a, R, V: RowViewer<R>> Renderer<'a, R, V> {
                     resp.context_menu(|ui| {
                         if let Some(action) = viewer.column_header_context_menu(ui, col.0) {
                             match action {
-                                crate::viewer::HeaderAction::AddColumn(at) => commands.push(Command::AddColumn(at)),
-                                crate::viewer::HeaderAction::RequestSave => commands.push(Command::RequestSave),
-                                crate::viewer::HeaderAction::RenameCommitted(new_name) => commands.push(Command::RenameCommitted(crate::viewer::RenameTarget::Column(col.0), new_name)),
-                                crate::viewer::HeaderAction::MoveColumn(at, s) => commands.push(Command::MoveColumn(at, s)),
-                                crate::viewer::HeaderAction::HideColumn(_) => commands.push(Command::CcHideColumn(col)),
-                                crate::viewer::HeaderAction::ClearSort => commands.push(Command::SetColumnSort(Vec::new())),
-                                crate::viewer::HeaderAction::ShowHidden(what) => commands.push(Command::CcShowColumn { what: ColumnIdx(what), at: vis_col }),
-                                crate::viewer::HeaderAction::RemoveColumn(idx) => commands.push(Command::RemoveColumn(idx)),
+                                crate::egui_data_table::viewer::HeaderAction::AddColumn(at) => commands.push(Command::AddColumn(at)),
+                                crate::egui_data_table::viewer::HeaderAction::RequestSave => commands.push(Command::RequestSave),
+                                crate::egui_data_table::viewer::HeaderAction::RenameCommitted(new_name) => commands.push(Command::RenameCommitted(crate::egui_data_table::viewer::RenameTarget::Column(col.0), new_name)),
+                                crate::egui_data_table::viewer::HeaderAction::MoveColumn(at, s) => commands.push(Command::MoveColumn(at, s)),
+                                crate::egui_data_table::viewer::HeaderAction::HideColumn(_) => commands.push(Command::CcHideColumn(col)),
+                                crate::egui_data_table::viewer::HeaderAction::ClearSort => commands.push(Command::SetColumnSort(Vec::new())),
+                                crate::egui_data_table::viewer::HeaderAction::ShowHidden(what) => commands.push(Command::CcShowColumn { what: ColumnIdx(what), at: vis_col }),
+                                crate::egui_data_table::viewer::HeaderAction::RemoveColumn(idx) => commands.push(Command::RemoveColumn(idx)),
                             }
                         }
                     });
@@ -932,3 +932,5 @@ impl Translator for EnglishTranslator {
         }.to_string()
     }
 }
+
+

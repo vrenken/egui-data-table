@@ -11,7 +11,7 @@ use egui::{
 use itertools::Itertools;
 use tap::prelude::{Pipe, Tap};
 
-use crate::{
+use crate::egui_data_table::{
     default,
     draw::tsv,
     viewer::{
@@ -27,7 +27,7 @@ macro_rules! int_ty {
     struct $name:ident ($($ty:ty),+); $($rest:tt)*) => {
     #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, PartialOrd, Ord)]
     $(#[$meta])*
-    pub(crate) struct $name($(pub(in crate::draw) $ty),+);
+    pub(crate) struct $name($(pub(in crate::egui_data_table::draw) $ty),+);
 
     int_ty!($($rest)*);
 };
@@ -1709,7 +1709,7 @@ pub(crate) enum Command<R> {
     InsertRows(RowIdx, Box<[R]>),
     AddColumn(usize),
     MoveColumn(usize, usize),
-    RenameCommitted(crate::viewer::RenameTarget, String),
+    RenameCommitted(crate::egui_data_table::viewer::RenameTarget, String),
     RequestSave,
     RemoveRow(Vec<RowIdx>),
     RemoveColumn(usize),
@@ -1720,3 +1720,5 @@ pub(crate) enum Command<R> {
 
     CcUpdateSystemClipboard(String),
 }
+
+
