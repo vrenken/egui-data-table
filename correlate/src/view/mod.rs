@@ -42,5 +42,8 @@ pub use add_project::*;
 mod switch_to_source;
 pub use switch_to_source::*;
 
+mod show_trash_confirmation_modal;
+pub use show_trash_confirmation_modal::*;
+
 
 
