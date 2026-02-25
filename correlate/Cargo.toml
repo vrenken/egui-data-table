@@ -9,29 +9,31 @@ path = "src/main.rs"
 
 [dependencies]
 egui =                  { workspace = true }
-egui-data-table =       { workspace = true }
+egui_extras =           { workspace = true, default-features = false, features = [ "serde" ] }
 egui_material_icons =   { workspace = true }
-egui_extras =           { workspace = true, features = [ "serde" ] }
+
 eframe =                { workspace = true, features = ["serde", "persistence"] }
 env_logger =            { workspace = true }
-getrandom =             { workspace = true, features = ["wasm_js"] }
 fastrand =              { workspace = true }
 names =                 { workspace = true, optional = true }
 
 tap =                   { workspace = true }
 log =                   { workspace = true }
-serde =                 { workspace = true, features = ["derive"] }
+serde =                 { workspace = true, features = ["derive"], optional = true }
 serde_json =            { workspace = true }
 umya-spreadsheet =      { workspace = true }
 csv =                   { workspace = true }
 rfd =                   { workspace = true }
+itertools =             { workspace = true }
+thiserror =             { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen-futures =  { version = "0.4" }
 web-sys =               { version = "0.3" }
 
 [features]
-demo = ["dep:names"]
+default = ["persistency"]
+persistency = ["dep:serde"]
 
 [dev-dependencies]
 eframe =                    { workspace = true, features = ["serde", "persistence"] }
