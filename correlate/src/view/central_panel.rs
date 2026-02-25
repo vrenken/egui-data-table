@@ -4,17 +4,7 @@ use eframe::emath::Align;
 use egui::Layout;
 use egui::scroll_area::ScrollBarVisibility;
 use crate::egui_data_table::renderer::Renderer;
-use std::any::Any;
-
-pub struct ToggleScrollBarVisibility;
-impl ApplicationCommand for ToggleScrollBarVisibility {
-    fn as_any(&self) -> &dyn Any { self }
-}
-
-pub struct ClearUserModificationFlag;
-impl ApplicationCommand for ClearUserModificationFlag {
-    fn as_any(&self) -> &dyn Any { self }
-}
+use crate::application_command::ApplicationCommand;
 
 #[derive(Default)]
 pub struct CentralPanel {}

@@ -25,4 +25,11 @@ mod hierarchy_view_model;
 pub use hierarchy_view_model::*;
 
 mod central_panel_view_model;
+
+mod clear_user_modification_flag;
+pub use clear_user_modification_flag::*;
+
+mod toggle_scrollbar_visibility;
+pub use toggle_scrollbar_visibility::*;
+
 pub use central_panel_view_model::*;

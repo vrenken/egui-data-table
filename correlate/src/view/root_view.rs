@@ -1,9 +1,5 @@
 ﻿use crate::view::*;
-use std::any::Any;
-
-pub trait ApplicationCommand: Any + Send + Sync {
-    fn as_any(&self) -> &dyn Any;
-}
+use crate::application_command::ApplicationCommand;
 
 pub struct RootView {
     pub root_view_model: RootViewModel,
