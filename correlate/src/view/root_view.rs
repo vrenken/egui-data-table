@@ -1,5 +1,5 @@
 ﻿use crate::view::*;
-use crate::application_command::ApplicationCommand;
+use crate::application_command::*;
 
 pub struct RootView {
     pub root_view_model: RootViewModel,
@@ -13,6 +13,7 @@ pub struct RootView {
     pub hierarchy_panel: HierarchyPanel,
 
     pub pending_commands: Vec<Box<dyn ApplicationCommand>>,
+    pub command_dispatcher: ApplicationCommandDispatcher,
 }
 
 impl Default for RootView {
@@ -21,6 +22,9 @@ impl Default for RootView {
 
         let config_path = "config.json";
         let config = crate::data::Configuration::load(config_path).unwrap();
+
+        let dispatcher = ApplicationCommandDispatcher::new();
+        //dispatcher.register()
 
         Self {
             hierarchy_view_model: HierarchyViewModel::default(&config),
@@ -31,6 +35,7 @@ impl Default for RootView {
             menu_bar: MenuBar::default(),
             hierarchy_panel: HierarchyPanel::default(),
             pending_commands: Vec::new(),
+            command_dispatcher: dispatcher,
         }
     }
 }
