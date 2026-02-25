@@ -32,6 +32,10 @@ impl Default for RootView {
 
 impl eframe::App for RootView {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+
+        self.hierarchyPanel.update(&mut self.root_view_model, ctx);
+        self.central_panel.update(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
+
         // Assert Send/Sync for DataTable as a compile-time check
         fn is_send<T: Send>(_: &T) {}
         fn is_sync<T: Sync>(_: &T) {}
@@ -48,6 +52,6 @@ impl eframe::App for RootView {
             self.root_view_model.switch_to_source(index, sheet_idx);
         }
 
-        self.central_panel.ui(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
+        self.central_panel.ui(&mut self.root_view_model, ctx);
     }
 }

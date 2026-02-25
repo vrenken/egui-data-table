@@ -8,9 +8,16 @@ use crate::view::*;
 pub struct CentralPanel {}
 
 impl CentralPanel {
+    pub fn update(&mut self,
+                  view_model: &mut RootViewModel,
+                  central_panel_view_model: &mut CentralPanelViewModel,
+                  ctx: &egui::Context) {
+        central_panel_view_model.handle_viewer_requests(view_model);
+        Self::show_trash_confirmation_modal(ctx, view_model);
+    }
+
     pub fn ui(&mut self,
               view_model: &mut RootViewModel,
-              central_panel_view_model: &mut CentralPanelViewModel,
               ctx: &egui::Context) {
 
         ctx.data_mut(|d| d.insert_temp(egui::Id::new("root_view_model"), view_model as *mut RootViewModel as usize));
@@ -48,9 +55,6 @@ impl CentralPanel {
                     view_model.table.clear_user_modification_flag();
                     view_model.save_datasource_configuration();
                 }
-
-                central_panel_view_model.handle_viewer_requests(view_model);
-                Self::show_trash_confirmation_modal(ctx, view_model);
             });
         });
     }

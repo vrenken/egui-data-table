@@ -6,6 +6,9 @@ use crate::data::*;
 pub struct HierarchyPanel {}
 
 impl HierarchyPanel {
+    pub fn update(&mut self, _view_model: &mut RootViewModel, _ctx: &Context) {
+    }
+
     pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &Context) -> (Option<usize>, Option<usize>) {
         let mut newly_selected_index = None;
         let mut newly_selected_sheet_index = None;
