@@ -46,7 +46,6 @@ impl eframe::App for RootView {
             self.root_view_model.switch_to_source(index, sheet_idx);
         }
 
-        self.root_view_model.handle_pending_file_add();
         self.central_panel.ui(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
     }
 }

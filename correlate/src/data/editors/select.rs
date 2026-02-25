@@ -87,7 +87,7 @@ impl ColumnTypeEditor for SelectEditor {
         });
 
         // Update allowed_values and cell_values only when the popup closes or if something changed.
-        // If it was open but now it's closed, it means it just closed.
+        // If it was open, but now it's closed, it means it just closed.
         let is_open = Popup::is_id_open(ui.ctx(), popup_id);
         if was_open && !is_open {
             if !cell_value.0.is_empty() {

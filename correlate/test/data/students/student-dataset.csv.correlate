@@ -32,15 +32,28 @@
           "related_source": null
         },
         {
-          "name": "city",
+          "name": "longitude",
+          "display_name": null,
+          "column_type": "Number",
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": false,
+          "is_visible": true,
+          "order": 2,
+          "width": 140.0,
+          "allowed_values": null,
+          "related_source": null
+        },
+        {
+          "name": "gender",
           "display_name": null,
           "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 2,
-          "width": 224.0,
+          "order": 3,
+          "width": 154.0,
           "allowed_values": null,
           "related_source": null
         },
@@ -52,21 +65,8 @@
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
-          "order": 3,
-          "width": 140.0,
-          "allowed_values": null,
-          "related_source": null
-        },
-        {
-          "name": "longitude",
-          "display_name": null,
-          "column_type": "Number",
-          "is_key": false,
-          "is_name": false,
-          "is_virtual": false,
-          "is_visible": true,
           "order": 4,
-          "width": 103.125,
+          "width": 119.21875,
           "allowed_values": null,
           "related_source": null
         },
@@ -79,7 +79,7 @@
           "is_virtual": true,
           "is_visible": true,
           "order": 5,
-          "width": 155.375,
+          "width": 163.0,
           "allowed_values": null,
           "related_source": "Netherlands > Netherlands"
         },
@@ -130,9 +130,9 @@
           "related_source": null
         },
         {
-          "name": "gender",
+          "name": "age",
           "display_name": null,
-          "column_type": "Text",
+          "column_type": "Number",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
@@ -143,15 +143,15 @@
           "related_source": null
         },
         {
-          "name": "age",
+          "name": "city",
           "display_name": null,
-          "column_type": "Number",
+          "column_type": "Text",
           "is_key": false,
           "is_name": false,
           "is_virtual": false,
           "is_visible": true,
           "order": 8,
-          "width": 88.875,
+          "width": 163.25,
           "allowed_values": null,
           "related_source": null
         },

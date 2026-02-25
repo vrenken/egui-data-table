@@ -41,7 +41,7 @@ impl HierarchyPanel {
                         }
                         ui.separator();
                         if let Some(path) = Self::ui_hierarchy_panel_context_menu(ui) {
-                            view_model.pending_file_to_add = Some((path, None));
+                            view_model.handle_pending_file_add(path, 0);
                         }
                     });
 
@@ -88,6 +88,16 @@ impl HierarchyPanel {
                 .add_filter("Excel Files", &["xlsx"])
                 .add_filter("CSV Files", &["csv"])
                 .pick_file() 
+            {
+                result = Some(path);
+            }
+            ui.close();
+        }
+        if ui.button("Add new data source").clicked() {
+             if let Some(path) = rfd::FileDialog::new()
+                .add_filter("CSV Files", &["csv"])
+                .set_file_name("new_data_source.csv")
+                .save_file() 
             {
                 result = Some(path);
             }

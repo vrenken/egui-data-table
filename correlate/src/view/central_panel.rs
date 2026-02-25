@@ -110,6 +110,7 @@ impl CentralPanel {
             egui::Modal::new(egui::Id::new("confirm_trash_datasource_modal")).show(ctx, |ui| {
                 ui.set_width(300.0);
                 ui.heading("Confirm Delete Data Source");
+
                 let ds_name = view_model.data_sources.get(ds_idx)
                     .map(|ds| ds.name.as_ref().cloned().unwrap_or_else(|| {
                         std::path::Path::new(&ds.path)

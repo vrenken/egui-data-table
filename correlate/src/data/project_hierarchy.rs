@@ -39,14 +39,9 @@ impl Project {
         if renaming_this_project {
             let mut rect = header_res.header_response.rect;
             rect.min.x += 20.0; // Offset for icon
-            header_res.header_response.context_menu(|ui| {
-                Rename::ui_item_context_menu(ui, Rename::Project(project_idx));
-                ui.separator();
-                if let Some(path) = HierarchyPanel::ui_hierarchy_panel_context_menu(ui) {
-                    view_model.pending_file_to_add = Some((path, Some(project_idx)));
-                }
-            });
-            ui.scope_builder(egui::UiBuilder::new().max_rect(rect), |ui| {
+            Self::show_context_menu(header_res, project_idx, view_model);
+
+            ui.scope_builder(UiBuilder::new().max_rect(rect), |ui| {
                 Rename::ui_item_as_editable(
                     ui,
                     view_model,
@@ -57,13 +52,18 @@ impl Project {
                 );
             });
         } else {
-            header_res.header_response.context_menu(|ui| {
-                Rename::ui_item_context_menu(ui, Rename::Project(project_idx));
-                ui.separator();
-                if let Some(path) = HierarchyPanel::ui_hierarchy_panel_context_menu(ui) {
-                    view_model.pending_file_to_add = Some((path, Some(project_idx)));
-                }
-            });
+            Self::show_context_menu(header_res, project_idx, view_model);
         }
+    }
+
+    pub fn show_context_menu(header_res: CollapsingResponse<()>, project_idx: usize, view_model: &mut RootViewModel)
+    {
+        header_res.header_response.context_menu(|ui| {
+            Rename::ui_item_context_menu(ui, Rename::Project(project_idx));
+            ui.separator();
+            if let Some(path) = HierarchyPanel::ui_hierarchy_panel_context_menu(ui) {
+                view_model.handle_pending_file_add(path, project_idx);
+            }
+        });
     }
 }

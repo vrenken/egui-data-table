@@ -3,14 +3,13 @@ use crate::data::*;
 use crate::view::*;
 
 pub struct RootViewModel {
-    pub(crate) config: Configuration,
-    pub(crate) table: egui_data_table::DataTable<Row>,
-    pub(crate) viewer: RowView,
-    pub(crate) data_sources: Vec<DataSource>,
-    pub(crate) selected_index: Option<usize>,
-    pub(crate) style_override: egui_data_table::Style,
-    pub(crate) scroll_bar_always_visible: bool,
-    pub(crate) pending_file_to_add: Option<(std::path::PathBuf, Option<usize>)>,
+    pub config: Configuration,
+    pub table: egui_data_table::DataTable<Row>,
+    pub viewer: RowView,
+    pub data_sources: Vec<DataSource>,
+    pub selected_index: Option<usize>,
+    pub style_override: egui_data_table::Style,
+    pub scroll_bar_always_visible: bool,
 }
 
 impl RootViewModel {
@@ -87,7 +86,6 @@ impl RootViewModel {
                 selected_index,
                 style_override: Default::default(),
                 scroll_bar_always_visible: false,
-                pending_file_to_add: None,
             };
         }
 
@@ -113,53 +111,57 @@ impl RootViewModel {
             selected_index: Some(selected_index),
             style_override: Default::default(),
             scroll_bar_always_visible: false,
-            pending_file_to_add: None,
         }
     }
 
-    pub fn handle_pending_file_add(&mut self) {
-        if let Some((path, project_idx)) = self.pending_file_to_add.take() {
-            let path_str = path.to_string_lossy().to_string();
-            let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
+    pub fn handle_pending_file_add(&mut self, path: std::path::PathBuf, index: usize) {
+        let path_str = path.to_string_lossy().to_string();
 
-            let loaded_result = if extension == "csv" {
-                CsvSheet.load(path_str.clone())
-            } else {
-                ExcelSheet.load(path_str.clone())
-            };
+        // If file doesn't exist, create an empty one (with headers)
+        if !path.exists() {
+            if let Err(e) = std::fs::write(&path, "Name\n") {
+                log::error!("Failed to create new file {}: {}", path_str, e);
+                return;
+            }
+        }
 
-            match loaded_result {
-                Ok((sheets, source_config)) => {
-                    let custom_name = sheets.first().and_then(|s| s.custom_name.clone());
-                    let new_index = self.data_sources.len();
+        let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
 
-                    self.data_sources.push(DataSource::new(
-                        path_str.clone(),
-                        custom_name,
-                        source_config,
-                        sheets,
-                        0,
-                    ));
+        let loaded_result = if extension == "csv" {
+            CsvSheet.load(path_str.clone())
+        } else {
+            ExcelSheet.load(path_str.clone())
+        };
 
-                    self.switch_to_source(new_index, 0);
+        match loaded_result {
+            Ok((sheets, source_config)) => {
+                let custom_name = sheets.first().and_then(|s| s.custom_name.clone());
+                let new_index = self.data_sources.len();
 
-                    // Persist to config
-                    if let Some(p_idx) = project_idx {
-                        if let Some(projects) = self.config.projects.as_mut() {
-                            if let Some(project) = projects.get_mut(p_idx) {
-                                project.data_sources.push(path_str);
-                            }
-                        }
-                    }
-                    
-                    self.config.selected_index = self.selected_index;
-                    if let Err(e) = self.config.save() {
-                        log::error!("Failed to save config: {}", e);
+                self.data_sources.push(DataSource::new(
+                    path_str.clone(),
+                    custom_name,
+                    source_config,
+                    sheets,
+                    0,
+                ));
+
+                self.switch_to_source(new_index, 0);
+
+                // Persist to config
+                if let Some(projects) = self.config.projects.as_mut() {
+                    if let Some(project) = projects.get_mut(index) {
+                        project.data_sources.push(path_str);
                     }
                 }
-                Err(e) => {
-                    log::error!("Failed to load {}: {}", path_str, e);
+
+                self.config.selected_index = self.selected_index;
+                if let Err(e) = self.config.save() {
+                    log::error!("Failed to save config: {}", e);
                 }
+            }
+            Err(e) => {
+                log::error!("Failed to load {}: {}", path_str, e);
             }
         }
     }
