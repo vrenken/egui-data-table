@@ -15,7 +15,7 @@ impl CentralPanel {
                   view_model: &mut RootViewModel,
                   central_panel_view_model: &mut CentralPanelViewModel,
                   ctx: &egui::Context,
-                  commands: Vec<Command<Row>>) {
+                  commands: &Vec<Command<Row>>) {
         central_panel_view_model.handle_viewer_requests(view_model);
         Self::show_trash_confirmation_modal(ctx, view_model);
 

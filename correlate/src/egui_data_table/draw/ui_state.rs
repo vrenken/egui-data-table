@@ -908,7 +908,11 @@ impl<R> UiState<R> {
                 // This command MUST have be consumed before calling this.
                 unreachable!()
             }
-            Command::ToggleScrollBarVisibility | Command::ClearUserModificationFlag => {
+            Command::ToggleScrollBarVisibility 
+            | Command::ClearUserModificationFlag
+            | Command::AddProject
+            | Command::AddExistingDataSource(_)
+            | Command::SwitchToSource(_, _) => {
                 unreachable!("This command should be handled by the view update method")
             }
         };
@@ -1039,7 +1043,10 @@ impl<R> UiState<R> {
             | Command::CcSetCells { .. }
             | Command::CcUpdateSystemClipboard(..)
             | Command::ToggleScrollBarVisibility
-            | Command::ClearUserModificationFlag => unreachable!(),
+            | Command::ClearUserModificationFlag
+            | Command::AddProject
+            | Command::AddExistingDataSource(_)
+            | Command::SwitchToSource(_, _) => unreachable!(),
         }
     }
 

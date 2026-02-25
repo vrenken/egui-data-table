@@ -1,15 +1,31 @@
 ﻿use egui::*;
 use crate::view::*;
 use crate::data::*;
+use crate::egui_data_table::command::Command;
 
 #[derive(Default)]
 pub struct HierarchyPanel {}
 
 impl HierarchyPanel {
-    pub fn update(&mut self, _view_model: &mut RootViewModel, _ctx: &Context) {
+    pub fn update(&mut self, view_model: &mut RootViewModel, _ctx: &Context, commands: &Vec<Command<Row>>) {
+        for command in commands {
+            match command {
+                Command::AddProject => {
+                    view_model.add_project();
+                }
+                Command::AddExistingDataSource(path) => {
+                    view_model.handle_pending_file_add(path.clone(), 0);
+                }
+                Command::SwitchToSource(index, sheet_idx) => {
+                    view_model.switch_to_source(*index, *sheet_idx);
+                }
+                _ => {}
+            }
+        }
     }
 
-    pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &Context) -> (Option<usize>, Option<usize>) {
+    pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &Context) -> Vec<Command<Row>> {
+        let mut commands = Vec::new();
         let mut newly_selected_index = None;
         let mut newly_selected_sheet_index = None;
 
@@ -39,12 +55,12 @@ impl HierarchyPanel {
 
                     header_res.header_response.context_menu(|ui| {
                         if ui.button("Add project").clicked() {
-                            view_model.add_project();
+                            commands.push(Command::AddProject);
                             ui.close();
                         }
                         ui.separator();
                         if let Some(path) = Self::ui_hierarchy_panel_context_menu(ui) {
-                            view_model.handle_pending_file_add(path, 0);
+                            commands.push(Command::AddExistingDataSource(path));
                         }
                     });
 
@@ -81,7 +97,12 @@ impl HierarchyPanel {
                 });
             });
 
-        (newly_selected_index, newly_selected_sheet_index)
+        if let Some(index) = newly_selected_index {
+            let sheet_idx = newly_selected_sheet_index.unwrap_or(0);
+            commands.push(Command::SwitchToSource(index, sheet_idx));
+        }
+
+        commands
     }
 
     pub fn ui_hierarchy_panel_context_menu(ui: &mut Ui) -> Option<std::path::PathBuf> {

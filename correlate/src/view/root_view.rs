@@ -39,12 +39,13 @@ impl Default for RootView {
 impl eframe::App for RootView {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 
-        self.hierarchy_panel.update(&mut self.root_view_model, ctx);
+        let commands = self.pending_commands.drain(..).collect::<Vec<_>>();
+        self.hierarchy_panel.update(&mut self.root_view_model, ctx, &commands);
         self.central_panel.update(
             &mut self.root_view_model,
             &mut self.central_panel_view_model,
             ctx,
-            self.pending_commands.drain(..).collect()
+            &commands
         );
 
         // Assert Send/Sync for DataTable as a compile-time check
@@ -56,13 +57,7 @@ impl eframe::App for RootView {
         self.menu_bar.ui(&mut self.root_view_model, ctx);
         self.bottom_panel.ui(&mut self.root_view_model, ctx);
 
-        let (newly_selected_index, newly_selected_sheet_index): (Option<usize>, Option<usize>) = self.hierarchy_panel.ui(&mut self.root_view_model, ctx);
-
-        if let Some(index) = newly_selected_index {
-            let sheet_idx = newly_selected_sheet_index.unwrap_or(0);
-            self.root_view_model.switch_to_source(index, sheet_idx);
-        }
-
-        self.pending_commands = self.central_panel.ui(&mut self.root_view_model, ctx);
+        self.pending_commands.extend(self.hierarchy_panel.ui(&mut self.root_view_model, ctx));
+        self.pending_commands.extend(self.central_panel.ui(&mut self.root_view_model, ctx));
     }
 }

@@ -45,4 +45,8 @@ pub enum Command<R> {
 
     ToggleScrollBarVisibility,
     ClearUserModificationFlag,
+
+    AddProject,
+    AddExistingDataSource(std::path::PathBuf),
+    SwitchToSource(usize, usize),
 }
