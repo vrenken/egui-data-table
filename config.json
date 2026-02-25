@@ -1,10 +1,11 @@
 {
-  "selected_index": 6,
+  "selected_index": 5,
   "projects": [
     {
       "name": "Private Metaverse Research",
       "data_sources": [
-        "correlate/test/data/students/student-dataset.csv"
+        "correlate/test/data/students/student-dataset.csv",
+        "correlate/test/data/sheets/test.xlsx"
       ]
     },
     {
