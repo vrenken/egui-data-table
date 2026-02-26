@@ -124,38 +124,36 @@ impl<'a> ColumnHeader<'a> {
         ui.menu_button(format!("{} Change type", egui_material_icons::icons::ICON_EDIT_SQUARE), |ui| {
             let current_type = self.column_configs[column].column_type;
 
-            let types = [
+            let types = vec![
                 ColumnType::Text,
                 ColumnType::Number,
                 ColumnType::DateTime,
             ];
 
-            for t in types {
-                let mut is_selected = current_type == t;
-                if ui.checkbox(&mut is_selected, format!("{} {:?}", t.icon(), t)).clicked() {
-                    self.column_configs[column].column_type = t;
-                    *action = Some(HeaderAction::RequestSave);
-                }
-            }
+            self.update_virtual_columns(types, current_type, column, action, ui);
 
             let is_virtual = self.column_configs[column].is_virtual;
             ui.add_enabled_ui(is_virtual, |ui| {
-                let virtual_types = [
+                let virtual_types = vec![
                     ColumnType::Select,
                     ColumnType::MultiSelect,
                     ColumnType::Relation,
                 ];
-                for t in virtual_types {
-                    let mut is_selected = current_type == t;
-                    if ui.checkbox(&mut is_selected, format!("{} {:?}", t.icon(), t)).clicked() {
-                        self.column_configs[column].column_type = t;
-                        *action = Some(HeaderAction::RequestSave);
-                    }
-                }
+                self.update_virtual_columns(virtual_types, current_type, column, action, ui);
             });
 
             self.show_disabled_types(ui);
         });
+    }
+
+    fn update_virtual_columns(&mut self, types: Vec<ColumnType>, current_type: ColumnType, column: usize, action: &mut HeaderResult, ui: &mut egui::Ui) {
+        for t in types {
+            let mut is_selected = current_type == t;
+            if ui.checkbox(&mut is_selected, format!("{} {:?}", t.icon(), t)).clicked() {
+                self.column_configs[column].column_type = t;
+                *action = Some(HeaderAction::RequestSave);
+            }
+        }
     }
 
     fn show_disabled_types(&self, ui: &mut egui::Ui) {
