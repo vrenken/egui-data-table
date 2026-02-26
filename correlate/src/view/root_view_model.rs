@@ -175,42 +175,6 @@ impl RootViewModel {
         }
     }
 
-    pub fn remove_data_source(&mut self, index: usize) {
-        if index < self.data_sources.len() {
-            let path_to_remove = self.data_sources[index].path.clone();
-            self.data_sources.remove(index);
-
-            // Update the selected index if necessary
-            if let Some(selected) = self.selected_index {
-                if selected == index {
-                    // If we removed the selected one, pick a new one or set to None
-                    if self.data_sources.is_empty() {
-                        self.selected_index = None;
-                        self.table = DataTable::new();
-                        self.viewer.column_configs = Vec::new();
-                        self.viewer.data_sources = Vec::new();
-                    } else {
-                        let new_idx = index.min(self.data_sources.len() - 1);
-                        self.switch_to_source(new_idx, self.data_sources[new_idx].selected_sheet_index);
-                    }
-                } else if selected > index {
-                    self.selected_index = Some(selected - 1);
-                }
-            }
-        
-            // Also remove from any project that might contain it
-            if let Some(projects) = self.config.projects.as_mut() {
-                for project in projects {
-                    project.data_sources.retain(|p| p != &path_to_remove);
-                }
-            }
-
-            if let Err(e) = self.config.save() {
-                log::error!("Failed to save config after removing data source: {}", e);
-            }
-        }
-    }
-
     pub fn switch_to_source(&mut self, index: usize, sheet_idx: usize) {
         // Save the current table state back to its source
         if let Some(old_idx) = self.selected_index {

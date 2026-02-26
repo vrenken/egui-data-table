@@ -28,9 +28,9 @@ impl Default for RootView {
         dispatcher.register::<AddProject, _>(AddProjectHandler);
         dispatcher.register::<AddExistingDataSource, _>(AddExistingDataSourceHandler);
         dispatcher.register::<SwitchToSource, _>(SwitchToSourceHandler);
-        dispatcher.register::<ShowTrashConfirmationModal, _>(ShowTrashConfirmationModalHandler);
         dispatcher.register::<TrashColumn, _>(TrashColumnHandler);
         dispatcher.register::<TrashProject, _>(TrashProjectHandler);
+        dispatcher.register::<TrashDataSource, _>(TrashDataSourceHandler);
 
         Self {
             hierarchy_view_model: HierarchyViewModel::default(&config),
@@ -51,8 +51,7 @@ impl eframe::App for RootView {
         
         self.dispatcher.dispatch(&mut self.pending_commands);
 
-        let central_panel_commands = self.central_panel.update(&mut self.root_view_model, &mut self.central_panel_view_model, ctx);
-        self.pending_commands.extend(central_panel_commands);
+        self.central_panel.update(&mut self.root_view_model, &mut self.central_panel_view_model);
 
         // Assert Send/Sync for DataTable as a compile-time check
         fn is_send<T: Send>(_: &T) {}

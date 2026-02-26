@@ -1,22 +1,16 @@
 use crate::view::*;
 use crate::egui_data_table::*;
+use crate::application_command::*;
 use eframe::emath::Align;
 use egui::Layout;
-use crate::egui_data_table::renderer::Renderer;
-use crate::application_command::{ApplicationCommand};
 
 
 #[derive(Default)]
 pub struct CentralPanel {}
 
 impl CentralPanel {
-    pub fn update(&mut self,
-                  _view_model: &mut RootViewModel,
-                  central_panel_view_model: &mut CentralPanelViewModel,
-                  ctx: &egui::Context) -> Vec<Box<dyn ApplicationCommand>> {
+    pub fn update(&mut self, _view_model: &mut RootViewModel, central_panel_view_model: &mut CentralPanelViewModel) {
         central_panel_view_model.handle_viewer_requests(_view_model);
-        
-        vec![Box::new(ShowTrashConfirmationModal { ctx: ctx.clone() })]
     }
 
     pub fn ui(&mut self,

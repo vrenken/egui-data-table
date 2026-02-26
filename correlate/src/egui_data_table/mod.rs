@@ -2,7 +2,8 @@
 
 pub mod draw;
 pub mod viewer;
-pub(crate) mod renderer;
+pub mod renderer;
+pub use renderer::*;
 
 pub use draw::*;
 pub use draw::state::*;
