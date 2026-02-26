@@ -377,34 +377,7 @@ impl RowViewer<Row> for RowView {
             }
             res.request_focus();
         } else {
-            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                ui.separator();
-
-                if has_any_sort {
-                    ui.monospace(
-                        egui::RichText::from(format!(
-                            "{:·>width$}",
-                            row_idx,
-                            width = row_id_digits
-                        ))
-                        .strong(),
-                    );
-                } else {
-                    ui.monospace(
-                        egui::RichText::from(format!("{:>width$}", "", width = row_id_digits))
-                            .strong(),
-                    );
-                }
-
-                ui.monospace(
-                    egui::RichText::from(format!(
-                        "{:·>width$}",
-                        vis_row + 1,
-                        width = vis_row_digits
-                    ))
-                    .weak(),
-                );
-            });
+            self.show_row_header_internal(ui, row_idx, vis_row, has_any_sort, row_id_digits, vis_row_digits);
         }
         committed
     }

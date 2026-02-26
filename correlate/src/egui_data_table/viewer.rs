@@ -300,6 +300,11 @@ pub trait RowViewer<R>: 'static {
 
     /// Show the row header UI.
     fn show_row_header(&mut self, ui: &mut egui::Ui, row: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize, _row_data: &R) -> Option<(RenameTarget, String)> {
+        self.show_row_header_internal(ui, row, vis_row, has_any_sort, row_id_digits, vis_row_digits);
+        None
+    }
+
+    fn show_row_header_internal(&mut self, ui: &mut egui::Ui, row: usize, vis_row: usize, has_any_sort: bool, row_id_digits: usize, vis_row_digits: usize) {
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
             ui.separator();
 
@@ -310,7 +315,7 @@ pub trait RowViewer<R>: 'static {
                         row,
                         width = row_id_digits
                     ))
-                    .strong(),
+                        .strong(),
                 );
             } else {
                 ui.monospace(
@@ -325,10 +330,9 @@ pub trait RowViewer<R>: 'static {
                     vis_row + 1,
                     width = vis_row_digits
                 ))
-                .weak(),
+                    .weak(),
             );
         });
-        None
     }
 
     /// Return hotkeys for the current context.
