@@ -45,5 +45,8 @@ pub use switch_to_source::*;
 mod show_trash_confirmation_modal;
 pub use show_trash_confirmation_modal::*;
 
+mod trash_column;
+pub use trash_column::*;
+
 
 

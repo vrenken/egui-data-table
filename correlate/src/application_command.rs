@@ -1,13 +1,17 @@
-﻿pub trait ApplicationCommand: Any + Send + Sync {
+﻿use egui::Id;
+use egui::Ui;
+use egui::Context;
+use std::any::{Any, TypeId};
+use std::collections::HashMap;
+
+
+pub trait ApplicationCommand: Any + Send + Sync {
     fn as_any(&self) -> &dyn Any;
 }
 
 pub trait ApplicationCommandHandler {
     fn handle(&self, cmd: &dyn Any);
 }
-
-use std::any::{Any, TypeId};
-use std::collections::HashMap;
 
 
 pub struct ApplicationCommandDispatcher {
@@ -39,3 +43,34 @@ impl ApplicationCommandDispatcher {
         }
     }
 }
+
+
+pub fn enqueue_ui_command(ui: &mut Ui, command: Box<dyn ApplicationCommand>) {
+    let key = Id::new("ui_commands");
+
+    ui.data_mut(|data| {
+        let list = data.get_temp_mut_or_insert_with::<UICommands>(key, UICommands::default);
+        list.0.push(command);
+    });
+}
+
+
+pub fn get_commands(ctx: &Context) -> Vec<Box<dyn ApplicationCommand>> {
+    let key = Id::new("ui_commands");
+
+    ctx.data_mut(|data| {
+        let list = data.get_temp_mut_or_insert_with::<UICommands>(key, UICommands::default);
+        std::mem::take(&mut list.0)
+    })
+}
+
+#[derive(Default)]
+struct UICommands(Vec<Box<dyn ApplicationCommand>>);
+
+impl Clone for UICommands {
+    fn clone(&self) -> Self {
+        panic!("UICommands should never be cloned");
+    }
+}
+
+

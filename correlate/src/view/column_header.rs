@@ -1,6 +1,7 @@
 use crate::data::*;
 use crate::view::*;
 use crate::egui_data_table::*;
+use crate::application_command::*;
 use std::borrow::Cow;
 use egui::Key;
 
@@ -282,7 +283,7 @@ impl<'a> ColumnHeader<'a> {
         let is_virtual = self.column_configs[column].is_virtual;
         ui.add_enabled_ui(is_virtual, |ui| {
             if ui.button(format!("{} Trash", egui_material_icons::icons::ICON_DELETE)).clicked() {
-                ui.data_mut(|d| d.insert_temp(egui::Id::new("trash_column_index"), Some(column)));
+                enqueue_ui_command(ui, Box::new(TrashColumn { column, ctx: ui.ctx().clone() }));
                 ui.close();
             }
         });

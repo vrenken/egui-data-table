@@ -29,6 +29,7 @@ impl Default for RootView {
         dispatcher.register::<AddExistingDataSource, _>(AddExistingDataSourceHandler);
         dispatcher.register::<SwitchToSource, _>(SwitchToSourceHandler);
         dispatcher.register::<ShowTrashConfirmationModal, _>(ShowTrashConfirmationModalHandler);
+        dispatcher.register::<TrashColumn, _>(TrashColumnHandler);
 
         Self {
             hierarchy_view_model: HierarchyViewModel::default(&config),
@@ -60,6 +61,8 @@ impl eframe::App for RootView {
 
         self.menu_bar.ui(&mut self.root_view_model, ctx);
         self.bottom_panel.ui(&mut self.root_view_model, ctx);
+
+        self.pending_commands.extend(get_commands(ctx));
 
         self.pending_commands.extend(self.hierarchy_panel.ui(&mut self.root_view_model, ctx));
         self.pending_commands.extend(self.central_panel.ui(&mut self.root_view_model, ctx));
