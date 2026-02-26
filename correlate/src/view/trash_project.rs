@@ -37,7 +37,7 @@ impl ApplicationCommandHandler for TrashProjectHandler {
             let project_idx = command.project;
 
             let ctx = &command.ctx;
-            egui::Modal::new(egui::Id::new("confirm_trash_project_modal")).show(ctx, |ui| {
+            egui::Modal::new(Id::new("confirm_trash_project_modal")).show(ctx, |ui| {
                 ui.set_width(300.0);
                 ui.heading("Confirm Delete Project");
                 let project_name = view_model.config.projects.as_ref()
