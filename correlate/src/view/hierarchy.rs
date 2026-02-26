@@ -9,10 +9,7 @@ use crate::application_command::*;
 pub struct HierarchyPanel {}
 
 impl HierarchyPanel {
-    pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &Context) -> Vec<Box<dyn ApplicationCommand>> {
-        let mut commands = Vec::<Box<dyn ApplicationCommand>>::new();
-        let mut newly_selected_index = None;
-        let mut newly_selected_sheet_index = None;
+    pub fn ui(&mut self, view_model: &mut RootViewModel, ctx: &Context) {
 
         SidePanel::left("hierarchy_panel")
             .resizable(true)
@@ -33,19 +30,26 @@ impl HierarchyPanel {
                                     let project = Project {
                                         configuration: project_configs[project_idx].clone(),
                                     };
+                                    let mut newly_selected_index = None;
+                                    let mut newly_selected_sheet_index = None;
                                     project.ui(ui, project_idx, renaming_target_opt, view_model, &mut newly_selected_index, &mut newly_selected_sheet_index);
+
+                                    if let Some(index) = newly_selected_index {
+                                        let sheet_idx = newly_selected_sheet_index.unwrap_or(0);
+                                        enqueue_ui_command(ui, Box::new(SwitchToSource { ctx: ctx.clone(), index, sheet_idx }));
+                                    }
                                 }
                             }
                         });
 
                     header_res.header_response.context_menu(|ui| {
                         if ui.button("Add project").clicked() {
-                            commands.push(Box::new(AddProject { ctx: ctx.clone() }));
+                            enqueue_ui_command(ui, Box::new(AddProject { ctx: ctx.clone() }));
                             ui.close();
                         }
                         ui.separator();
                         if let Some(path) = Self::ui_hierarchy_panel_context_menu(ui) {
-                            commands.push(Box::new(AddExistingDataSource { ctx: ctx.clone(), path }));
+                            enqueue_ui_command(ui, Box::new(AddExistingDataSource { ctx: ctx.clone(), path }));
                         }
                     });
 
@@ -82,12 +86,6 @@ impl HierarchyPanel {
                 });
             });
 
-        if let Some(index) = newly_selected_index {
-            let sheet_idx = newly_selected_sheet_index.unwrap_or(0);
-            commands.push(Box::new(SwitchToSource { ctx: ctx.clone(), index, sheet_idx }));
-        }
-
-        commands
     }
 
     pub fn ui_hierarchy_panel_context_menu(ui: &mut Ui) -> Option<std::path::PathBuf> {

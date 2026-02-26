@@ -15,9 +15,7 @@ impl CentralPanel {
 
     pub fn ui(&mut self,
               view_model: &mut RootViewModel,
-              ctx: &egui::Context) -> Vec<Box<dyn ApplicationCommand>> {
-
-        let mut commands = Vec::<Box<dyn ApplicationCommand>>::new();
+              ctx: &egui::Context) {
 
         ctx.data_mut(|d| d.insert_temp(egui::Id::new("root_view_model"), view_model as *mut RootViewModel as usize));
 
@@ -30,7 +28,7 @@ impl CentralPanel {
                     if ui.button(egui_material_icons::icons::ICON_PAGE_INFO).clicked() {}
                     if ui.button(egui_material_icons::icons::ICON_SWAP_VERT).clicked() {}
                     if ui.button(egui_material_icons::icons::ICON_FILTER_LIST).clicked() {
-                        commands.push(Box::new(ToggleScrollBarVisibility { ctx: ctx.clone() }));
+                        enqueue_ui_command(ui, Box::new(ToggleScrollBarVisibility { ctx: ctx.clone() }));
                     }
                 });
 
@@ -51,12 +49,10 @@ impl CentralPanel {
                 );
 
                 if view_model.table.has_user_modification() {
-                    commands.push(Box::new(ClearUserModificationFlag { ctx: ctx.clone() }));
+                    enqueue_ui_command(ui, Box::new(ClearUserModificationFlag { ctx: ctx.clone() }));
                 }
             });
         });
-
-        commands
     }
 
     pub fn ui_row_context_menu(viewer: &mut RowView, ui: &mut egui::Ui, column: usize) {

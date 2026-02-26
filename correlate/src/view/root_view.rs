@@ -64,7 +64,7 @@ impl eframe::App for RootView {
 
         self.pending_commands.extend(get_commands(ctx));
 
-        self.pending_commands.extend(self.hierarchy_panel.ui(&mut self.root_view_model, ctx));
-        self.pending_commands.extend(self.central_panel.ui(&mut self.root_view_model, ctx));
+        self.hierarchy_panel.ui(&mut self.root_view_model, ctx);
+        self.central_panel.ui(&mut self.root_view_model, ctx);
     }
 }
