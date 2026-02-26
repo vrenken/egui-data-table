@@ -163,7 +163,7 @@ impl Rename
             }
             Rename::DataSource(index) => {
                 if ui.button("Remove").clicked() {
-                    ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_datasource_index"), Some(index)));
+                    enqueue_ui_command(ui, Box::new(TrashDataSource { data_source: index, ctx: ui.ctx().clone() }));
                     ui.close();
                 }
             }
