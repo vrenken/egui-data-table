@@ -138,7 +138,7 @@
           "is_virtual": false,
           "is_visible": true,
           "order": 7,
-          "width": 163.375,
+          "width": 84.625,
           "allowed_values": null,
           "related_source": null
         },
@@ -151,7 +151,7 @@
           "is_virtual": false,
           "is_visible": true,
           "order": 8,
-          "width": 163.25,
+          "width": 83.25,
           "allowed_values": null,
           "related_source": null
         },
@@ -255,7 +255,7 @@
           "is_virtual": false,
           "is_visible": false,
           "order": 16,
-          "width": 0.0,
+          "width": 131.15625,
           "allowed_values": null,
           "related_source": null
         },
@@ -268,7 +268,7 @@
           "is_virtual": false,
           "is_visible": false,
           "order": 17,
-          "width": 0.0,
+          "width": 120.59375,
           "allowed_values": null,
           "related_source": null
         }

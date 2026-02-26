@@ -134,6 +134,19 @@
           "width": 1346.8125,
           "allowed_values": null,
           "related_source": null
+        },
+        {
+          "name": "New Column 11",
+          "display_name": null,
+          "column_type": "Text",
+          "is_key": false,
+          "is_name": false,
+          "is_virtual": true,
+          "is_visible": true,
+          "order": 10,
+          "width": null,
+          "allowed_values": null,
+          "related_source": null
         }
       ],
       "sort_config": null,
