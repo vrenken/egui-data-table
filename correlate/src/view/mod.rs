@@ -48,5 +48,8 @@ pub use show_trash_confirmation_modal::*;
 mod trash_column;
 pub use trash_column::*;
 
+mod trash_project;
+pub use trash_project::*;
+
 
 

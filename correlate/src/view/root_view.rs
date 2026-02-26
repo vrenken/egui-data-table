@@ -30,6 +30,7 @@ impl Default for RootView {
         dispatcher.register::<SwitchToSource, _>(SwitchToSourceHandler);
         dispatcher.register::<ShowTrashConfirmationModal, _>(ShowTrashConfirmationModalHandler);
         dispatcher.register::<TrashColumn, _>(TrashColumnHandler);
+        dispatcher.register::<TrashProject, _>(TrashProjectHandler);
 
         Self {
             hierarchy_view_model: HierarchyViewModel::default(&config),

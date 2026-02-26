@@ -175,17 +175,6 @@ impl RootViewModel {
         }
     }
 
-    pub fn remove_project(&mut self, index: usize) {
-        if let Some(projects) = self.config.projects.as_mut() {
-            if index < projects.len() {
-                projects.remove(index);
-                if let Err(e) = self.config.save() {
-                    log::error!("Failed to save config after removing project: {}", e);
-                }
-            }
-        }
-    }
-
     pub fn remove_data_source(&mut self, index: usize) {
         if index < self.data_sources.len() {
             let path_to_remove = self.data_sources[index].path.clone();

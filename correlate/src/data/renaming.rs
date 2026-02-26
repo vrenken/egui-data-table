@@ -2,6 +2,7 @@ use crate::data::*;
 use crate::view::*;
 use egui::*;
 use crate::egui_data_table::*;
+use crate::enqueue_ui_command;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Rename {
@@ -155,7 +156,8 @@ impl Rename
         match target {
             Rename::Project(index) => {
                 if ui.button("Remove").clicked() {
-                    ui.ctx().data_mut(|d| d.insert_temp(Id::new("trash_project_index"), Some(index)));
+
+                    enqueue_ui_command(ui, Box::new(TrashProject { project: index, ctx: ui.ctx().clone() }));
                     ui.close();
                 }
             }
